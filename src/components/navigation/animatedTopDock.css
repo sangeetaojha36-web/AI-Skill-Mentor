@@ -1,0 +1,269 @@
+/* Animated Top Dock — Command Bar (Modern Variant) Styles */
+
+.animated-top-dock-component.atd-modern {
+  --atd-top: 16px;
+  --atd-bar-width: min(1200px, calc(100% - 32px));
+  --atd-bar-height: 52px;
+  --atd-item-height: 36px;
+  --atd-item-pad: 12px;
+  --atd-label: 12.5px;
+  --atd-icon: 14px;
+  --atd-gap: 6px;
+  --atd-brand: 14px;
+  --atd-mark: 26px;
+  --atd-action-height: 36px;
+
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  isolation: isolate;
+  background: transparent;
+  padding: var(--atd-top) 12px 14px;
+}
+
+.atd-modern__bar {
+  pointer-events: auto;
+  position: relative;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: max-content;
+  max-width: var(--atd-bar-width);
+  height: var(--atd-bar-height);
+  /* Generous symmetric pill padding: 6px top/bottom, 16px right (prevents overlay), 14px left */
+  padding: 6px 16px 6px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(24, 27, 38, 0.95), rgba(12, 14, 21, 0.92));
+  box-shadow:
+    0 20px 48px -20px rgba(0, 0, 0, 0.95),
+    0 6px 20px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  box-sizing: border-box;
+}
+
+.atd-modern__brand {
+  display: inline-flex;
+  flex: none;
+  gap: 8px;
+  align-items: center;
+  text-decoration: none;
+  color: #f2f3f7;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  padding: 0 4px 0 0;
+}
+
+.atd-modern__mark {
+  display: block;
+  width: var(--atd-mark);
+  height: var(--atd-mark);
+  overflow: hidden;
+  border-radius: 7px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.42);
+}
+
+.atd-modern__mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.atd-modern__word {
+  font-size: var(--atd-brand);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.atd-modern__dock {
+  display: flex;
+  flex: none;
+  gap: 3px;
+  align-items: center;
+  justify-content: center;
+  height: var(--atd-item-height);
+}
+
+.atd-modern__item {
+  display: inline-flex;
+  flex: none;
+  gap: var(--atd-gap);
+  align-items: center;
+  justify-content: center;
+  height: var(--atd-item-height);
+  padding: 0 var(--atd-item-pad);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  outline: none;
+  white-space: nowrap;
+  transform-origin: 50% 0;
+  will-change: width, height, transform;
+  cursor: pointer;
+  color: #9ba1b4;
+  background: transparent;
+  font: 500 var(--atd-label) / 1 inherit;
+  letter-spacing: -0.005em;
+  transition:
+    color 0.16s,
+    border-color 0.18s,
+    background 0.18s,
+    box-shadow 0.18s;
+}
+
+.atd-modern__item[data-dock-near="true"],
+.atd-modern__item:hover,
+.atd-modern__item:focus-visible {
+  color: #f4f5f9;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 8px 20px -14px rgba(0, 0, 0, 0.9),
+    inset 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.atd-modern__item[aria-pressed="true"] {
+  color: #0c0e15;
+  font-weight: 600;
+  border-color: transparent;
+  background: linear-gradient(180deg, #ff8c42, #ea580c);
+  box-shadow:
+    0 8px 20px -8px rgba(234, 88, 12, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.atd-modern__icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--atd-icon);
+  height: var(--atd-icon);
+  opacity: 0.75;
+  transition: opacity 0.16s;
+}
+
+.atd-modern__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.atd-modern__item[data-dock-near="true"] .atd-modern__icon,
+.atd-modern__item[aria-pressed="true"] .atd-modern__icon {
+  opacity: 1;
+}
+
+.atd-modern__actions {
+  display: inline-flex;
+  flex: none;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.atd-modern__ghost {
+  height: var(--atd-action-height);
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: #a7abba;
+  font: 500 var(--atd-label) / 1 inherit;
+  transition: color 0.16s, background 0.16s;
+  cursor: pointer;
+}
+
+.atd-modern__ghost:hover {
+  color: #f0f1f6;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.atd-modern__cta {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  height: var(--atd-action-height);
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  background: linear-gradient(180deg, #ea580c, #c2410c);
+  font: 600 var(--atd-label) / 1 inherit;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  box-shadow:
+    0 10px 24px -12px rgba(234, 88, 12, 0.95),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition:
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.18s;
+  cursor: pointer;
+}
+
+.atd-modern__cta svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.atd-modern__cta:hover {
+  box-shadow:
+    0 14px 28px -10px rgba(234, 88, 12, 1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+  .atd-modern__bar {
+    max-width: 98vw;
+    gap: 10px;
+    padding: 6px 12px;
+  }
+
+  .atd-modern__item span:last-child {
+    display: none;
+  }
+
+  .atd-modern__item {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 680px) {
+  .atd-modern__bar {
+    width: 98vw;
+    gap: 6px;
+    padding: 5px 10px;
+  }
+
+  .atd-modern__word {
+    display: none;
+  }
+
+  .atd-modern__item {
+    height: 30px !important;
+    padding: 0 8px !important;
+    transform: none !important;
+  }
+}

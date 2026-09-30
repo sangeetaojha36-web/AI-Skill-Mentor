@@ -1,0 +1,6 @@
+{
+  "name": "AI Skill Mentor – Career Guidance & Learning Platform",
+  "description": "An intelligent AI-powered career guidance and personalized learning ecosystem supporting students across all disciplines with ML skill extraction, gap analysis, roadmaps, and AI mock interviews.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
