@@ -117,8 +117,14 @@ const DOCK_ITEMS: readonly DockItem[] = [
 
 const BRAND_MARK = (
   <svg viewBox="0 0 24 24" aria-hidden="true">
-    <rect width="24" height="24" rx="6" fill="#ea580c" />
-    <circle cx="12" cy="12" r="6.5" stroke="#ffffff" strokeWidth="1.2" fill="none" />
+    <defs>
+      <linearGradient id="solarSunsetBrandGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#FEC163" />
+        <stop offset="100%" stopColor="#DE4313" />
+      </linearGradient>
+    </defs>
+    <rect width="24" height="24" rx="6" fill="url(#solarSunsetBrandGrad)" />
+    <circle cx="12" cy="12" r="6.5" stroke="#ffffff" strokeWidth="1.2" strokeOpacity="0.9" fill="none" />
     <path d="M14.5 9.5l-4 1.5-1.5 4 4-1.5 1.5-4z" fill="#ffffff" />
   </svg>
 );
@@ -222,40 +228,40 @@ export const AnimatedTopDock: React.FC<AnimatedTopDockProps> = ({
         <div className="atd-modern__actions">
           {currentUser ? (
             <div className="relative flex items-center" ref={menuRef}>
-              {/* Student Account Button (properly padded, no clipping) */}
+              {/* Student Account Button (Solar Sunset FEC163 to DE4313) */}
               <button
                 type="button"
                 onClick={() => setMenuOpen(!menuOpen)}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
                   activeTab === 'setup'
-                    ? 'bg-orange-950/70 border-orange-500/80 text-orange-200'
-                    : 'bg-zinc-900 hover:bg-zinc-800 border-zinc-700/80 text-zinc-100'
+                    ? 'bg-[#3A1408] border-[#FEC163] text-white shadow-[0_0_15px_rgba(222,67,19,0.6)]'
+                    : 'bg-[#180A04]/90 hover:bg-[#2A1006] border-[#FEC163]/35 text-slate-100'
                 }`}
                 title="Account & Profile Setup"
               >
-                <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" />
+                <span className="h-2 w-2 rounded-full bg-[#FEC163] shadow-[0_0_10px_#FEC163] shrink-0" />
                 <span className="text-xs font-semibold max-w-[110px] sm:max-w-[130px] truncate">
                   {displayName}
                 </span>
-                <ChevronDown className={`h-3 w-3 text-zinc-400 transition-transform ${menuOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`h-3 w-3 text-[#FEC163] transition-transform ${menuOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {/* Account Area Dropdown (Includes Profile Setup as requested) */}
               {menuOpen && (
                 <div
-                  className="absolute right-0 top-full mt-2.5 w-72 rounded-2xl border border-white/[0.1] bg-[#0E1017] p-2.5 shadow-2xl z-50 text-xs backdrop-blur-xl animate-fade-in"
+                  className="absolute right-0 top-full mt-2.5 w-72 rounded-2xl border border-[#FEC163]/35 bg-[#0D0502]/95 p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.95)] z-50 text-xs backdrop-blur-2xl animate-fade-in"
                   onClick={() => setMenuOpen(false)}
                 >
                   {/* Account Header Details */}
-                  <div className="p-3 rounded-xl bg-zinc-900/80 border border-white/[0.06] mb-2 space-y-1">
+                  <div className="p-3 rounded-xl bg-[#1F0C05] border border-[#FEC163]/25 mb-2 space-y-1">
                     <div className="font-semibold text-white text-sm truncate">
                       {currentUser.name}
                     </div>
-                    <div className="text-[11px] text-zinc-400 truncate">
+                    <div className="text-[11px] text-[#FEC163] truncate">
                       {currentUser.email}
                     </div>
                     {currentUser.education?.degree && (
-                      <div className="text-[10px] text-orange-400 pt-1 border-t border-zinc-800/80 flex items-center gap-1">
+                      <div className="text-[10px] text-amber-200 pt-1 border-t border-[#FEC163]/25 flex items-center gap-1 font-mono">
                         <span>🎓 {currentUser.education.degree} in {currentUser.education.branch}</span>
                       </div>
                     )}
@@ -267,21 +273,21 @@ export const AnimatedTopDock: React.FC<AnimatedTopDockProps> = ({
                       onClick={() => onSelectTab('setup')}
                       className={`w-full text-left p-2.5 rounded-xl transition-all flex items-start gap-2.5 cursor-pointer ${
                         activeTab === 'setup'
-                          ? 'bg-orange-600/20 border border-orange-500/40 text-orange-300'
-                          : 'hover:bg-zinc-800/80 text-zinc-200'
+                          ? 'bg-[#DE4313]/25 border border-[#FEC163]/50 text-white'
+                          : 'hover:bg-[#260E06] text-slate-200'
                       }`}
                     >
-                      <div className="h-7 w-7 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#FEC163] to-[#DE4313] text-black font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-md">
                         <UserCheck className="h-4 w-4" />
                       </div>
                       <div>
                         <div className="font-semibold text-xs text-white flex items-center gap-1.5">
                           <span>Profile Setup</span>
-                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-orange-500/20 text-orange-400 font-mono">
+                          <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#DE4313]/30 text-[#FEC163] font-mono border border-[#FEC163]/30">
                             {currentUser.isProfileComplete ? 'Complete' : 'Pending'}
                           </span>
                         </div>
-                        <div className="text-[11px] text-zinc-400 mt-0.5">
+                        <div className="text-[11px] text-slate-400 mt-0.5">
                           10th/12th Marks, College, Skills, Projects
                         </div>
                       </div>
@@ -289,25 +295,25 @@ export const AnimatedTopDock: React.FC<AnimatedTopDockProps> = ({
                   </div>
 
                   {/* Switch Demo Student Options */}
-                  <div className="pt-2 mt-1 border-t border-white/[0.08]">
-                    <div className="px-2 py-1 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+                  <div className="pt-2 mt-1 border-t border-[#FEC163]/20">
+                    <div className="px-2 py-1 text-[10px] font-semibold text-[#FEC163] uppercase tracking-wider font-mono">
                       Switch Demo Student Profile
                     </div>
 
                     <button
                       onClick={() => onSelectTab('dashboard')}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors flex items-center justify-between"
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#260E06] text-slate-300 hover:text-white transition-colors flex items-center justify-between"
                     >
                       <span>Rohan Sharma (Mechanical)</span>
-                      <span className="text-[10px] text-orange-400 font-mono">Tier 3</span>
+                      <span className="text-[10px] text-[#FEC163] font-mono">Tier 3</span>
                     </button>
 
                     <button
                       onClick={() => onSelectTab('dashboard')}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-zinc-800 text-zinc-300 hover:text-white transition-colors flex items-center justify-between"
+                      className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-[#260E06] text-slate-300 hover:text-white transition-colors flex items-center justify-between"
                     >
                       <span>Ananya Iyer (Biotechnology)</span>
-                      <span className="text-[10px] text-emerald-400 font-mono">Tier 1</span>
+                      <span className="text-[10px] text-amber-200 font-mono">Tier 1</span>
                     </button>
                   </div>
 

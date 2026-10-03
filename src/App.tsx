@@ -275,103 +275,103 @@ export default function App() {
   // If user is not authenticated, render the System-Themed Auth Page
   if (!currentUser) {
     return (
-      <div className="min-h-screen w-full bg-[#08090E] text-slate-100 flex items-center justify-center p-3 sm:p-6 lg:p-8 font-sans antialiased selection:bg-orange-500/30 selection:text-orange-200">
-        {/* Main Bento Registration Shell */}
-        <div className="w-full max-w-6xl rounded-3xl border border-white/[0.08] bg-[#0E1017]/95 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 backdrop-blur-xl transition-all">
+      <div className="min-h-screen w-full bg-[#050302] text-slate-100 flex items-center justify-center p-3 sm:p-6 lg:p-8 font-sans antialiased selection:bg-[#DE4313]/40 selection:text-white">
+        {/* Main Bento Registration Shell (Solar Sunset FEC163 to DE4313) */}
+        <div className="w-full max-w-6xl rounded-3xl border border-[#FEC163]/30 bg-[#0A0402]/95 shadow-[0_24px_70px_rgba(0,0,0,0.98),0_0_40px_rgba(222,67,19,0.22)] overflow-hidden grid grid-cols-1 lg:grid-cols-12 backdrop-blur-2xl transition-all">
           
           {/* =====================================================================
-             LEFT HERO: SYSTEM CAREER CONSTELLATION ANIMATION (Theme-Aligned)
+             LEFT HERO: SYSTEM CAREER CONSTELLATION ANIMATION (Solar Theme)
              ===================================================================== */}
-          <div className="lg:col-span-7 relative min-h-[480px] sm:min-h-[560px] lg:min-h-[680px] flex flex-col justify-between p-6 sm:p-10 overflow-hidden rounded-2xl m-2 bg-zinc-950 border border-white/[0.06]">
+          <div className="lg:col-span-7 relative min-h-[480px] sm:min-h-[560px] lg:min-h-[680px] flex flex-col justify-between p-6 sm:p-10 overflow-hidden rounded-2xl m-2 bg-[#060201] border border-[#FEC163]/25">
             {/* Live Interactive Constellation Canvas */}
             <CareerConstellationCanvas />
 
             {/* Subtle Gradient Vignette ensuring text legibility */}
-            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#060201] via-[#060201]/45 to-transparent pointer-events-none" />
 
             {/* Top Brand Bar */}
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-xl bg-orange-600 flex items-center justify-center text-white shadow-lg shadow-orange-600/30">
-                  <Compass className="h-5 w-5" />
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FEC163] to-[#DE4313] flex items-center justify-center text-black font-bold shadow-lg shadow-[#DE4313]/40 border border-[#FEC163]/50">
+                  <Compass className="h-5 w-5 text-black" />
                 </div>
                 <div>
                   <span className="text-base font-bold tracking-tight text-white block">
                     AI Skill Mentor
                   </span>
-                  <span className="text-[10px] text-orange-400 font-mono tracking-wider uppercase block">
-                    Career Guidance Ecosystem
+                  <span className="text-[10px] text-[#FEC163] font-mono tracking-wider uppercase block">
+                    Solar Career Engine
                   </span>
                 </div>
               </div>
 
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900/80 border border-white/[0.08] text-[11px] text-zinc-300">
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1A0904]/90 border border-[#FEC163]/40 text-[11px] text-[#FFD799] shadow-[0_0_15px_rgba(222,67,19,0.35)]">
+                <span className="h-2 w-2 rounded-full bg-[#FEC163] animate-pulse shadow-[0_0_10px_#FEC163]" />
                 <span>Placement AI Active</span>
               </div>
             </div>
 
-            {/* Floating Live Bento Metric Badges */}
+            {/* Floating Live Bento Metric Badges (Solar Amber & Flame) */}
             <div className="relative z-10 my-auto py-8 space-y-3 pointer-events-none max-w-sm">
-              <div className="p-3 rounded-2xl bg-zinc-900/90 border border-white/[0.08] shadow-xl backdrop-blur-md flex items-center gap-3 transform hover:translate-x-1 transition-transform">
-                <div className="h-8 w-8 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
-                  <Target className="h-4 w-4" />
+              <div className="p-3 rounded-2xl bg-[#140603]/90 border border-[#FEC163]/35 shadow-2xl backdrop-blur-md flex items-center gap-3 transform hover:translate-x-1 transition-transform">
+                <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#FEC163] to-[#DE4313] text-black font-bold flex items-center justify-center shrink-0 shadow-md">
+                  <Target className="h-4 w-4 text-black" />
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-white">94% Role Readiness Match</div>
-                  <div className="text-[10px] text-zinc-400">Data Analyst & Software Engineering</div>
+                  <div className="text-[10px] text-[#FFD799]">Data Analytics & Software Engineering</div>
                 </div>
               </div>
 
-              <div className="p-3 rounded-2xl bg-zinc-900/90 border border-white/[0.08] shadow-xl backdrop-blur-md flex items-center gap-3 transform translate-x-3">
-                <div className="h-8 w-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+              <div className="p-3 rounded-2xl bg-[#140603]/90 border border-[#FEC163]/35 shadow-2xl backdrop-blur-md flex items-center gap-3 transform translate-x-3">
+                <div className="h-8 w-8 rounded-xl bg-[#DE4313]/25 text-[#FEC163] flex items-center justify-center shrink-0 border border-[#FEC163]/40">
                   <FileCheck2 className="h-4 w-4" />
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-white">ATS Resume Health: 88/100</div>
-                  <div className="text-[10px] text-zinc-400">Calibrated for Indian Recruiters (TCS, Swiggy)</div>
+                  <div className="text-[10px] text-[#FFD799]">Calibrated for Indian Recruiters (TCS, Swiggy)</div>
                 </div>
               </div>
 
-              <div className="p-3 rounded-2xl bg-zinc-900/90 border border-white/[0.08] shadow-xl backdrop-blur-md flex items-center gap-3">
-                <div className="h-8 w-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0">
+              <div className="p-3 rounded-2xl bg-[#140603]/90 border border-[#FEC163]/35 shadow-2xl backdrop-blur-md flex items-center gap-3">
+                <div className="h-8 w-8 rounded-xl bg-[#FEC163]/20 text-[#FEC163] flex items-center justify-center shrink-0 border border-[#FEC163]/40">
                   <Video className="h-4 w-4" />
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-white">Greenroom AI Mock Studio</div>
-                  <div className="text-[10px] text-zinc-400">Speech-to-text technical & HR practice</div>
+                  <div className="text-[10px] text-[#FFD799]">Speech-to-text technical & HR practice</div>
                 </div>
               </div>
             </div>
 
-            {/* Bottom System Onboarding Steps (Aligned with AI Skill Mentor) */}
-            <div className="relative z-10 space-y-4 pt-4 border-t border-white/[0.08]">
+            {/* Bottom System Onboarding Steps */}
+            <div className="relative z-10 space-y-4 pt-4 border-t border-[#FEC163]/20">
               <div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                <h3 className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-[#FEC163] to-[#DE4313] bg-clip-text text-transparent">
                   Discover Your Future in Your Field
                 </h3>
-                <p className="text-xs text-zinc-400 mt-1 max-w-md leading-relaxed">
+                <p className="text-xs text-slate-400 mt-1 max-w-md leading-relaxed">
                   Bridge your skill gaps, analyze curriculum benchmarks, and practice campus interviews with AI.
                 </p>
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-white text-black font-medium text-xs">
-                  <span className="h-5 w-5 rounded-full bg-black text-white text-[11px] font-bold flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold text-xs shadow-[0_0_20px_rgba(222,67,19,0.5)]">
+                  <span className="h-5 w-5 rounded-full bg-black text-[#FEC163] text-[11px] font-bold flex items-center justify-center shrink-0">
                     1
                   </span>
                   <span>Register Student Profile</span>
                 </div>
 
-                <div className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-zinc-900/80 border border-white/[0.06] text-zinc-300 text-xs">
-                  <span className="h-5 w-5 rounded-full bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-[#120502]/80 border border-[#FEC163]/25 text-slate-300 text-xs">
+                  <span className="h-5 w-5 rounded-full bg-[#260C05] text-[#FEC163] text-[11px] font-bold flex items-center justify-center shrink-0 border border-[#FEC163]/30">
                     2
                   </span>
                   <span>Map Academic Marks (10th, 12th & College)</span>
                 </div>
 
-                <div className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-zinc-900/80 border border-white/[0.06] text-zinc-300 text-xs">
-                  <span className="h-5 w-5 rounded-full bg-zinc-800 text-zinc-400 text-[11px] font-bold flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-[#120502]/80 border border-[#FEC163]/25 text-slate-300 text-xs">
+                  <span className="h-5 w-5 rounded-full bg-[#260C05] text-[#FEC163] text-[11px] font-bold flex items-center justify-center shrink-0 border border-[#FEC163]/30">
                     3
                   </span>
                   <span>Unlock Placement Roadmap & Greenroom</span>
@@ -381,21 +381,21 @@ export default function App() {
           </div>
 
           {/* =====================================================================
-             RIGHT FORM COLUMN (Responsive & Robust)
+             RIGHT FORM COLUMN (Solar Sunset Form)
              ===================================================================== */}
           <div className="lg:col-span-5 flex flex-col justify-center p-6 sm:p-8 lg:p-10">
             {/* Mode Switcher Tabs */}
-            <div className="flex rounded-xl bg-zinc-900 p-1 border border-white/[0.06] mb-6">
+            <div className="flex rounded-xl bg-[#0D0502] p-1 border border-[#FEC163]/30 mb-6">
               <button
                 type="button"
                 onClick={() => {
                   setIsLoginMode(false);
                   setAuthError("");
                 }}
-                className={`w-1/2 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                className={`w-1/2 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                   !isLoginMode
-                    ? "bg-orange-600 text-white shadow-sm"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black shadow-[0_0_18px_rgba(222,67,19,0.6)]"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 Sign Up (New Student)
@@ -406,10 +406,10 @@ export default function App() {
                   setIsLoginMode(true);
                   setAuthError("");
                 }}
-                className={`w-1/2 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                className={`w-1/2 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                   isLoginMode
-                    ? "bg-orange-600 text-white shadow-sm"
-                    : "text-zinc-400 hover:text-white"
+                    ? "bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black shadow-[0_0_18px_rgba(222,67,19,0.6)]"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 Sign In (Existing User)
@@ -418,10 +418,10 @@ export default function App() {
 
             {/* Form Header */}
             <div className="space-y-1 mb-6">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-white via-[#FEC163] to-[#DE4313] bg-clip-text text-transparent">
                 {isLoginMode ? "Welcome Back" : "Create Student Account"}
               </h2>
-              <p className="text-xs text-zinc-400">
+              <p className="text-xs text-slate-400">
                 {isLoginMode
                   ? "Enter your registered credentials to resume career mentoring."
                   : "Input your basic details to start personalized skill tracking."}
@@ -440,7 +440,7 @@ export default function App() {
               {!isLoginMode && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-medium text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-medium text-slate-300 block mb-1.5">
                       First Name
                     </label>
                     <input
@@ -449,11 +449,11 @@ export default function App() {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       required={!isLoginMode}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none transition-all"
+                      className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:ring-1 focus:ring-[#FEC163]/60 focus:outline-none transition-all"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-medium text-slate-300 block mb-1.5">
                       Last Name
                     </label>
                     <input
@@ -462,14 +462,14 @@ export default function App() {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       required={!isLoginMode}
-                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none transition-all"
+                      className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:ring-1 focus:ring-[#FEC163]/60 focus:outline-none transition-all"
                     />
                   </div>
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-medium text-zinc-300 block mb-1.5">
+                <label className="text-xs font-medium text-slate-300 block mb-1.5">
                   College / Personal Email
                 </label>
                 <div className="relative flex items-center">
@@ -479,18 +479,18 @@ export default function App() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none transition-all"
+                    className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:ring-1 focus:ring-[#FEC163]/60 focus:outline-none transition-all"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex justify-between items-center mb-1.5">
-                  <label className="text-xs font-medium text-zinc-300">
+                  <label className="text-xs font-medium text-slate-300">
                     Password
                   </label>
                   {!isLoginMode && (
-                    <span className="text-[10px] text-zinc-500">Min. 6 characters</span>
+                    <span className="text-[10px] text-slate-400 font-mono">Min. 6 characters</span>
                   )}
                 </div>
                 <div className="relative flex items-center">
@@ -500,23 +500,23 @@ export default function App() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl h-11 px-3.5 pr-10 text-xs text-white placeholder:text-zinc-500 focus:border-orange-500 focus:outline-none transition-all"
+                    className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 px-3.5 pr-10 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:ring-1 focus:ring-[#FEC163]/60 focus:outline-none transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 text-zinc-500 hover:text-zinc-300 transition-colors cursor-pointer"
+                    className="absolute right-3 text-slate-400 hover:text-white transition-colors cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
-              {/* Submit CTA */}
+              {/* Submit CTA (Solar Sunset Gradient Button) */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 bg-white hover:bg-zinc-200 text-black font-semibold text-xs rounded-xl shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
+                className="w-full h-12 bg-gradient-to-r from-[#FEC163] via-[#FA8C28] to-[#DE4313] hover:from-[#FFE19C] hover:to-[#DE4313] text-black font-bold text-xs rounded-xl shadow-[0_0_28px_rgba(222,67,19,0.7)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
               >
                 {loading ? (
                   <span>Directing to Student Space...</span>
@@ -535,8 +535,8 @@ export default function App() {
             </form>
 
             {/* Instant Demo Student Profiles (Fast 1-Click Access) */}
-            <div className="mt-6 pt-5 border-t border-white/[0.06]">
-              <div className="text-[10px] font-semibold text-zinc-500 uppercase tracking-wider text-center mb-2.5">
+            <div className="mt-6 pt-5 border-t border-[#FEC163]/20">
+              <div className="text-[10px] font-semibold text-[#FEC163] uppercase tracking-wider text-center mb-2.5 font-mono">
                 Instant 1-Click Student Demo Profiles
               </div>
 
@@ -544,25 +544,25 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => handleDemoLogin('rohan')}
-                  className="p-2.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-white/[0.06] text-left transition-colors cursor-pointer"
+                  className="p-2.5 rounded-xl bg-[#120603] hover:bg-[#220B04] border border-[#FEC163]/30 text-left transition-colors cursor-pointer shadow-sm"
                 >
                   <div className="font-semibold text-white text-[11px]">Rohan Sharma</div>
-                  <div className="text-[10px] text-orange-400">B.Tech Mech · Tier 3</div>
+                  <div className="text-[10px] text-[#FEC163] font-mono">B.Tech Mech · Tier 3</div>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => handleDemoLogin('ananya')}
-                  className="p-2.5 rounded-xl bg-zinc-900/80 hover:bg-zinc-800 border border-white/[0.06] text-left transition-colors cursor-pointer"
+                  className="p-2.5 rounded-xl bg-[#120603] hover:bg-[#220B04] border border-[#FEC163]/30 text-left transition-colors cursor-pointer shadow-sm"
                 >
                   <div className="font-semibold text-white text-[11px]">Ananya Iyer</div>
-                  <div className="text-[10px] text-emerald-400">B.Sc Biotech · DU</div>
+                  <div className="text-[10px] text-amber-200 font-mono">B.Sc Biotech · DU</div>
                 </button>
               </div>
             </div>
 
             {/* Footer switcher */}
-            <div className="mt-5 text-center text-xs text-zinc-400">
+            <div className="mt-5 text-center text-xs text-slate-400">
               {isLoginMode ? (
                 <>
                   Need to setup a student profile?{" "}
@@ -572,7 +572,7 @@ export default function App() {
                       setIsLoginMode(false);
                       setAuthError("");
                     }}
-                    className="text-orange-400 font-semibold hover:underline cursor-pointer ml-1"
+                    className="text-[#FEC163] font-semibold hover:underline cursor-pointer ml-1"
                   >
                     Sign Up Free
                   </button>
@@ -586,7 +586,7 @@ export default function App() {
                       setIsLoginMode(true);
                       setAuthError("");
                     }}
-                    className="text-orange-400 font-semibold hover:underline cursor-pointer ml-1"
+                    className="text-[#FEC163] font-semibold hover:underline cursor-pointer ml-1"
                   >
                     Sign In
                   </button>
@@ -602,7 +602,7 @@ export default function App() {
 
   // Once signed up or logged in, DIRECT TO FULL APPLICATION INTERFACE
   return (
-    <div className="min-h-screen bg-black text-slate-100 flex flex-col font-sans antialiased selection:bg-orange-500/30 selection:text-orange-200">
+    <div className="min-h-screen bg-[#050302] text-slate-100 flex flex-col font-sans antialiased selection:bg-[#DE4313]/40 selection:text-white">
       {/* Animated Top Dock Command Bar */}
       <AnimatedTopDock
         currentUser={currentUser}
@@ -719,34 +719,34 @@ export default function App() {
         {activeTab === "admin" && <AdminView onNavigate={setActiveTab} />}
       </main>
 
-      {/* Floating AI Chat Mentor Button */}
+      {/* Floating AI Chat Mentor Button (Solar Sunset FEC163 to DE4313) */}
       <button
         onClick={() => setShowChatModal(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-orange-600 hover:bg-orange-500 text-white shadow-2xl transition-all hover:scale-105 cursor-pointer"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:from-[#FFE19C] hover:to-[#DE4313] text-black font-bold shadow-[0_0_28px_rgba(222,67,19,0.7)] border border-[#FEC163]/50 transition-all hover:scale-105 cursor-pointer"
       >
-        <Bot className="h-5 w-5" />
-        <span className="text-xs font-semibold hidden sm:inline">Ask AI Mentor</span>
+        <Bot className="h-5 w-5 text-black" />
+        <span className="text-xs font-bold hidden sm:inline">Ask AI Mentor</span>
       </button>
 
-      {/* AI Chatbot Modal */}
+      {/* AI Chatbot Modal (Solar Glass) */}
       {showChatModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-end sm:items-center justify-center p-2 sm:p-4 backdrop-blur-sm">
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div className="fixed inset-0 z-50 bg-black/85 flex items-end sm:items-center justify-center p-2 sm:p-4 backdrop-blur-md">
+          <div className="bg-[#0A0402] border border-[#FEC163]/35 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-[0_24px_70px_rgba(0,0,0,0.98),0_0_40px_rgba(222,67,19,0.25)]">
+            <div className="p-4 border-b border-[#FEC163]/25 flex items-center justify-between bg-[#190804]/90">
               <div className="flex items-center gap-2">
-                <div className="h-7 w-7 rounded-lg bg-orange-600 text-white flex items-center justify-center">
-                  <Bot className="h-4 w-4" />
+                <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#FEC163] to-[#DE4313] text-black font-bold flex items-center justify-center shadow-[0_0_15px_rgba(222,67,19,0.6)] border border-[#FEC163]/40">
+                  <Bot className="h-4 w-4 text-black" />
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-white">AI Career Mentor</h3>
-                  <div className="text-[10px] text-orange-400">
+                  <div className="text-[10px] text-[#FEC163] font-mono">
                     Online for {currentUser.name}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setShowChatModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-[#260C05] transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>

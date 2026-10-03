@@ -198,7 +198,16 @@ export function createTopDockController(
   const remeasure = () => { if (!released) measure(); };
   document.fonts?.ready.then(remeasure);
 
-  const resizeObserver = new ResizeObserver(measure);
+  let resizeRaf = 0;
+  const handleResize = () => {
+    if (released) return;
+    cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(() => {
+      if (!released) measure();
+    });
+  };
+
+  const resizeObserver = new ResizeObserver(handleResize);
   resizeObserver.observe(root.closest<HTMLElement>("[data-dock-frame]") ?? root.parentElement ?? root);
   root.addEventListener("pointermove", onPointerMove);
   root.addEventListener("pointerleave", reset);
@@ -214,6 +223,7 @@ export function createTopDockController(
 
   return () => {
     released = true;
+    cancelAnimationFrame(resizeRaf);
     root.style.width = "";
     cancelAnimationFrame(frame);
     resizeObserver.disconnect();

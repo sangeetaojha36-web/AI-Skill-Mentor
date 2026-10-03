@@ -1,11 +1,46 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --color-brand-gray: #1A1A1A;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --color-solar-gold: #FEC163;
+  --color-solar-flame: #DE4313;
+  --color-solar-amber: #FA8C28;
 }
 
 body {
-  @apply font-sans bg-black text-white antialiased;
+  background-color: #050302;
+  color: #F8FAFC;
+  font-family: var(--font-sans);
+  selection-background-color: #DE4313;
+  selection-color: #ffffff;
+}
+
+::selection {
+  background: #DE4313;
+  color: #ffffff;
+}
+
+/* Solar Sunset Gradients */
+.bg-gradient-solar {
+  background: linear-gradient(135deg, #FEC163 0%, #DE4313 100%);
+}
+
+.text-gradient-solar {
+  background: linear-gradient(135deg, #FEC163 0%, #FB923C 45%, #DE4313 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.shadow-solar {
+  box-shadow: 0 0 25px rgba(222, 67, 19, 0.45);
+}
+
+.shadow-solar-lg {
+  box-shadow: 0 10px 35px -8px rgba(222, 67, 19, 0.7);
+}
+
+.border-solar {
+  border-color: rgba(254, 193, 99, 0.28);
 }
