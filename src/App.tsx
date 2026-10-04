@@ -24,6 +24,7 @@ import { api } from "./services/api.ts";
 import { CareerConstellationCanvas } from "./components/auth/CareerConstellationCanvas.tsx";
 import { AnimatedTopDock } from "./components/navigation/AnimatedTopDock.tsx";
 import { BreadcrumbNavigation } from "./components/navigation/BreadcrumbNavigation.tsx";
+import { DemostackAppLayout } from "./components/demostack/DemostackAppLayout.tsx";
 import { ProfileSetupView } from "./components/ProfileSetupView.tsx";
 import { DashboardView } from "./components/DashboardView.tsx";
 import { ResumeAnalyzerView } from "./components/ResumeAnalyzerView.tsx";
@@ -50,8 +51,19 @@ export default function App() {
   });
 
   // Active navigation tab and step-by-step history stack
-  const [activeTab, setActiveTab] = useState<string>("setup");
-  const [navigationHistory, setNavigationHistory] = useState<string[]>(["dashboard", "setup"]);
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const stored = localStorage.getItem("ai_skill_mentor_user");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed?.isProfileComplete || parsed?.careerGoal || parsed?.skills?.length || parsed?.education?.branch) {
+          return "dashboard";
+        }
+      } catch (_) {}
+    }
+    return "dashboard";
+  });
+  const [navigationHistory, setNavigationHistory] = useState<string[]>(["dashboard"]);
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [showChatModal, setShowChatModal] = useState<boolean>(false);
 
@@ -634,24 +646,14 @@ export default function App() {
 
   // Once signed up or logged in, DIRECT TO FULL APPLICATION INTERFACE
   return (
-    <div className="min-h-screen bg-[#050302] text-slate-100 flex flex-col font-sans antialiased selection:bg-[#DE4313]/40 selection:text-white">
-      {/* Animated Top Dock Command Bar */}
-      <AnimatedTopDock
-        currentUser={currentUser}
-        activeTab={activeTab}
-        onSelectTab={navigateTab}
-        onOpenChat={() => setShowChatModal(true)}
-        onLogout={handleLogout}
-        proximity={122}
-        spring={0.19}
-        damping={0.7}
-        widthGrowth={17}
-        heightGrowth={16}
-        drop={3.5}
-      />
-
-      {/* Main Container */}
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-16 pt-4 max-w-7xl mx-auto w-full">
+    <DemostackAppLayout
+      currentUser={currentUser}
+      activeTab={activeTab}
+      onNavigate={navigateTab}
+      onOpenChat={() => setShowChatModal(true)}
+      onLogout={handleLogout}
+    >
+      <div className="max-w-7xl mx-auto w-full pb-16">
         {/* Step-by-Step Breadcrumb Navigation Bar */}
         <BreadcrumbNavigation
           activeTab={activeTab}
@@ -684,6 +686,10 @@ export default function App() {
             profileCompleteness={dashboardData?.profileCompleteness || 85}
             onNavigate={navigateTab}
             onOpenChat={() => setShowChatModal(true)}
+            onUpdateUser={(updated) => {
+              setCurrentUser(updated);
+              localStorage.setItem("ai_skill_mentor_user", JSON.stringify(updated));
+            }}
           />
         )}
 
@@ -742,7 +748,11 @@ export default function App() {
 
         {/* Projects */}
         {activeTab === "projects" && (
-          <ProjectsView user={currentUser} onNavigate={navigateTab} />
+          <ProjectsView
+            user={currentUser}
+            onNavigate={navigateTab}
+            onOpenChat={() => setShowChatModal(true)}
+          />
         )}
 
         {/* Progress Tracker */}
@@ -758,7 +768,7 @@ export default function App() {
 
         {/* Admin View */}
         {activeTab === "admin" && <AdminView onNavigate={navigateTab} />}
-      </main>
+      </div>
 
       {/* Floating AI Chat Mentor Button (Solar Sunset FEC163 to DE4313) */}
       <button
@@ -799,6 +809,6 @@ export default function App() {
           </div>
         </div>
       )}
-    </div>
+    </DemostackAppLayout>
   );
 }

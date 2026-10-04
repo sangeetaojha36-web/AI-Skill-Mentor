@@ -9,7 +9,7 @@ import { DB, INTERVIEW_QUESTIONS_BANK } from './db.ts';
 import { extractSkillsNLP } from './ml/skillExtractor.ts';
 import { rankCareersForUser, performSkillGapAnalysis } from './ml/recommender.ts';
 import { retrieveRelevantKnowledge } from './ml/rag.ts';
-import { generateChatResponse, evaluateInterviewAnswer, generateAdaptiveRoadmap } from './gemini.ts';
+import { generateChatResponse, evaluateInterviewAnswer, generateAdaptiveRoadmap, analyzeStudentProject } from './gemini.ts';
 import { User, Career, Course, Project, ResumeAnalysis, Roadmap, MockInterviewSession, ChatMessage } from './types.ts';
 
 export const apiRouter = Router();
@@ -450,6 +450,24 @@ apiRouter.post('/projects/recommend', (req: Request, res: Response) => {
   }
 
   return res.json({ projects: filtered, userGoal: user.careerGoal });
+});
+
+apiRouter.post('/projects/analyze', async (req: Request, res: Response) => {
+  const { title, description, techStack, githubUrl, liveUrl } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ error: 'Project title is required.' });
+  }
+
+  const analysis = await analyzeStudentProject({
+    title,
+    description: description || 'Student engineering portfolio project',
+    techStack: Array.isArray(techStack) ? techStack : [],
+    githubUrl,
+    liveUrl,
+  });
+
+  return res.json({ analysis });
 });
 
 /* ==========================================================================

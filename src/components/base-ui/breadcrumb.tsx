@@ -89,21 +89,21 @@ export const BreadcrumbPage = React.forwardRef<HTMLSpanElement, BreadcrumbPagePr
 );
 BreadcrumbPage.displayName = 'BreadcrumbPage';
 
-export interface BreadcrumbSeparatorProps extends React.ComponentPropsWithoutRef<'li'> {}
+export interface BreadcrumbSeparatorProps extends React.ComponentPropsWithoutRef<'span'> {}
 
 export const BreadcrumbSeparator = ({
   children,
   className = '',
   ...props
 }: BreadcrumbSeparatorProps) => (
-  <li
+  <span
     role="presentation"
     aria-hidden="true"
-    className={`text-slate-600 [&>svg]:size-3.5 ${className}`}
+    className={`inline-flex items-center text-slate-600 [&>svg]:size-3.5 ${className}`}
     {...props}
   >
     {children ?? <ChevronRight className="h-3.5 w-3.5 text-slate-500" />}
-  </li>
+  </span>
 );
 BreadcrumbSeparator.displayName = 'BreadcrumbSeparator';
 

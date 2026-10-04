@@ -43,6 +43,11 @@ body {
   box-shadow: 0 10px 35px -8px rgba(222, 67, 19, 0.7);
 }
 
-.border-solar {
-  border-color: rgba(254, 193, 99, 0.28);
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

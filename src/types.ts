@@ -32,12 +32,29 @@ export interface StudentAchievement {
   description: string;
 }
 
+export interface ProjectAiAnalysis {
+  recruiterScore: number;
+  impactSummary: string;
+  verifiedSkills: string[];
+  suggestedResumeBullets: string[];
+  interviewQuestions: string[];
+  analyzedAt: string;
+}
+
 export interface StudentProject {
   id: string;
   title: string;
   techStack: string[];
-  link?: string;
   description: string;
+  link?: string;
+  githubUrl?: string;
+  liveUrl?: string;
+  imageUrl?: string;
+  previewType?: 'analytics' | 'saas' | 'code' | 'dashboard' | 'mobile' | 'custom';
+  author?: string;
+  createdAt?: string;
+  isShared?: boolean;
+  aiAnalysis?: ProjectAiAnalysis;
 }
 
 export interface StudentCourse {

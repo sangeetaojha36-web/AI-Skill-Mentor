@@ -19,7 +19,11 @@ import {
   Calendar,
   Layers,
   Check,
-  ChevronRight
+  ChevronRight,
+  Github,
+  Globe,
+  ExternalLink,
+  Loader2
 } from 'lucide-react';
 
 interface ProfileSetupViewProps {
@@ -138,24 +142,18 @@ export const ProfileSetupView: React.FC<ProfileSetupViewProps> = ({
   const [newAchDesc, setNewAchDesc] = useState('');
   const [showAddAchModal, setShowAddAchModal] = useState(false);
 
-  // 7. Projects
+  // 7. Projects (Personal, Capstone, Hackathons)
   const [projectsList, setProjectsList] = useState<StudentProject[]>(
-    user.studentProjects && user.studentProjects.length > 0
-      ? user.studentProjects
-      : [
-          {
-            id: 'proj-1',
-            title: 'EV Battery Pack Thermal Simulation',
-            techStack: ['Python', 'SolidWorks', 'ANSYS'],
-            link: 'https://github.com/student/ev-battery-sim',
-            description: 'Designed CAD casing and ran thermal stress analysis to prevent thermal runaway in battery packs.'
-          }
-        ]
+    user.studentProjects && user.studentProjects.length > 0 ? user.studentProjects : []
   );
   const [newProjTitle, setNewProjTitle] = useState('');
   const [newProjTech, setNewProjTech] = useState('');
   const [newProjLink, setNewProjLink] = useState('');
+  const [newProjGithub, setNewProjGithub] = useState('');
+  const [newProjLive, setNewProjLive] = useState('');
   const [newProjDesc, setNewProjDesc] = useState('');
+  const [newProjPreviewType, setNewProjPreviewType] = useState<'analytics' | 'saas' | 'code' | 'dashboard' | 'mobile'>('saas');
+  const [isAnalyzingProj, setIsAnalyzingProj] = useState(false);
   const [showAddProjModal, setShowAddProjModal] = useState(false);
 
   // 8. Courses & Certifications
@@ -239,23 +237,58 @@ export const ProfileSetupView: React.FC<ProfileSetupViewProps> = ({
   };
 
   // Handlers for Projects
-  const handleAddProject = () => {
+  const handleAddProject = async (runAi: boolean = false) => {
     if (!newProjTitle.trim()) return;
     const stack = newProjTech
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean);
+
+    let aiAnalysisResult: any = undefined;
+    let chosenPreview = newProjPreviewType;
+
+    if (runAi) {
+      setIsAnalyzingProj(true);
+      try {
+        const res = await api.analyzeProject({
+          title: newProjTitle.trim(),
+          description: newProjDesc.trim(),
+          techStack: stack,
+          githubUrl: newProjGithub.trim(),
+          liveUrl: newProjLive.trim(),
+        });
+        aiAnalysisResult = res.analysis;
+        if (res.analysis?.previewType) {
+          chosenPreview = res.analysis.previewType as any;
+        }
+      } catch (err) {
+        console.error('Project analysis error:', err);
+      } finally {
+        setIsAnalyzingProj(false);
+      }
+    }
+
     const item: StudentProject = {
       id: `proj-${Date.now()}`,
       title: newProjTitle.trim(),
-      techStack: stack.length > 0 ? stack : ['General'],
-      link: newProjLink.trim(),
-      description: newProjDesc.trim() || 'Academic capstone project.'
+      techStack: stack.length > 0 ? stack : ['Full-Stack', 'Git'],
+      githubUrl: newProjGithub.trim() || undefined,
+      liveUrl: newProjLive.trim() || undefined,
+      link: newProjLive.trim() || newProjGithub.trim() || undefined,
+      previewType: chosenPreview,
+      description: newProjDesc.trim() || 'Student technical portfolio project.',
+      author: user.name || 'You',
+      createdAt: 'Recent',
+      isShared: true,
+      aiAnalysis: aiAnalysisResult,
     };
+
     setProjectsList([...projectsList, item]);
     setNewProjTitle('');
     setNewProjTech('');
     setNewProjLink('');
+    setNewProjGithub('');
+    setNewProjLive('');
     setNewProjDesc('');
     setShowAddProjModal(false);
   };
@@ -333,16 +366,30 @@ export const ProfileSetupView: React.FC<ProfileSetupViewProps> = ({
     <div className="max-w-5xl mx-auto space-y-8 pb-16">
       {/* Header */}
       <div className="border-b border-slate-800 pb-6">
-        <div className="flex items-center gap-2 text-xs text-orange-400 mb-1">
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>Step 2: Comprehensive Student Profile Setup</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs text-orange-400 mb-1">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Step 2: Comprehensive Student Profile Setup</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              Build Your Academic & Skill Profile
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl">
+              Enter your school marks, college degree, skills, projects, and achievements. The AI Skill Mentor will use these details to guide your future career path.
+            </p>
+          </div>
+          {onContinueToDashboard && (
+            <button
+              type="button"
+              onClick={onContinueToDashboard}
+              className="self-start sm:self-center shrink-0 px-4 py-2 text-xs font-semibold text-[#FEC163] hover:text-white bg-[#140603] hover:bg-[#200A04] border border-[#FEC163]/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+            >
+              <span>Go to Dashboard</span>
+              <ArrowRight className="h-3.5 w-3.5 text-[#FEC163]" />
+            </button>
+          )}
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-          Build Your Academic & Skill Profile
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl">
-          Enter your school marks, college degree, skills, projects, and achievements. The AI Skill Mentor will use these details to guide your future career path.
-        </p>
 
         {/* Step Indicator Tabs */}
         <div className="flex items-center gap-2 mt-6 overflow-x-auto pb-2">
@@ -859,46 +906,95 @@ export const ProfileSetupView: React.FC<ProfileSetupViewProps> = ({
               {projectsList.map((proj) => (
                 <div
                   key={proj.id}
-                  className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs space-y-1.5 flex items-start justify-between gap-3"
+                  className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-2.5"
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">{proj.title}</span>
-                      {proj.link && (
-                        <a
-                          href={proj.link}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-[10px] text-orange-400 hover:underline"
-                        >
-                          View Link ↗
-                        </a>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {proj.techStack.map((tech) => (
-                        <span
-                          key={tech}
-                          className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300"
-                        >
-                          {tech}
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-white text-sm">{proj.title}</span>
+                        {proj.aiAnalysis?.recruiterScore && (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-orange-500/15 text-[#FEC163] border border-orange-500/30 font-bold">
+                            AI Score: {proj.aiAnalysis.recruiterScore}%
+                          </span>
+                        )}
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-400 capitalize">
+                          {proj.previewType || 'Web App'}
                         </span>
-                      ))}
+                      </div>
+                      <p className="text-slate-400 text-xs mt-1 leading-relaxed">{proj.description}</p>
                     </div>
-                    <p className="text-slate-400 text-[11px] leading-relaxed">{proj.description}</p>
+
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveProject(proj.id)}
+                      className="text-slate-500 hover:text-rose-400 shrink-0 p-1 cursor-pointer"
+                      title="Remove Project"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveProject(proj.id)}
-                    className="text-slate-500 hover:text-rose-400 shrink-0 p-1"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+
+                  <div className="flex flex-wrap gap-1">
+                    {proj.techStack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="text-[10px] px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300 font-mono"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Links / Direct Access */}
+                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800/80">
+                    {proj.liveUrl && (
+                      <button
+                        type="button"
+                        onClick={() => window.open(proj.liveUrl, '_blank')}
+                        className="px-2.5 py-1 rounded bg-orange-600/20 hover:bg-orange-600/30 border border-orange-500/40 text-orange-300 text-[11px] font-medium flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Globe className="h-3 w-3" />
+                        <span>Launch Live App ↗</span>
+                      </button>
+                    )}
+                    {proj.githubUrl && (
+                      <button
+                        type="button"
+                        onClick={() => window.open(proj.githubUrl, '_blank')}
+                        className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 text-[11px] font-medium flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Github className="h-3 w-3" />
+                        <span>GitHub Repo ↗</span>
+                      </button>
+                    )}
+                    {proj.link && !proj.liveUrl && !proj.githubUrl && (
+                      <button
+                        type="button"
+                        onClick={() => window.open(proj.link, '_blank')}
+                        className="px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 border border-slate-800 text-orange-400 text-[11px] flex items-center gap-1 cursor-pointer"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        <span>Open Project Link ↗</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
               {projectsList.length === 0 && (
-                <div className="p-4 text-center text-xs text-slate-500 border border-dashed border-slate-800 rounded-lg">
-                  No projects added yet. (Add your final year capstone or semester projects)
+                <div className="p-6 text-center text-xs text-slate-400 border border-dashed border-slate-800 rounded-xl space-y-2">
+                  <Code className="h-6 w-6 text-orange-400 mx-auto opacity-70" />
+                  <p className="font-medium text-slate-300">No projects added yet</p>
+                  <p className="text-[11px] text-slate-500 max-w-sm mx-auto">
+                    Add your final year capstone, hackathon project, or GitHub repository. AI will automatically evaluate ATS recruiter strength and generate interactive interface previews on your dashboard!
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddProjModal(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-600 text-white font-medium text-xs mt-1 cursor-pointer"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Add Project with GitHub Link</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -1239,68 +1335,164 @@ export const ProfileSetupView: React.FC<ProfileSetupViewProps> = ({
          MODALS: ADD PROJECT
          ========================================================================= */}
       {showAddProjModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 max-w-md w-full space-y-4 text-xs">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-lg w-full space-y-4 text-xs my-8 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h4 className="text-sm font-bold text-white">Add Academic / Capstone Project</h4>
-              <button onClick={() => setShowAddProjModal(false)} className="text-slate-400 hover:text-white">✕</button>
+              <div className="flex items-center gap-2">
+                <div className="size-7 rounded-lg bg-orange-600/20 text-orange-400 border border-orange-500/30 flex items-center justify-center font-bold">
+                  <Sparkles className="size-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-white">Add Project to Profile & Portfolio</h4>
+                  <p className="text-[11px] text-slate-400">Directly link your GitHub repo or deployed application</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddProjModal(false)}
+                className="text-slate-400 hover:text-white"
+              >
+                ✕
+              </button>
             </div>
+
             <div className="space-y-3">
               <div>
-                <label className="text-slate-300 block mb-1">Project Title</label>
+                <label className="text-slate-300 font-semibold block mb-1">
+                  Project Title <span className="text-orange-400">*</span>
+                </label>
                 <input
                   type="text"
+                  required
                   value={newProjTitle}
                   onChange={(e) => setNewProjTitle(e.target.value)}
-                  placeholder="e.g. Swiggy Food Delivery Analytics Dashboard"
+                  placeholder="e.g. Hospital Patient Flow & Telemetry Dashboard"
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-orange-500"
                 />
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1 flex items-center gap-1.5">
+                    <Globe className="size-3 text-orange-400" />
+                    <span>Live Application Link</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={newProjLive}
+                    onChange={(e) => setNewProjLive(e.target.value)}
+                    placeholder="https://my-project.vercel.app"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-orange-500 text-xs"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-0.5">Recruiters will be directed here on click</p>
+                </div>
+
+                <div>
+                  <label className="text-slate-300 font-semibold block mb-1 flex items-center gap-1.5">
+                    <Github className="size-3 text-orange-400" />
+                    <span>GitHub Repository Link</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={newProjGithub}
+                    onChange={(e) => setNewProjGithub(e.target.value)}
+                    placeholder="https://github.com/user/project-repo"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-orange-500 text-xs"
+                  />
+                  <p className="text-[10px] text-slate-500 mt-0.5">For recruiters reviewing code</p>
+                </div>
+              </div>
+
               <div>
-                <label className="text-slate-300 block mb-1">Tech Stack (Comma Separated)</label>
+                <label className="text-slate-300 font-semibold block mb-1">
+                  Tech Stack (Comma Separated)
+                </label>
                 <input
                   type="text"
                   value={newProjTech}
                   onChange={(e) => setNewProjTech(e.target.value)}
-                  placeholder="e.g. Python, SQL, Power BI"
+                  placeholder="e.g. React, TypeScript, FastAPI, PostgreSQL, Tailwind"
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-orange-500"
                 />
               </div>
+
               <div>
-                <label className="text-slate-300 block mb-1">GitHub / Live Link (Optional)</label>
-                <input
-                  type="text"
-                  value={newProjLink}
-                  onChange={(e) => setNewProjLink(e.target.value)}
-                  placeholder="https://github.com/..."
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-orange-500"
-                />
+                <label className="text-slate-300 font-semibold block mb-1">
+                  Application Interface Preview Style
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  {[
+                    { id: 'analytics', label: 'Analytics' },
+                    { id: 'saas', label: 'SaaS App' },
+                    { id: 'code', label: 'Backend API' },
+                    { id: 'dashboard', label: 'Dashboard' },
+                    { id: 'mobile', label: 'Mobile App' },
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setNewProjPreviewType(item.id as any)}
+                      className={`p-2 rounded-lg border text-center font-medium transition-all ${
+                        newProjPreviewType === item.id
+                          ? 'bg-orange-950/70 border-orange-500 text-orange-300'
+                          : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
               </div>
+
               <div>
-                <label className="text-slate-300 block mb-1">Detailed Description & Deliverables</label>
+                <label className="text-slate-300 font-semibold block mb-1">
+                  Detailed Description & Engineering Outcomes
+                </label>
                 <textarea
                   value={newProjDesc}
                   onChange={(e) => setNewProjDesc(e.target.value)}
                   rows={3}
-                  placeholder="What problem did it solve? What were the key outcomes?"
+                  placeholder="What engineering problem did it solve? What were key features, scale, or metrics?"
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-orange-500 resize-none"
                 />
               </div>
             </div>
-            <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+
+            <div className="flex flex-wrap items-center justify-end gap-2 pt-3 border-t border-slate-800">
               <button
                 type="button"
                 onClick={() => setShowAddProjModal(false)}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300"
+                className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs"
               >
                 Cancel
               </button>
+
               <button
                 type="button"
-                onClick={handleAddProject}
-                className="px-4 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-semibold"
+                disabled={isAnalyzingProj || !newProjTitle.trim()}
+                onClick={() => handleAddProject(false)}
+                className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs disabled:opacity-50"
               >
                 Add Project
+              </button>
+
+              <button
+                type="button"
+                disabled={isAnalyzingProj || !newProjTitle.trim()}
+                onClick={() => handleAddProject(true)}
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:from-[#ffd28e] hover:to-[#ef5323] text-black font-bold text-xs flex items-center gap-1.5 shadow-md disabled:opacity-50 cursor-pointer"
+              >
+                {isAnalyzingProj ? (
+                  <>
+                    <Loader2 className="size-3.5 animate-spin" />
+                    <span>AI Analyzing...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="size-3.5 text-black" />
+                    <span>Analyze with AI & Add</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
