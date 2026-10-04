@@ -124,7 +124,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <div className="flex items-center justify-between gap-4 mb-4">
               <div className="flex items-center gap-2 text-xs font-medium text-orange-400">
                 <Target className="h-4 w-4" />
-                <span className="uppercase tracking-wider">Target Career Focus</span>
+                <span className="uppercase tracking-wider">
+                  Target Career Focus · Tailored for {user.education?.branch || 'Your Discipline'}
+                </span>
               </div>
               <button
                 onClick={() => onNavigate('careers')}
@@ -140,8 +142,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                   {user.careerGoal || topCareer?.title || 'Data Analyst & Business Insights'}
                 </h2>
+                <div className="flex items-center gap-2 mt-2 mb-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                    <GraduationCap className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>Matched with {user.education?.degree} {user.education?.branch}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-mono font-medium bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                    <span>{topCareer?.averageSalaryIndia || '₹7.5 - 16 LPA'}</span>
+                  </span>
+                </div>
                 <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-xl leading-relaxed">
-                  {topCareer?.description || 'Transform business operations with Python, SQL analytics, and dashboards for top hiring enterprises in India.'}
+                  {topCareer?.description || 'Transform business operations with Python, SQL analytics, and dashboards for top hiring enterprises.'}
                 </p>
               </div>
 
@@ -363,20 +374,25 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* -----------------------------------------------------------------------
-           BENTO TILE 5: India Compensation & Placement CTC (Col Span: 4)
+           BENTO TILE 5: Market Compensation & Branch Tracks (Col Span: 4)
            ----------------------------------------------------------------------- */}
         <div className="lg:col-span-4 rounded-3xl border border-white/[0.08] bg-zinc-950 p-6 flex flex-col justify-between group hover:border-white/[0.16] transition-all">
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-blue-400">
-              <Building2 className="h-4 w-4" />
-              <span>MARKET COMPENSATION (INDIA)</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-semibold text-blue-400">
+                <Building2 className="h-4 w-4" />
+                <span>MARKET COMPENSATION</span>
+              </div>
+              <span className="text-[10px] font-mono text-zinc-500 uppercase">
+                {user.education?.branch ? user.education.branch.split(' ')[0] : 'Major'} Track
+              </span>
             </div>
 
             <div>
               <div className="text-2xl font-bold font-mono text-white tracking-tight">
                 {topCareer?.averageSalaryIndia || '₹7.5 - 16 LPA'}
               </div>
-              <div className="text-xs text-zinc-400 mt-1">Average Starting to Mid Package in LPA</div>
+              <div className="text-xs text-zinc-400 mt-1">Starting to Growth Package in LPA</div>
             </div>
 
             <div className="pt-2 border-t border-white/[0.06]">
@@ -387,7 +403,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 {(topCareer?.topRecruitersIndia || ['Flipkart', 'Tata Motors', 'Swiggy', 'TCS Digital', 'Mu Sigma']).map((comp) => (
                   <span
                     key={comp}
-                    className="px-2.5 py-1 rounded-xl bg-zinc-900 border border-white/[0.06] text-xs text-zinc-200"
+                    className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-white/[0.06] text-xs text-zinc-200"
                   >
                     {comp}
                   </span>
@@ -396,8 +412,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
 
-          <div className="mt-5 text-[11px] text-zinc-500">
-            Growth Outlook: <span className="text-emerald-400 font-medium">{topCareer?.growthOutlook || '+22% (High Demand)'}</span>
+          <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between">
+            <div className="text-[11px] text-zinc-400">
+              Demand: <span className="text-emerald-400 font-medium">{topCareer?.growthOutlook || '+22% (High)'}</span>
+            </div>
+            <button
+              onClick={() => onNavigate('careers')}
+              className="text-xs text-orange-400 hover:text-orange-300 font-medium flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <span>View Roles</span>
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
 

@@ -508,25 +508,61 @@ apiRouter.post('/chat', async (req: Request, res: Response) => {
    7. AI MOCK INTERVIEW
    ========================================================================== */
 
+apiRouter.post('/interview/match-companies', (req: Request, res: Response) => {
+  const user = getCurrentUser(req);
+  const { resumeText, linkedInUrl, skills } = req.body;
+
+  let candidateSkills: string[] = Array.isArray(skills) ? [...skills] : [...user.skills];
+
+  // If resume text provided, run NLP extraction
+  if (resumeText && typeof resumeText === 'string') {
+    const extracted = extractSkillsNLP(resumeText).map((s: any) => s.name);
+    candidateSkills = Array.from(new Set([...candidateSkills, ...extracted]));
+  }
+
+  // If LinkedIn profile URL provided, infer typical skills based on handle or degree
+  if (linkedInUrl && typeof linkedInUrl === 'string') {
+    if (linkedInUrl.toLowerCase().includes('data') || linkedInUrl.toLowerCase().includes('analytics')) {
+      candidateSkills.push('Python', 'SQL', 'Data Analytics', 'Power BI');
+    } else if (linkedInUrl.toLowerCase().includes('mech') || linkedInUrl.toLowerCase().includes('auto')) {
+      candidateSkills.push('CAD', 'SolidWorks', 'MATLAB', 'Robotics');
+    } else {
+      candidateSkills.push('Algorithms', 'Java', 'Problem Solving', 'Git');
+    }
+    candidateSkills = Array.from(new Set(candidateSkills));
+  }
+
+  return res.json({
+    extractedSkills: candidateSkills,
+    analyzedSource: resumeText ? 'Resume Document' : linkedInUrl ? 'LinkedIn Profile' : 'Student Account Profile'
+  });
+});
+
 apiRouter.post('/interview/start', (req: Request, res: Response) => {
   const user = getCurrentUser(req);
-  const { career, interviewType = 'Technical', difficulty = 'Intermediate' } = req.body;
+  const { career, interviewType = 'Technical', difficulty = 'Intermediate', companyName, targetRole } = req.body;
 
-  const targetCareer = career || user.careerGoal || 'Data Analyst';
+  const targetCareer = career || targetRole || user.careerGoal || 'Data Analyst';
   const pool = INTERVIEW_QUESTIONS_BANK[targetCareer] || INTERVIEW_QUESTIONS_BANK['Default'];
 
-  // Select 3 to 4 questions
-  const selectedQuestions = pool.map((q, idx) => ({
-    id: `q-${idx + 1}-${Date.now()}`,
-    question: q.question,
-    type: q.type,
-    expectedKeyPoints: q.expectedKeyPoints
-  }));
+  // Select questions, customizing for company if provided
+  const selectedQuestions = pool.map((q, idx) => {
+    let questionText = q.question;
+    if (companyName && idx === 0 && q.type === 'HR') {
+      questionText = `Welcome to your campus interview for ${companyName}. To start off, introduce yourself and explain what specifically draws you to ${companyName} over other industry peers.`;
+    }
+    return {
+      id: `q-${idx + 1}-${Date.now()}`,
+      question: questionText,
+      type: q.type,
+      expectedKeyPoints: q.expectedKeyPoints
+    };
+  });
 
   const session: MockInterviewSession = {
     id: `interview-${Date.now()}`,
     userId: user.id,
-    career: targetCareer,
+    career: companyName ? `${companyName} · ${targetRole || targetCareer}` : targetCareer,
     interviewType,
     difficulty,
     questions: selectedQuestions,

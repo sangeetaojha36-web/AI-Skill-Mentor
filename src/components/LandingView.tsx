@@ -39,11 +39,11 @@ export const LandingView: React.FC<LandingViewProps> = ({
               </div>
 
               <h1 className="text-3xl sm:text-5xl font-bold tracking-tight text-white leading-tight text-balance">
-                Crack high-package careers from any college & degree in India.
+                Crack high-package careers from any college & degree.
               </h1>
 
               <p className="text-base sm:text-lg text-slate-400 max-w-2xl leading-relaxed">
-                Whether you study Mechanical Engineering at an AKTU college, Biotechnology at DU, or Commerce in Mumbai, AI Skill Mentor bridges your syllabus into in-demand skills, high-scoring ATS resumes, and placements at top Indian product & core giants.
+                Whether you study Mechanical Engineering at a technical university, Biotechnology, or Commerce, AI Skill Mentor bridges your syllabus into in-demand skills, high-scoring ATS resumes, and placements at top product & core enterprises.
               </p>
 
               <div className="flex flex-wrap items-center gap-3 pt-2">

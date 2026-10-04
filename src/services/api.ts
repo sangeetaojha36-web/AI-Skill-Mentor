@@ -158,11 +158,20 @@ export const api = {
   },
 
   // Mock Interview
-  async startInterview(userId: string, career: string, interviewType?: string, difficulty?: string): Promise<{ session: MockInterviewSession }> {
+  async matchCompaniesForInterview(userId: string, data: { resumeText?: string; linkedInUrl?: string; skills?: string[] }): Promise<{ extractedSkills: string[]; analyzedSource: string }> {
+    const res = await fetch(`${API_BASE}/interview/match-companies`, {
+      method: 'POST',
+      headers: getHeaders(userId),
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
+
+  async startInterview(userId: string, career: string, interviewType?: string, difficulty?: string, companyName?: string, targetRole?: string): Promise<{ session: MockInterviewSession }> {
     const res = await fetch(`${API_BASE}/interview/start`, {
       method: 'POST',
       headers: getHeaders(userId),
-      body: JSON.stringify({ career, interviewType, difficulty }),
+      body: JSON.stringify({ career, interviewType, difficulty, companyName, targetRole }),
     });
     return res.json();
   },

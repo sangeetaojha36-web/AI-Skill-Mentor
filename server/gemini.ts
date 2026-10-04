@@ -18,20 +18,19 @@ export const ai = new GoogleGenAI({
 export const MODEL_NAME = 'gemini-3.8-flash';
 
 /**
- * Generates an AI-powered conversational response tailored to Indian students & placements
+ * Generates an AI-powered conversational response tailored to career seekers & students
  */
 export async function generateChatResponse(userMessage: string, userProfileSummary: string, ragContext: string): Promise<string> {
   if (!apiKey) {
-    return `Namaste! Based on your student profile (${userProfileSummary}):\n\n${ragContext ? `Referenced Campus & Industry Insights:\n${ragContext}\n\n` : ''}For campus placements and off-campus drives in India, prioritize: 1) Strong problem-solving foundations (SQL/Python/DSA), 2) Building 2 capstone projects with live deployed links, and 3) Preparing structured STAR-format answers for managerial and HR rounds. You can achieve strong CTC packages (₹8-16+ LPA) regardless of your college tier with consistent preparation.`;
+    return `Hello! Based on your profile (${userProfileSummary}):\n\n${ragContext ? `Referenced Industry Insights:\n${ragContext}\n\n` : ''}For successful career placements and recruitment drives, prioritize: 1) Strong problem-solving foundations (SQL/Python/Data Structures), 2) Building 2 polished capstone projects with live deployed links, and 3) Preparing structured STAR-format answers for managerial and HR rounds. You can achieve strong compensation packages (₹6 - ₹20+ LPA) with steady and consistent preparation.`;
   }
 
   try {
-    const prompt = `You are "AI Skill Mentor", an elite Career Advisor & Placement Mentor specifically for students and freshers across India.
-You understand the realities of the Indian education system and job market:
-- Engineering & degree branches: B.Tech/B.E. (Mechanical, Civil, Biotech, ECE, CSE), BCA/MCA, B.Sc, B.Com, BBA, etc.
-- College tiers: Tier-1 (IITs, NITs, BITS), Tier-2, and Tier-3 colleges (AKTU, VTU, Anna Univ, state colleges).
-- Indian recruiters: Product tech (Flipkart, Swiggy, Amazon India, Razorpay, CRED), Analytics (Fractal, Mu Sigma, Deloitte India), Core giants (Tata Motors, L&T, Biocon, Dr. Reddy's), and IT services (TCS Digital, Infosys, Wipro).
-- Compensation metrics: Always speak in terms of Indian CTC Lakhs Per Annum (LPA, e.g. ₹6 LPA - ₹18 LPA).
+    const prompt = `You are "AI Skill Mentor", an elite Career Advisor & Placement Mentor for ambitious students and freshers.
+You understand modern university education and industry hiring standards:
+- Degree backgrounds: Engineering (Mechanical, Civil, Biotech, ECE, CSE), BCA/MCA, B.Sc, B.Com, BBA, etc.
+- Top hiring employers: Product tech firms, Analytics agencies, Core engineering giants, and Global enterprise consulting firms.
+- Compensation benchmarks: Always speak in terms of INR Lakhs Per Annum (LPA, e.g. ₹6 LPA - ₹18 LPA).
 
 Student Profile:
 ${userProfileSummary}
@@ -43,16 +42,16 @@ Student's Question:
 "${userMessage}"
 
 Instructions:
-1. Provide a sharp, highly encouraging, and actionable answer tailored specifically to Indian campus placements or off-campus jobs.
-2. If they are from a core branch (Mechanical, Civil, Biotech, Commerce) asking to switch to IT/Data, explain how to leverage transferable skills and articulate it convincingly in interviews.
-3. Recommend specific Indian learning resources (NPTEL, GeeksforGeeks, Striver's SDE sheet, Coursera India) and practical project ideas.
+1. Provide a sharp, highly encouraging, and actionable answer tailored specifically to career placement drives and competitive hiring.
+2. If they are from a core branch (Mechanical, Civil, Biotech, Commerce) asking to transition to Software/Data, explain how to leverage transferable analytical strengths and articulate them convincingly.
+3. Recommend specific practical learning resources (GeeksforGeeks, LeetCode, Coursera, freeCodeCamp) and hands-on project ideas.
 4. Keep the tone empathetic, practical, and structured (2-3 concise paragraphs with bullet points). Avoid generic fluff.`;
 
     const response = await ai.models.generateContent({
       model: MODEL_NAME,
       contents: prompt,
       config: {
-        systemInstruction: 'You are AI Skill Mentor, a premier career and campus placement mentor for Indian college students. Give realistic, strategic advice aligned with Indian hiring standards and CTC benchmarks.',
+        systemInstruction: 'You are AI Skill Mentor, a premier career and campus placement advisor. Provide realistic, strategic guidance aligned with modern hiring standards and competitive compensation benchmarks.',
         temperature: 0.7,
       },
     });
@@ -60,12 +59,12 @@ Instructions:
     return response.text || 'Prepare structured projects with measurable metrics, master SQL/Python fundamentals, and practice technical communication for your placement rounds.';
   } catch (error) {
     console.error('Gemini chat generation error:', error);
-    return `Regarding your career query: With your background in ${userProfileSummary}, focus on building 1 solid capstone project and mastering SQL & Python fundamentals. In Indian campus drives, demonstrating practical curiosity and structured problem-solving is what distinguishes top candidates.`;
+    return `Regarding your career query: With your background in ${userProfileSummary}, focus on building 1 solid capstone project and mastering core domain fundamentals. In technical recruitment drives, demonstrating practical curiosity and structured problem-solving is what distinguishes top candidates.`;
   }
 }
 
 /**
- * Evaluates mock interview answers based on Indian campus recruitment rubrics
+ * Evaluates mock interview answers based on modern recruitment rubrics
  */
 export async function evaluateInterviewAnswer(
   career: string,
@@ -86,7 +85,7 @@ export async function evaluateInterviewAnswer(
   }
 
   try {
-    const prompt = `You are a Senior Technical Interviewer & Hiring Manager conducting a ${questionType} campus interview for a "${career}" role at a top firm in India.
+    const prompt = `You are a Senior Technical Interviewer & Hiring Manager conducting a ${questionType} interview for a "${career}" role at a top firm.
 
 Interview Question:
 "${question}"
@@ -97,11 +96,11 @@ ${expectedPoints.join(', ')}
 Candidate's Answer:
 "${userAnswer}"
 
-Evaluate the candidate's answer based on Indian tech and core company standards (depth, clarity, confidence, relevance). Return a JSON object with:
+Evaluate the candidate's answer based on industry standards (depth, clarity, confidence, relevance). Return a JSON object with:
 - score: integer from 0 to 100.
 - feedback: 2-3 sentence constructive critique.
 - strengths: array of 2 key strengths.
-- improvements: array of 2 actionable areas to refine for Indian placement rounds.`;
+- improvements: array of 2 actionable areas to refine for placement rounds.`;
 
     const response = await ai.models.generateContent({
       model: MODEL_NAME,
@@ -132,7 +131,7 @@ Evaluate the candidate's answer based on Indian tech and core company standards 
     console.error('Gemini interview evaluation error:', error);
     return {
       score: 75,
-      feedback: 'Solid attempt. For Indian placement drives, make sure to link your answer to practical project work or real data.',
+      feedback: 'Solid attempt. For competitive placement drives, make sure to link your answer to practical project work or real data.',
       strengths: ['Understood the question premise', 'Polite and professional tone'],
       improvements: ['Structure with STAR method', 'Mention concrete tools and outcomes']
     };
@@ -140,7 +139,7 @@ Evaluate the candidate's answer based on Indian tech and core company standards 
 }
 
 /**
- * Generates an adaptive learning roadmap tailored for Indian students
+ * Generates an adaptive learning roadmap tailored for ambitious students
  */
 export async function generateAdaptiveRoadmap(
   careerTitle: string,
@@ -150,7 +149,7 @@ export async function generateAdaptiveRoadmap(
   if (!apiKey) return null;
 
   try {
-    const prompt = `Create an adaptive 6-phase learning roadmap for an Indian college student with background in "${userBranch}" aiming to crack a "${careerTitle}" role (target CTC: ₹7-18 LPA).
+    const prompt = `Create an adaptive 6-phase learning roadmap for a college student with background in "${userBranch}" aiming to crack a "${careerTitle}" role (target CTC: ₹7-18 LPA).
 The student ALREADY knows: [${userCurrentSkills.join(', ')}].
 DO NOT make them relearn beginner concepts of what they already know. Bridge their core background into industry placement readiness.
 

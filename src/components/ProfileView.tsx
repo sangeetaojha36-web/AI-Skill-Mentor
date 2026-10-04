@@ -473,7 +473,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, on
               <span>Placement profile updated successfully!</span>
             </span>
           ) : (
-            <span className="text-xs text-slate-500">Updates Indian career recommendations immediately.</span>
+            <span className="text-xs text-slate-500">Updates career recommendations immediately.</span>
           )}
 
           <button

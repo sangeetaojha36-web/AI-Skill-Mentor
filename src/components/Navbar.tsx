@@ -24,7 +24,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const navLinks = [
     { id: 'setup', label: '1. Profile Setup' },
     { id: 'dashboard', label: 'Dashboard' },
-    { id: 'careers', label: 'Careers (India)' },
+    { id: 'careers', label: 'Career Explorer' },
     { id: 'skillgap', label: 'Skill Gap' },
     { id: 'roadmap', label: 'Roadmap' },
     { id: 'resume', label: 'ATS Resume' },

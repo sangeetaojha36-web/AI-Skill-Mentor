@@ -48,38 +48,68 @@ export function calculateCosineSimilarity(userVector: number[], targetVector: nu
 /**
  * Determines transferability / interest alignment between student background & career
  */
-export function evaluateDisciplineSynergy(userBranch: string, careerDomain: string, userInterests: string[]): number {
-  const branch = userBranch.toLowerCase();
-  const domain = careerDomain.toLowerCase();
-  const interests = userInterests.map(i => i.toLowerCase());
+export function evaluateDisciplineSynergy(
+  userBranch: string,
+  userDegree: string = '',
+  careerDomain: string,
+  recommendedDisciplines: string[] = [],
+  userInterests: string[] = []
+): number {
+  const branch = (userBranch || '').toLowerCase();
+  const degree = (userDegree || '').toLowerCase();
+  const domain = (careerDomain || '').toLowerCase();
+  const disciplines = (recommendedDisciplines || []).map(d => d.toLowerCase());
+  const interests = (userInterests || []).map(i => i.toLowerCase());
 
-  // Direct branch affinity
-  if (branch && domain.includes(branch.slice(0, 5))) return 0.95;
+  // 1. Direct discipline match against career's recommended disciplines
+  if (branch) {
+    const isDirectDiscipline = disciplines.some(d =>
+      d.includes(branch) || branch.includes(d) ||
+      (branch.includes('mech') && (d.includes('mech') || d.includes('auto') || d.includes('production'))) ||
+      (branch.includes('civil') && (d.includes('civil') || d.includes('struct') || d.includes('construction'))) ||
+      ((branch.includes('comput') || branch.includes('it') || branch.includes('software')) && (d.includes('comput') || d.includes('bca') || d.includes('it') || d.includes('software'))) ||
+      ((branch.includes('elect') || branch.includes('ece') || branch.includes('eee')) && (d.includes('elect') || d.includes('ece') || d.includes('hardware'))) ||
+      (branch.includes('bio') && (d.includes('bio') || d.includes('life science'))) ||
+      ((branch.includes('comm') || branch.includes('bba') || branch.includes('mba') || branch.includes('econ')) && (d.includes('comm') || d.includes('bba') || d.includes('business') || d.includes('finance')))
+    );
+    if (isDirectDiscipline) return 0.98;
+  }
 
-  // Cross-discipline bridge heuristics
-  // 1. Engineering / Math -> Tech / Data / AI
-  if ((branch.includes('mechanical') || branch.includes('civil') || branch.includes('electrical') || branch.includes('chemical') || branch.includes('physics')) &&
-      (domain.includes('data') || domain.includes('software') || domain.includes('automation') || domain.includes('ai'))) {
+  // 2. Open to any engineering major or any graduate
+  if (disciplines.some(d => d.includes('any engineering') || d.includes('any major') || d.includes('any graduate'))) {
+    if (degree.includes('b.tech') || degree.includes('b.e') || degree.includes('diploma') || branch.includes('eng')) {
+      return 0.92;
+    }
     return 0.85;
   }
 
-  // 2. Life Sciences / Biology -> Bioinformatics / Health Tech
+  // 3. Direct domain text affinity
+  if (branch && domain.includes(branch.slice(0, 5))) return 0.95;
+
+  // 4. Cross-discipline bridge heuristics
+  // Engineering / Math -> Tech / Data / Automation
+  if ((branch.includes('mechanical') || branch.includes('civil') || branch.includes('electrical') || branch.includes('chemical') || branch.includes('physics')) &&
+      (domain.includes('data') || domain.includes('software') || domain.includes('automation') || domain.includes('ai') || domain.includes('operations'))) {
+    return 0.85;
+  }
+
+  // Life Sciences / Biology -> Bioinformatics / Health Tech
   if ((branch.includes('bio') || branch.includes('medic') || branch.includes('health') || branch.includes('chem')) &&
       (domain.includes('bio') || domain.includes('health') || domain.includes('data') || domain.includes('clinical'))) {
     return 0.90;
   }
 
-  // 3. Commerce / Economics -> Fintech / Product / Analytics
+  // Commerce / Economics -> Fintech / Product / Analytics
   if ((branch.includes('commerce') || branch.includes('business') || branch.includes('finance') || branch.includes('econ')) &&
-      (domain.includes('finance') || domain.includes('product') || domain.includes('consulting') || domain.includes('business'))) {
+      (domain.includes('finance') || domain.includes('product') || domain.includes('consulting') || domain.includes('business') || domain.includes('operations') || domain.includes('marketing'))) {
     return 0.90;
   }
 
   // Check interest bridges
-  let interestScore = 0.4;
+  let interestScore = 0.45;
   for (const interest of interests) {
     if (domain.includes(interest) || interest.includes(domain.slice(0, 4))) {
-      interestScore = Math.max(interestScore, 0.85);
+      interestScore = Math.max(interestScore, 0.82);
     }
   }
 
@@ -93,6 +123,7 @@ export function rankCareersForUser(user: Partial<User>, allCareers: Career[]): C
   const userSkills = (user.skills || []).map(normalize);
   const userInterests = (user.interests || []).map(normalize);
   const userBranch = user.education?.branch || '';
+  const userDegree = user.education?.degree || '';
   const preferredGoal = (user.careerGoal || '').toLowerCase();
 
   const results: CareerMatchScore[] = allCareers.map(career => {
@@ -139,31 +170,52 @@ export function rankCareersForUser(user: Partial<User>, allCareers: Career[]): C
       : 60;
 
     // 3. Education synergy / Transferability score
-    const eduSynergy = evaluateDisciplineSynergy(userBranch, career.domain, user.interests || []);
+    const eduSynergy = evaluateDisciplineSynergy(
+      userBranch,
+      userDegree,
+      career.domain,
+      career.recommendedDisciplines,
+      user.interests || []
+    );
     const educationRelevanceScore = Math.round(eduSynergy * 100);
 
-    // 4. Preferred goal bonus
+    // 4. Preferred goal bonus & branch prioritization
     const isDirectGoal = preferredGoal && (normalize(career.title).includes(normalize(preferredGoal)) || normalize(preferredGoal).includes(normalize(career.title)));
     const preferenceBonus = isDirectGoal ? 15 : 0;
 
-    // Weighted composite overall score
-    // 45% Skill match + 25% Interest + 20% Education transferability + 10% preference bonus
-    let overallScore = Math.round(
-      (skillMatchPercent * 0.45) +
-      (interestAlignmentScore * 0.25) +
-      (educationRelevanceScore * 0.20) +
-      preferenceBonus
-    );
-    overallScore = Math.max(15, Math.min(99, overallScore));
+    // Strong branch relevance weighting for student profiles
+    let branchPriorityBonus = 0;
+    if (userBranch) {
+      if (educationRelevanceScore >= 95) {
+        branchPriorityBonus = 22; // Core major match
+      } else if (educationRelevanceScore >= 80) {
+        branchPriorityBonus = 8; // High synergy interdisciplinary bridge
+      }
+    }
 
-    const isCrossDiscipline = userBranch ? !career.recommendedDisciplines.some(d => d.toLowerCase().includes(userBranch.toLowerCase())) : false;
+    // Weighted composite overall score:
+    // 35% Skill match + 35% Education/Branch alignment + 15% Interest + preference & branch boosts
+    let overallScore = Math.round(
+      (skillMatchPercent * 0.35) +
+      (educationRelevanceScore * 0.35) +
+      (interestAlignmentScore * 0.15) +
+      preferenceBonus +
+      branchPriorityBonus
+    );
+    overallScore = Math.max(25, Math.min(99, overallScore));
+
+    const isCrossDiscipline = userBranch
+      ? !career.recommendedDisciplines.some(d => d.toLowerCase().includes(userBranch.toLowerCase()))
+      : false;
 
     // Generate personalized human-readable explanation
     let matchExplanation = '';
     if (isDirectGoal) {
-      matchExplanation = `Matches your explicitly stated target career goal. You already possess ${matchedSkills.length} key foundational competencies with clear runway to close ${missingSkills.length} skill gaps.`;
+      matchExplanation = `Direct match for your stated career goal. You already possess ${matchedSkills.length} key foundational competencies with clear runway to close ${missingSkills.length} skill gaps.`;
+    } else if (educationRelevanceScore >= 95) {
+      matchExplanation = `Core discipline match for your ${userBranch || 'field'} background. Your coursework gives you an immediate competitive advantage for ${career.title}.`;
     } else if (isCrossDiscipline) {
-      matchExplanation = `High-potential interdisciplinary bridge: your ${userBranch || 'academic'} foundation and interests in ${user.interests?.slice(0, 2).join(' & ') || 'modern industry'} provide strong analytical transferability to ${career.title}.`;
+      matchExplanation = `High-potential interdisciplinary bridge: your ${userBranch || 'academic'} foundation and quantitative problem solving provide strong transferability to ${career.title}.`;
     } else {
       matchExplanation = `Natural progression from your ${userBranch || 'field'} studies. Your existing skills in ${matchedSkills.slice(0, 3).join(', ') || 'core principles'} establish strong foundational momentum.`;
     }
@@ -181,8 +233,21 @@ export function rankCareersForUser(user: Partial<User>, allCareers: Career[]): C
     };
   });
 
-  // Sort descending by overall match score
-  return results.sort((a, b) => b.overallScore - a.overallScore);
+  // Sort descending by goal preference, direct branch synergy, and overall match score
+  return results.sort((a, b) => {
+    // 1. Target career goal
+    const aIsGoal = preferredGoal && (normalize(a.career.title).includes(normalize(preferredGoal)) || normalize(preferredGoal).includes(normalize(a.career.title)));
+    const bIsGoal = preferredGoal && (normalize(b.career.title).includes(normalize(preferredGoal)) || normalize(preferredGoal).includes(normalize(b.career.title)));
+    if (aIsGoal && !bIsGoal) return -1;
+    if (!aIsGoal && bIsGoal) return 1;
+
+    // 2. Direct branch match priority (core field matches come first for the student's profile)
+    if (a.educationRelevanceScore >= 95 && b.educationRelevanceScore < 95) return -1;
+    if (a.educationRelevanceScore < 95 && b.educationRelevanceScore >= 95) return 1;
+
+    // 3. Overall composite score
+    return b.overallScore - a.overallScore;
+  });
 }
 
 /**

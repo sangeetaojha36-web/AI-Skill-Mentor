@@ -7,6 +7,8 @@
   --color-solar-gold: #FEC163;
   --color-solar-flame: #DE4313;
   --color-solar-amber: #FA8C28;
+  --color-background: #0e0502;
+  --color-border: rgba(254, 193, 99, 0.28);
 }
 
 body {

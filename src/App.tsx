@@ -13,6 +13,7 @@ import {
   Video,
   Sparkles,
   ArrowRight,
+  ArrowLeft,
   CheckCircle2,
   Lock,
   Mail,
@@ -22,6 +23,7 @@ import { User } from "./types.ts";
 import { api } from "./services/api.ts";
 import { CareerConstellationCanvas } from "./components/auth/CareerConstellationCanvas.tsx";
 import { AnimatedTopDock } from "./components/navigation/AnimatedTopDock.tsx";
+import { BreadcrumbNavigation } from "./components/navigation/BreadcrumbNavigation.tsx";
 import { ProfileSetupView } from "./components/ProfileSetupView.tsx";
 import { DashboardView } from "./components/DashboardView.tsx";
 import { ResumeAnalyzerView } from "./components/ResumeAnalyzerView.tsx";
@@ -47,10 +49,40 @@ export default function App() {
     return null;
   });
 
-  // Active navigation tab
+  // Active navigation tab and step-by-step history stack
   const [activeTab, setActiveTab] = useState<string>("setup");
+  const [navigationHistory, setNavigationHistory] = useState<string[]>(["dashboard", "setup"]);
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [showChatModal, setShowChatModal] = useState<boolean>(false);
+
+  const navigateTab = (newTab: string) => {
+    if (newTab === activeTab) return;
+    setNavigationHistory((prev) => {
+      if (newTab === "dashboard") {
+        return ["dashboard"];
+      }
+      const existingIdx = prev.indexOf(newTab);
+      if (existingIdx !== -1) {
+        return prev.slice(0, existingIdx + 1);
+      }
+      const base = prev.length > 0 && prev[0] === "dashboard" ? prev : ["dashboard", ...prev];
+      return [...base, newTab];
+    });
+    setActiveTab(newTab);
+  };
+
+  const handleBack = () => {
+    setNavigationHistory((prev) => {
+      if (prev.length <= 1) {
+        setActiveTab("dashboard");
+        return ["dashboard"];
+      }
+      const nextHistory = prev.slice(0, -1);
+      const prevTab = nextHistory[nextHistory.length - 1] || "dashboard";
+      setActiveTab(prevTab);
+      return nextHistory;
+    });
+  };
 
   // Auth Form State
   const [isLoginMode, setIsLoginMode] = useState(false);
@@ -607,7 +639,7 @@ export default function App() {
       <AnimatedTopDock
         currentUser={currentUser}
         activeTab={activeTab}
-        onSelectTab={setActiveTab}
+        onSelectTab={navigateTab}
         onOpenChat={() => setShowChatModal(true)}
         onLogout={handleLogout}
         proximity={122}
@@ -620,12 +652,21 @@ export default function App() {
 
       {/* Main Container */}
       <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-16 pt-4 max-w-7xl mx-auto w-full">
+        {/* Step-by-Step Breadcrumb Navigation Bar */}
+        <BreadcrumbNavigation
+          activeTab={activeTab}
+          historyStack={navigationHistory}
+          user={currentUser}
+          onNavigate={navigateTab}
+          onBack={handleBack}
+        />
+
         {/* Step 2: Comprehensive Student Profile Setup */}
         {activeTab === "setup" && (
           <ProfileSetupView
             user={currentUser}
             onProfileSaved={handleProfileSaved}
-            onContinueToDashboard={() => setActiveTab("dashboard")}
+            onContinueToDashboard={() => navigateTab("dashboard")}
           />
         )}
 
@@ -641,7 +682,7 @@ export default function App() {
             recommendedCourses={dashboardData?.recommendedCourses || []}
             recommendedProjects={dashboardData?.recommendedProjects || []}
             profileCompleteness={dashboardData?.profileCompleteness || 85}
-            onNavigate={setActiveTab}
+            onNavigate={navigateTab}
             onOpenChat={() => setShowChatModal(true)}
           />
         )}
@@ -656,7 +697,7 @@ export default function App() {
               await api.generateRoadmap(currentUser.id, cid);
               refreshDashboard();
             }}
-            onNavigate={setActiveTab}
+            onNavigate={navigateTab}
           />
         )}
 
@@ -664,16 +705,16 @@ export default function App() {
         {activeTab === "skillgap" && (
           <SkillGapView
             user={currentUser}
-            onNavigate={setActiveTab}
+            onNavigate={navigateTab}
             onGenerateRoadmap={(cid) => {
-              setActiveTab("roadmap");
+              navigateTab("roadmap");
             }}
           />
         )}
 
         {/* Roadmap */}
         {activeTab === "roadmap" && (
-          <RoadmapView user={currentUser} onNavigate={setActiveTab} />
+          <RoadmapView user={currentUser} onNavigate={navigateTab} />
         )}
 
         {/* ATS Resume Analyzer */}
@@ -685,23 +726,23 @@ export default function App() {
               setCurrentUser((prev) => (prev ? { ...prev, skills: merged } : null));
               refreshDashboard();
             }}
-            onNavigate={setActiveTab}
+            onNavigate={navigateTab}
           />
         )}
 
         {/* Greenroom Mock Interview Studio */}
         {activeTab === "interview" && (
-          <MockInterviewView user={currentUser} onNavigate={setActiveTab} />
+          <MockInterviewView user={currentUser} onNavigate={navigateTab} />
         )}
 
         {/* Courses */}
         {activeTab === "courses" && (
-          <CoursesView user={currentUser} onNavigate={setActiveTab} />
+          <CoursesView user={currentUser} onNavigate={navigateTab} />
         )}
 
         {/* Projects */}
         {activeTab === "projects" && (
-          <ProjectsView user={currentUser} onNavigate={setActiveTab} />
+          <ProjectsView user={currentUser} onNavigate={navigateTab} />
         )}
 
         {/* Progress Tracker */}
@@ -711,12 +752,12 @@ export default function App() {
             roadmap={dashboardData?.roadmap}
             latestResume={dashboardData?.latestResume}
             latestInterview={dashboardData?.latestInterview}
-            onNavigate={setActiveTab}
+            onNavigate={navigateTab}
           />
         )}
 
         {/* Admin View */}
-        {activeTab === "admin" && <AdminView onNavigate={setActiveTab} />}
+        {activeTab === "admin" && <AdminView onNavigate={navigateTab} />}
       </main>
 
       {/* Floating AI Chat Mentor Button (Solar Sunset FEC163 to DE4313) */}
