@@ -854,28 +854,42 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
         </div>
       </div>
 
-      {/* Bottom Placement Next Step CTA */}
-      <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#120603]/60 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
-        <div className="space-y-1">
-          <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-            <span>Need targeted video courses for your active milestone?</span>
-            <span className="text-[10px] font-mono text-[#FEC163] bg-[#FEC163]/10 px-2 py-0.5 rounded border border-[#FEC163]/20">
-              Verified
-            </span>
-          </h4>
-          <p className="text-xs text-zinc-400">
-            Explore verified tutorials & practical coding repositories mapped to each phase of your roadmap.
-          </p>
+      {/* Next in Workflow: Proceed to Step 5 (Courses & Projects) */}
+      <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#120603]/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+        <div className="flex items-center gap-3">
+          <div className="size-8 rounded-full bg-[#FEC163] text-black font-bold text-sm flex items-center justify-center font-mono shrink-0">
+            5
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+              <span>Next in Workflow: AI Recommends Courses & Projects</span>
+              <span className="text-[10px] font-mono text-[#FEC163] bg-[#FEC163]/10 px-2 py-0.5 rounded border border-[#FEC163]/20">
+                Verified
+              </span>
+            </h4>
+            <p className="text-xs text-zinc-400">
+              Master the exact skills highlighted in your roadmap and build recruiter-grade proof-of-work capstones.
+            </p>
+          </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => onNavigate('courses')}
-          className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-[#FEC163] hover:bg-[#ffcd7d] rounded-xl shadow-lg shadow-amber-950/40 transition-colors whitespace-nowrap cursor-pointer"
-        >
-          <span>Explore Recommended Courses</span>
-          <ArrowRight className="size-3.5" />
-        </button>
+        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+          <button
+            type="button"
+            onClick={() => onNavigate('courses')}
+            className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-[#FEC163] hover:bg-[#ffcd7d] rounded-xl shadow-lg shadow-amber-950/40 transition-colors whitespace-nowrap cursor-pointer"
+          >
+            <span>Learning Academy</span>
+            <ArrowRight className="size-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigate('projects')}
+            className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 rounded-xl transition-colors whitespace-nowrap cursor-pointer"
+          >
+            <span>Portfolio Projects</span>
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -37,6 +37,8 @@ import { ChatbotView } from "./components/ChatbotView.tsx";
 import { MockInterviewView } from "./components/MockInterviewView.tsx";
 import { ProgressView } from "./components/ProgressView.tsx";
 import { AdminView } from "./components/AdminView.tsx";
+import { LandingPageView } from "./components/LandingPageView.tsx";
+import { LockedFeatureGateView } from "./components/LockedFeatureGateView.tsx";
 
 export default function App() {
   // Current user state
@@ -44,7 +46,10 @@ export default function App() {
     const stored = localStorage.getItem("ai_skill_mentor_user");
     if (stored) {
       try {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (parsed && !parsed.isGuestPreview) {
+          return parsed;
+        }
       } catch (_) {}
     }
     return null;
@@ -66,6 +71,7 @@ export default function App() {
   const [navigationHistory, setNavigationHistory] = useState<string[]>(["dashboard"]);
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [showChatModal, setShowChatModal] = useState<boolean>(false);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
 
   const navigateTab = (newTab: string) => {
     if (newTab === activeTab) return;
@@ -82,6 +88,13 @@ export default function App() {
     });
     setActiveTab(newTab);
   };
+
+  // Guarantee scroll-to-top whenever the active tab changes across the application
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [activeTab]);
 
   const handleBack = () => {
     setNavigationHistory((prev) => {
@@ -106,15 +119,15 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState("");
 
-  // Synchronize dashboard whenever user updates
+  // Synchronize dashboard whenever user updates (only persist real authenticated accounts)
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && !currentUser.isGuestPreview) {
       localStorage.setItem("ai_skill_mentor_user", JSON.stringify(currentUser));
       refreshDashboard();
-    } else {
+    } else if (!currentUser) {
       localStorage.removeItem("ai_skill_mentor_user");
     }
-  }, [currentUser?.id, currentUser?.skills, currentUser?.careerGoal]);
+  }, [currentUser?.id, currentUser?.skills, currentUser?.careerGoal, currentUser?.isGuestPreview]);
 
   const refreshDashboard = async () => {
     if (!currentUser) return;
@@ -150,8 +163,10 @@ export default function App() {
           });
         });
 
+        sessionStorage.removeItem("skillbridge_guest_preview");
         setCurrentUser(res.user);
-        setActiveTab("setup");
+        setShowAuthModal(false);
+        setActiveTab("dashboard");
       } else {
         // Sign up flow
         const fullName = `${firstName.trim()} ${lastName.trim()}`.trim() || "Student";
@@ -200,106 +215,16 @@ export default function App() {
           isProfileComplete: false,
         };
 
+        sessionStorage.removeItem("skillbridge_guest_preview");
         setCurrentUser(completeUser);
         localStorage.setItem("ai_skill_mentor_user", JSON.stringify(completeUser));
+        setShowAuthModal(false);
         setActiveTab("setup");
       }
     } catch (err: any) {
       setAuthError(err.message || "Authentication error. Please check your credentials.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleDemoLogin = (type: 'rohan' | 'ananya') => {
-    if (type === 'rohan') {
-      const rohanUser: User = {
-        id: "user-rohan-mechanical",
-        name: "Rohan Sharma",
-        email: "rohan.sharma22@aktu.ac.in",
-        role: "student",
-        country: "India",
-        location: "Noida, Uttar Pradesh",
-        stateOrCity: "Noida, Uttar Pradesh",
-        languages: ["Hindi", "English"],
-        schoolEducation: {
-          tenthMarks: "91%",
-          tenthBoard: "CBSE",
-          twelfthMarks: "86%",
-          twelfthBoard: "CBSE",
-          twelfthStream: "Science (PCM)",
-        },
-        education: {
-          degree: "B.Tech",
-          branch: "Mechanical Engineering",
-          college: "Dr. A.P.J. Abdul Kalam Technical University",
-          collegeTier: "Tier 3",
-          currentYear: "Final Year (4th Year)",
-          passingYear: "2026",
-          cgpa: "8.2 / 10.0",
-        },
-        skills: ["Python", "AutoCAD", "SolidWorks", "Excel", "Problem Solving", "SQL"],
-        interests: ["Data Science & Analytics", "Robotics & Automation"],
-        careerGoal: "Data Analyst & Business Insights",
-        targetCompanies: ["Flipkart", "Tata Motors", "TCS Digital", "Swiggy"],
-        experience: [
-          {
-            id: "exp-1",
-            role: "Industrial Engineering Trainee",
-            company: "BHEL Summer Internship",
-            duration: "June 2025 - August 2025 (2 Months)",
-            description: "Assisted senior plant engineers with turbine maintenance telemetry and vibration analysis."
-          }
-        ],
-        achievements: [],
-        studentProjects: [],
-        studentCourses: [],
-        isProfileComplete: true,
-        createdAt: new Date().toISOString(),
-      };
-      setCurrentUser(rohanUser);
-      localStorage.setItem("ai_skill_mentor_user", JSON.stringify(rohanUser));
-      setActiveTab("dashboard");
-    } else {
-      const ananyaUser: User = {
-        id: "user-ananya-biotech",
-        name: "Ananya Iyer",
-        email: "ananya.iyer@du.ac.in",
-        role: "student",
-        country: "India",
-        location: "New Delhi",
-        stateOrCity: "New Delhi",
-        languages: ["English", "Hindi"],
-        schoolEducation: {
-          tenthMarks: "94%",
-          tenthBoard: "CBSE",
-          twelfthMarks: "91%",
-          twelfthBoard: "CBSE",
-          twelfthStream: "Science (PCB)",
-        },
-        education: {
-          degree: "B.Sc (Hons)",
-          branch: "Biotechnology & Life Sciences",
-          college: "University of Delhi",
-          collegeTier: "Tier 1",
-          currentYear: "Final Year (3rd Year)",
-          passingYear: "2026",
-          cgpa: "8.7 / 10.0",
-        },
-        skills: ["PCR", "Python", "Biostatistics", "Genomics", "Excel"],
-        interests: ["Bioinformatics", "Pharmaceutical Analytics"],
-        careerGoal: "Bioinformatics & Genomic Data Scientist",
-        targetCompanies: ["Biocon", "Strand Life Sciences", "Dr. Reddy's"],
-        experience: [],
-        achievements: [],
-        studentProjects: [],
-        studentCourses: [],
-        isProfileComplete: true,
-        createdAt: new Date().toISOString(),
-      };
-      setCurrentUser(ananyaUser);
-      localStorage.setItem("ai_skill_mentor_user", JSON.stringify(ananyaUser));
-      setActiveTab("dashboard");
     }
   };
 
@@ -310,28 +235,79 @@ export default function App() {
   };
 
   const handleLogout = () => {
+    sessionStorage.removeItem("skillbridge_guest_preview");
     setCurrentUser(null);
     localStorage.removeItem("ai_skill_mentor_user");
     setIsLoginMode(false);
-    setActiveTab("setup");
+    setActiveTab("dashboard");
   };
 
-  // If user is not authenticated, render the System-Themed Auth Page
-  if (!currentUser) {
-    return (
-      <div className="min-h-screen w-full bg-[#050302] text-slate-100 flex items-center justify-center p-3 sm:p-6 lg:p-8 font-sans antialiased selection:bg-[#DE4313]/40 selection:text-white">
-        {/* Main Bento Registration Shell (Solar Sunset FEC163 to DE4313) */}
-        <div className="w-full max-w-6xl rounded-3xl border border-[#FEC163]/30 bg-[#0A0402]/95 shadow-[0_24px_70px_rgba(0,0,0,0.98),0_0_40px_rgba(222,67,19,0.22)] overflow-hidden grid grid-cols-1 lg:grid-cols-12 backdrop-blur-2xl transition-all">
-          
-          {/* =====================================================================
-             LEFT HERO: SYSTEM CAREER CONSTELLATION ANIMATION (Solar Theme)
-             ===================================================================== */}
-          <div className="lg:col-span-7 relative min-h-[480px] sm:min-h-[560px] lg:min-h-[680px] flex flex-col justify-between p-6 sm:p-10 overflow-hidden rounded-2xl m-2 bg-[#060201] border border-[#FEC163]/25">
-            {/* Live Interactive Constellation Canvas */}
-            <CareerConstellationCanvas />
+  const handleStartGuestPreview = () => {
+    const guestUser: User = {
+      id: "guest_preview_student",
+      name: "Guest Student (Preview)",
+      email: "guest@skillbridge.ai",
+      careerGoal: "Software Engineer",
+      role: "student",
+      country: "India",
+      languages: ["English", "Hindi"],
+      skills: ["Python", "Data Structures", "SQL", "Git"],
+      interests: ["Full Stack Development", "System Design"],
+      education: {
+        college: "State Institute of Technology",
+        degree: "B.Tech",
+        branch: "Computer Science & Engineering",
+        currentYear: "Final Year (2026)",
+        passingYear: "2026",
+        cgpa: "8.2",
+      },
+      isProfileComplete: true,
+      isGuestPreview: true,
+      createdAt: new Date().toISOString(),
+    };
+    sessionStorage.setItem("skillbridge_guest_preview", "true");
+    setCurrentUser(guestUser);
+    setActiveTab("resume");
+  };
 
-            {/* Subtle Gradient Vignette ensuring text legibility */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#060201] via-[#060201]/45 to-transparent pointer-events-none" />
+  // Reusable Auth Modal Dialog for unauthenticated visitors and demo students
+  const renderAuthModal = () => (
+    <AnimatePresence>
+      {showAuthModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setShowAuthModal(false)}
+                className="fixed inset-0 bg-black/85 backdrop-blur-md"
+              />
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="relative z-10 w-full max-w-5xl rounded-3xl border border-[#FEC163]/30 bg-[#0A0402]/95 shadow-[0_24px_70px_rgba(0,0,0,0.98),0_0_40px_rgba(222,67,19,0.22)] overflow-hidden grid grid-cols-1 lg:grid-cols-12 backdrop-blur-2xl my-auto"
+              >
+                {/* Close Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowAuthModal(false)}
+                  className="absolute top-4 right-4 z-20 size-8 rounded-full bg-black/60 border border-white/15 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                  title="Close and return to landing page"
+                >
+                  <X className="size-4" />
+                </button>
+
+                {/* =====================================================================
+                   LEFT HERO: SYSTEM CAREER CONSTELLATION ANIMATION (Solar Theme)
+                   ===================================================================== */}
+                <div className="lg:col-span-7 relative min-h-[480px] sm:min-h-[560px] lg:min-h-[640px] flex flex-col justify-between p-6 sm:p-10 overflow-hidden rounded-2xl m-2 bg-[#060201] border border-[#FEC163]/25">
+                  {/* Live Interactive Constellation Canvas */}
+                  <CareerConstellationCanvas />
+
+                  {/* Subtle Gradient Vignette ensuring text legibility */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#060201] via-[#060201]/45 to-transparent pointer-events-none" />
 
             {/* Top Brand Bar */}
             <div className="relative z-10 flex items-center justify-between">
@@ -578,31 +554,15 @@ export default function App() {
               </button>
             </form>
 
-            {/* Instant Demo Student Profiles (Fast 1-Click Access) */}
-            <div className="mt-6 pt-5 border-t border-[#FEC163]/20">
-              <div className="text-[10px] font-semibold text-[#FEC163] uppercase tracking-wider text-center mb-2.5 font-mono">
-                Instant 1-Click Student Demo Profiles
+            {/* Student Registration Benefits */}
+            <div className="mt-6 pt-5 border-t border-[#FEC163]/20 text-center">
+              <div className="flex items-center justify-center gap-1.5 text-xs text-[#FEC163] font-semibold mb-1">
+                <CheckCircle2 className="size-3.5 text-emerald-400" />
+                <span>Verified Campus Placement Preparation</span>
               </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <button
-                  type="button"
-                  onClick={() => handleDemoLogin('rohan')}
-                  className="p-2.5 rounded-xl bg-[#120603] hover:bg-[#220B04] border border-[#FEC163]/30 text-left transition-colors cursor-pointer shadow-sm"
-                >
-                  <div className="font-semibold text-white text-[11px]">Rohan Sharma</div>
-                  <div className="text-[10px] text-[#FEC163] font-mono">B.Tech Mech · Tier 3</div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleDemoLogin('ananya')}
-                  className="p-2.5 rounded-xl bg-[#120603] hover:bg-[#220B04] border border-[#FEC163]/30 text-left transition-colors cursor-pointer shadow-sm"
-                >
-                  <div className="font-semibold text-white text-[11px]">Ananya Iyer</div>
-                  <div className="text-[10px] text-amber-200 font-mono">B.Sc Biotech · DU</div>
-                </button>
-              </div>
+              <p className="text-[11px] text-zinc-400 max-w-xs mx-auto">
+                Create your student account to save your resume scans, unlock your personalized week-by-week roadmap, and rehearse technical rounds.
+              </p>
             </div>
 
             {/* Footer switcher */}
@@ -639,7 +599,26 @@ export default function App() {
             </div>
           </div>
 
-        </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+  );
+
+  // If user is not authenticated, render the Landing Page and the Auth Modal on demand
+  if (!currentUser) {
+    return (
+      <div className="relative min-h-screen bg-[#070201]">
+        {/* Full Interactive Animated Landing Page */}
+        <LandingPageView
+          onOpenAuth={(isLogin) => {
+            setIsLoginMode(isLogin);
+            setAuthError("");
+            setShowAuthModal(true);
+          }}
+          onStartGuestPreview={handleStartGuestPreview}
+        />
+        {renderAuthModal()}
       </div>
     );
   }
@@ -650,8 +629,22 @@ export default function App() {
       currentUser={currentUser}
       activeTab={activeTab}
       onNavigate={navigateTab}
-      onOpenChat={() => setShowChatModal(true)}
+      onOpenChat={() => {
+        if (currentUser?.isGuestPreview) {
+          setIsLoginMode(false);
+          setAuthError("Sign up or log in to chat with your AI Placement Mentor!");
+          setShowAuthModal(true);
+          return;
+        }
+        setShowChatModal(true);
+      }}
       onLogout={handleLogout}
+      onOpenAuthModal={(isLogin) => {
+        setIsLoginMode(isLogin);
+        setAuthError("");
+        setShowAuthModal(true);
+      }}
+      onExitPreview={handleLogout}
     >
       <div className="max-w-7xl mx-auto w-full pb-16">
         {/* Step-by-Step Breadcrumb Navigation Bar */}
@@ -663,14 +656,27 @@ export default function App() {
           onBack={handleBack}
         />
 
-        {/* Step 2: Comprehensive Student Profile Setup */}
-        {activeTab === "setup" && (
-          <ProfileSetupView
-            user={currentUser}
-            onProfileSaved={handleProfileSaved}
-            onContinueToDashboard={() => navigateTab("dashboard")}
+        {/* If guest preview user attempts to access locked features, render LockedFeatureGateView */}
+        {currentUser?.isGuestPreview && !["resume", "skillgap", "landing"].includes(activeTab) ? (
+          <LockedFeatureGateView
+            featureKey={activeTab}
+            onOpenAuth={(isLogin) => {
+              setIsLoginMode(isLogin);
+              setAuthError("");
+              setShowAuthModal(true);
+            }}
+            onBackToAllowed={() => navigateTab("resume")}
           />
-        )}
+        ) : (
+          <>
+            {/* Step 2: Comprehensive Student Profile Setup */}
+            {activeTab === "setup" && (
+              <ProfileSetupView
+                user={currentUser}
+                onProfileSaved={handleProfileSaved}
+                onContinueToDashboard={() => navigateTab("dashboard")}
+              />
+            )}
 
         {/* Dashboard View */}
         {activeTab === "dashboard" && (
@@ -714,6 +720,11 @@ export default function App() {
             onNavigate={navigateTab}
             onGenerateRoadmap={(cid) => {
               navigateTab("roadmap");
+            }}
+            onOpenAuth={(isLogin) => {
+              setIsLoginMode(isLogin);
+              setAuthError("");
+              setShowAuthModal(true);
             }}
           />
         )}
@@ -766,13 +777,32 @@ export default function App() {
           />
         )}
 
-        {/* Admin View */}
-        {activeTab === "admin" && <AdminView onNavigate={navigateTab} />}
+        {/* Admin View (Restricted to verified admin authorities) */}
+        {activeTab === "admin" && (
+          <AdminView
+            user={currentUser}
+            onUpdateUser={(updated) => {
+              setCurrentUser(updated);
+              localStorage.setItem("ai_skill_mentor_user", JSON.stringify(updated));
+            }}
+            onNavigate={navigateTab}
+          />
+        )}
+          </>
+        )}
       </div>
 
       {/* Floating AI Chat Mentor Button (Solar Sunset FEC163 to DE4313) */}
       <button
-        onClick={() => setShowChatModal(true)}
+        onClick={() => {
+          if (currentUser?.isGuestPreview) {
+            setIsLoginMode(false);
+            setAuthError("Sign up or log in to chat with your 24/7 AI Placement Mentor!");
+            setShowAuthModal(true);
+            return;
+          }
+          setShowChatModal(true);
+        }}
         className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:from-[#FFE19C] hover:to-[#DE4313] text-black font-bold shadow-[0_0_28px_rgba(222,67,19,0.7)] border border-[#FEC163]/50 transition-all hover:scale-105 cursor-pointer"
       >
         <Bot className="h-5 w-5 text-black" />
@@ -809,6 +839,8 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {renderAuthModal()}
     </DemostackAppLayout>
   );
 }

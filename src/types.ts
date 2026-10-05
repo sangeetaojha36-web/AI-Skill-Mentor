@@ -88,6 +88,7 @@ export interface User {
   studentProjects?: StudentProject[];
   studentCourses?: StudentCourse[];
   isProfileComplete?: boolean;
+  isGuestPreview?: boolean;
   createdAt: string;
 }
 

@@ -58,9 +58,12 @@ interface MockInterviewViewProps {
 interface BehavioralFrameMetrics {
   eyeContactPercent: number;
   confidenceScore: number;
-  expression: 'Confident & Poised' | 'Thoughtful & Engaged' | 'Active & Articulate' | 'Slightly Hesitant' | 'Calm & Neutral';
-  posture: 'Centered & Upright' | 'Slight Head Tilt' | 'Looking Away' | 'Centered';
+  expression: string;
+  posture: string;
   coachingNudge: string;
+  focusStatus: string;
+  normalizedX?: number;
+  normalizedY?: number;
 }
 
 export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNavigate }) => {
@@ -108,11 +111,14 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
   // Real-time Camera AI Vision & Behavioral Analysis
   const [liveMetrics, setLiveMetrics] = useState<BehavioralFrameMetrics>({
-    eyeContactPercent: 92,
+    eyeContactPercent: 94,
     confidenceScore: 88,
     expression: 'Confident & Poised',
     posture: 'Centered & Upright',
-    coachingNudge: 'Maintaining steady eye contact with the camera lens.'
+    focusStatus: 'Optimal (Locked on Lens)',
+    coachingNudge: 'Maintaining steady eye contact with the camera lens.',
+    normalizedX: 0.5,
+    normalizedY: 0.42,
   });
 
   const [behavioralHistory, setBehavioralHistory] = useState<{
@@ -128,6 +134,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
   // Speech & Answering
   const [currentAnswer, setCurrentAnswer] = useState('');
   const [isRecordingSpeech, setIsRecordingSpeech] = useState(false);
+  const [speechErrorMsg, setSpeechErrorMsg] = useState('');
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [fillerWordCount, setFillerWordCount] = useState(0);
@@ -142,6 +149,9 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
   const animationFrameRef = useRef<number | null>(null);
   const visionIntervalRef = useRef<any>(null);
   const recognitionRef = useRef<any>(null);
+  const isRecordingSpeechRef = useRef<boolean>(false);
+  const speechBaseAnswerRef = useRef<string>('');
+  const offscreenCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const timerIntervalRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -241,36 +251,146 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
      CAMERA AI VISION & BEHAVIORAL ANALYSIS ENGINE
      ========================================================================= */
   const analyzeLiveVideoFrame = () => {
-    const randomVariation = (Math.random() - 0.5) * 4;
-    const baseEyeContact = 91 + randomVariation;
-    const eyeContact = Math.max(75, Math.min(99, Math.round(baseEyeContact)));
+    let eyeContact = 94;
+    let posture = 'Centered & Upright';
+    let focusStatus = 'Optimal (Locked on Lens)';
+    let normX = 0.5;
+    let normY = 0.42;
 
-    let confidence = 85;
-    if (audioLevel > 15) confidence += 4;
-    if (speechWPM >= 100 && speechWPM <= 160) confidence += 5;
-    if (fillerWordCount > 3) confidence -= 5;
-    confidence = Math.max(65, Math.min(98, Math.round(confidence + randomVariation)));
+    const vid = videoRef.current;
+    if (vid && vid.readyState >= 2 && vid.videoWidth > 0) {
+      if (!offscreenCanvasRef.current) {
+        offscreenCanvasRef.current = document.createElement('canvas');
+        offscreenCanvasRef.current.width = 160;
+        offscreenCanvasRef.current.height = 120;
+      }
+      const canvas = offscreenCanvasRef.current;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (ctx) {
+        ctx.drawImage(vid, 0, 0, 160, 120);
+        try {
+          const imgData = ctx.getImageData(0, 0, 160, 120);
+          const data = imgData.data;
 
-    const expressions: BehavioralFrameMetrics['expression'][] = [
-      'Confident & Poised',
-      'Thoughtful & Engaged',
-      'Active & Articulate',
-      'Calm & Neutral'
-    ];
-    const pickedExpression = eyeContact > 88 ? expressions[Math.floor(Math.random() * 3)] : 'Thoughtful & Engaged';
+          let skinCount = 0;
+          let sumX = 0;
+          let sumY = 0;
 
-    let nudge = 'Maintaining steady eye contact with the camera lens.';
-    if (eyeContact < 82) nudge = 'Focus your eyes directly on the webcam to project assurance.';
-    else if (speechWPM > 170) nudge = 'Slightly slow down your speaking cadence for clarity.';
-    else if (fillerWordCount > 2) nudge = 'Pause for 1 second instead of using filler words.';
-    else if (confidence > 90) nudge = 'Outstanding composure and professional posture.';
+          // Sample pixels across the 160x120 grid
+          for (let y = 0; y < 120; y += 3) {
+            for (let x = 0; x < 160; x += 3) {
+              const idx = (y * 160 + x) * 4;
+              const r = data[idx];
+              const g = data[idx + 1];
+              const b = data[idx + 2];
+
+              // Skin chroma detection in diverse lighting
+              const isSkin = r > 55 && g > 35 && b > 20 && r > g && r > b && (r - g) > 8;
+              if (isSkin) {
+                skinCount++;
+                sumX += x;
+                sumY += y;
+              }
+            }
+          }
+
+          if (skinCount > 35) {
+            normX = (sumX / skinCount) / 160;
+            normY = (sumY / skinCount) / 120;
+
+            const xOffset = Math.abs(normX - 0.5);
+            if (xOffset < 0.08) {
+              eyeContact = Math.min(99, Math.round(92 + (0.08 - xOffset) * 80));
+              posture = 'Centered & Upright';
+              focusStatus = 'Optimal (Locked on Lens)';
+            } else if (xOffset < 0.18) {
+              eyeContact = Math.round(80 - (xOffset - 0.08) * 100);
+              posture = 'Slight Head Tilt';
+              focusStatus = 'Head Tilted';
+            } else {
+              eyeContact = Math.max(52, Math.round(68 - (xOffset - 0.18) * 80));
+              posture = 'Looking Away';
+              focusStatus = 'Off-Center';
+            }
+
+            if (normY > 0.58) {
+              posture = 'Head Low / Looking Down';
+              eyeContact = Math.min(eyeContact, 70);
+              focusStatus = 'Looking Down';
+            }
+          }
+        } catch (e) {
+          console.warn('Frame analysis catch:', e);
+        }
+      }
+    } else {
+      const cycle = Math.sin(Date.now() / 2500);
+      eyeContact = Math.round(93 + cycle * 4);
+    }
+
+    // Dynamic Multi-Modal Confidence calculation
+    let confidence = 80;
+    if (eyeContact >= 90) confidence += 8;
+    else if (eyeContact >= 80) confidence += 4;
+    else if (eyeContact < 70) confidence -= 8;
+
+    // Speaking vocal presence boost from real microphone input
+    if (audioLevel > 18) {
+      confidence += 8;
+    } else if (audioLevel > 5) {
+      confidence += 3;
+    }
+
+    // Speech cadence
+    if (speechWPM >= 100 && speechWPM <= 160) {
+      confidence += 4;
+    } else if (speechWPM > 175) {
+      confidence -= 5;
+    }
+
+    if (fillerWordCount > 3) {
+      confidence -= 5;
+    }
+
+    confidence = Math.max(55, Math.min(99, confidence));
+
+    // Determine Behavior & Demeanor
+    let expression = 'Thoughtful & Engaged';
+    if (audioLevel > 15 && eyeContact >= 85) {
+      expression = 'Active & Articulate';
+    } else if (confidence >= 88) {
+      expression = 'Confident & Poised';
+    } else if (eyeContact < 75 || posture === 'Looking Away') {
+      expression = 'Slightly Hesitant';
+    } else {
+      expression = 'Calm & Neutral';
+    }
+
+    // Actionable AI Coach Nudge
+    let nudge = 'Maintaining strong, steady eye contact with the interviewer.';
+    if (posture === 'Head Low / Looking Down') {
+      nudge = 'Lift your chin and look directly into the camera lens.';
+    } else if (posture === 'Looking Away' || eyeContact < 78) {
+      nudge = 'Re-center your gaze on the webcam to project professional assurance.';
+    } else if (posture === 'Slight Head Tilt') {
+      nudge = 'Level your head with the webcam for an authoritative stance.';
+    } else if (audioLevel < 6 && isRecordingSpeech) {
+      nudge = 'Project your voice slightly louder for clear acoustic capture.';
+    } else if (speechWPM > 170) {
+      nudge = 'Pace yourself slightly — calm pauses demonstrate executive poise.';
+    } else if (confidence >= 90) {
+      nudge = 'Outstanding composure, centered posture, and vocal confidence.';
+    }
 
     const newMetrics: BehavioralFrameMetrics = {
       eyeContactPercent: eyeContact,
       confidenceScore: confidence,
-      expression: pickedExpression,
-      posture: 'Centered & Upright',
-      coachingNudge: nudge
+      expression,
+      posture,
+      coachingNudge: nudge,
+      focusStatus,
+      normalizedX: normX,
+      normalizedY: normY,
     };
 
     setLiveMetrics(newMetrics);
@@ -280,8 +400,8 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       confidenceSamples: [...prev.confidenceSamples, confidence],
       expressions: {
         ...prev.expressions,
-        [pickedExpression]: (prev.expressions[pickedExpression] || 0) + 1
-      }
+        [expression]: (prev.expressions[expression] || 0) + 1,
+      },
     }));
   };
 
@@ -307,6 +427,10 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           modalVideoRef.current.srcObject = stream;
           modalVideoRef.current.play().catch((e) => console.warn('Modal video play caught:', e));
         }
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play().catch((e) => console.warn('Main video play caught:', e));
+        }
 
         setCameraActive(true);
         setMicActive(true);
@@ -316,8 +440,16 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       }
     } catch (err: any) {
       console.warn('Camera request error:', err);
-      setCameraError('Camera access required. Please click allow in your browser address bar or use Simulated Camera.');
-      setCameraActive(false);
+      // Fallback: try video only if combined audio+video is denied
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        mediaStreamRef.current = stream;
+        if (videoRef.current) videoRef.current.srcObject = stream;
+        setCameraActive(true);
+      } catch (_) {
+        setCameraError('Camera access required. Please click allow in your browser address bar or use Simulated Camera.');
+        setCameraActive(false);
+      }
     }
   };
 
@@ -403,6 +535,10 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
         modalVideoRef.current.srcObject = stream;
         modalVideoRef.current.play().catch(() => {});
       }
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play().catch(() => {});
+      }
 
       setCameraActive(true);
       setMicActive(true);
@@ -447,6 +583,9 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       if (!AudioCtx) return;
 
       const audioCtx = new AudioCtx();
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
+      }
       audioContextRef.current = audioCtx;
 
       const analyser = audioCtx.createAnalyser();
@@ -684,19 +823,21 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
   };
 
   const toggleSpeechRecognition = () => {
+    setSpeechErrorMsg('');
     if (isRecordingSpeech) {
+      isRecordingSpeechRef.current = false;
+      setIsRecordingSpeech(false);
       if (recognitionRef.current) {
         try {
           recognitionRef.current.stop();
         } catch (_) {}
       }
-      setIsRecordingSpeech(false);
       return;
     }
 
     const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRec) {
-      alert('Speech Recognition is not natively supported in this browser. Please type your answer directly in the editor.');
+      setSpeechErrorMsg('Speech Recognition is not natively supported in this browser. Please type directly or use the STAR structure blueprints.');
       return;
     }
 
@@ -704,28 +845,78 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       const recognition = new SpeechRec();
       recognition.continuous = true;
       recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
       recognition.lang = languageRegister === 'Pure English' ? 'en-IN' : 'hi-IN';
 
-      recognition.onstart = () => setIsRecordingSpeech(true);
+      isRecordingSpeechRef.current = true;
+      speechBaseAnswerRef.current = currentAnswer.trim() ? `${currentAnswer.trim()} ` : '';
+
+      recognition.onstart = () => {
+        setIsRecordingSpeech(true);
+        setSpeechErrorMsg('');
+      };
+
       recognition.onresult = (event: any) => {
-        let finalTranscript = '';
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript + ' ';
+        let interimText = '';
+        let finalizedText = '';
+
+        for (let i = 0; i < event.results.length; ++i) {
+          const item = event.results[i];
+          if (item.isFinal) {
+            finalizedText += item[0].transcript + ' ';
+          } else {
+            interimText += item[0].transcript;
           }
         }
-        if (finalTranscript) {
-          setCurrentAnswer((prev) => (prev ? `${prev} ${finalTranscript.trim()}` : finalTranscript.trim()));
+
+        // Live update answer input with finalized + interim text so words appear as the user speaks!
+        const totalText = (speechBaseAnswerRef.current + finalizedText + interimText).replace(/\s+/g, ' ').trim();
+        if (totalText) {
+          setCurrentAnswer(totalText);
         }
       };
-      recognition.onerror = () => setIsRecordingSpeech(false);
-      recognition.onend = () => setIsRecordingSpeech(false);
+
+      recognition.onerror = (event: any) => {
+        console.warn('Speech recognition event error:', event?.error);
+        if (event?.error === 'no-speech') {
+          // Do not disconnect on brief silence, keep listening!
+          return;
+        }
+        if (event?.error === 'not-allowed' || event?.error === 'service-not-allowed') {
+          setSpeechErrorMsg('Microphone access for speech recognition was blocked by browser. Please allow microphone permissions or type your answer.');
+          isRecordingSpeechRef.current = false;
+          setIsRecordingSpeech(false);
+        }
+      };
+
+      recognition.onend = () => {
+        // Continuous dictation: if candidate hasn't pressed stop, restart recognition automatically!
+        if (isRecordingSpeechRef.current) {
+          try {
+            recognition.start();
+          } catch (_) {
+            setTimeout(() => {
+              if (isRecordingSpeechRef.current) {
+                try {
+                  recognition.start();
+                } catch (e) {
+                  console.warn('Speech restart caught:', e);
+                }
+              }
+            }, 250);
+          }
+        } else {
+          setIsRecordingSpeech(false);
+        }
+      };
 
       recognition.start();
       recognitionRef.current = recognition;
-    } catch (err) {
+    } catch (err: any) {
       console.warn('Speech recognition start failed:', err);
+      setSpeechErrorMsg('Speech recognition failed to initialize. Please type your response directly.');
       setIsRecordingSpeech(false);
+      isRecordingSpeechRef.current = false;
     }
   };
 
@@ -1703,6 +1894,44 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Workflow Step 6 Complete: Track Progress & Return to Dashboard */}
+          <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#120603]/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+            <div className="flex items-center gap-3">
+              <div className="size-8 rounded-full bg-emerald-500 text-black font-bold text-sm flex items-center justify-center font-mono shrink-0">
+                ✓
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                  <span>Workflow Complete: Placement Readiness Audited</span>
+                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
+                    Step 6
+                  </span>
+                </h4>
+                <p className="text-xs text-zinc-400">
+                  Track your comprehensive academic milestones, verified skills, and interview history on the dashboard.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+              <button
+                type="button"
+                onClick={() => onNavigate('progress')}
+                className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-[#FEC163] hover:bg-[#ffcd7d] rounded-xl shadow-lg shadow-amber-950/40 transition-colors whitespace-nowrap cursor-pointer"
+              >
+                <span>Academic Progress Tracker</span>
+                <ArrowRight className="size-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('dashboard')}
+                className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 rounded-xl transition-colors whitespace-nowrap cursor-pointer"
+              >
+                <span>Placement Dashboard</span>
+              </button>
             </div>
           </div>
         </div>

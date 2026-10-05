@@ -655,24 +655,24 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                 </ul>
               </div>
 
-              {/* Next Steps: Launch Mock Interview with Matched Companies */}
+              {/* Next Steps: Proceed to Step 3 Skill Gap Matrix */}
               <div className="p-5 rounded-2xl bg-gradient-to-r from-[#1E0803] to-[#0A0402] border border-[#FEC163]/35 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
                 <div>
                   <div className="text-sm font-bold text-white flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-[#FEC163]" />
-                    <span>Ready for Placement Rehearsals?</span>
+                    <span className="size-5 rounded-full bg-[#FEC163] text-black font-bold text-[11px] flex items-center justify-center font-mono">3</span>
+                    <span>Next in Workflow: Identify Skill Gaps</span>
                   </div>
                   <p className="text-xs text-slate-400 mt-0.5">
-                    Your skills have been matched with 20+ hiring companies in the Greenroom.
+                    Compare your extracted competencies against target campus cutoff requirements.
                   </p>
                 </div>
 
                 <button
                   type="button"
-                  onClick={() => onNavigate('interview')}
+                  onClick={() => onNavigate('skillgap')}
                   className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold text-xs shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center gap-2 shrink-0"
                 >
-                  <span>Rehearse in Greenroom</span>
+                  <span>Proceed to Skill Gap Matrix</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
               </div>

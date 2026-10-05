@@ -700,6 +700,44 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
         </div>
       </div>
 
+      {/* Next in Workflow: Proceed to Mock Interview & Progress */}
+      <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#120603]/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+        <div className="flex items-center gap-3">
+          <div className="size-8 rounded-full bg-[#FEC163] text-black font-bold text-sm flex items-center justify-center font-mono shrink-0">
+            6
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+              <span>Next: Mock Interview & Progress Tracking</span>
+              <span className="text-[10px] font-mono text-[#FEC163] bg-[#FEC163]/10 px-2 py-0.5 rounded border border-[#FEC163]/20">
+                Greenroom
+              </span>
+            </h4>
+            <p className="text-xs text-zinc-400">
+              Once you have built your project proof of work, rehearse technical interview questions and track your placement readiness.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
+          <button
+            type="button"
+            onClick={() => onNavigate('interview')}
+            className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:brightness-110 rounded-xl shadow-lg shadow-amber-950/40 transition-colors whitespace-nowrap cursor-pointer"
+          >
+            <span>Proceed to Mock Interview</span>
+            <ArrowRight className="size-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigate('progress')}
+            className="flex items-center gap-1.5 px-4 py-2.5 text-xs font-semibold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 rounded-xl transition-colors whitespace-nowrap cursor-pointer"
+          >
+            <span>Progress Tracker</span>
+          </button>
+        </div>
+      </div>
+
       {/* =========================================================================
          INTERACTIVE STEP-BY-STEP PROJECT IMPLEMENTATION BLUEPRINT MODAL
          ========================================================================= */}

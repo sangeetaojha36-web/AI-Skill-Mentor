@@ -18,6 +18,7 @@ import {
   X,
   Menu,
   ChevronDown,
+  Lock,
 } from 'lucide-react';
 import {
   BuildingIcon,
@@ -31,6 +32,7 @@ import {
   FigGraduationIcon,
   DashboardFolderPlusIcon,
   FigLightbulbIcon,
+  FigPlayIcon,
   NavCmdIcon,
   NavSearchIcon,
 } from './icons.tsx';
@@ -42,6 +44,8 @@ interface DemostackAppLayoutProps {
   onNavigate: (tab: string) => void;
   onOpenChat: () => void;
   onLogout: () => void;
+  onOpenAuthModal?: (isLogin: boolean) => void;
+  onExitPreview?: () => void;
   children: React.ReactNode;
 }
 
@@ -51,6 +55,8 @@ export function DemostackAppLayout({
   onNavigate,
   onOpenChat,
   onLogout,
+  onOpenAuthModal,
+  onExitPreview,
   children,
 }: DemostackAppLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -65,6 +71,24 @@ export function DemostackAppLayout({
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const orgMenuRef = useRef<HTMLDivElement>(null);
   const notifMenuRef = useRef<HTMLDivElement>(null);
+  const mainScrollRef = useRef<HTMLElement>(null);
+
+  // Guarantee that every page opens at the top when navigating between tabs
+  useEffect(() => {
+    const scrollToTop = () => {
+      if (mainScrollRef.current) {
+        mainScrollRef.current.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        mainScrollRef.current.scrollTop = 0;
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    scrollToTop();
+    const rId = requestAnimationFrame(scrollToTop);
+    return () => cancelAnimationFrame(rId);
+  }, [activeTab]);
 
   // Close popovers on click outside
   useEffect(() => {
@@ -100,49 +124,63 @@ export function DemostackAppLayout({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Workspace Nav Items
+  const isGuest = currentUser?.isGuestPreview;
+
+  // Workspace Nav Items - Ordered according to the Placement Workflow
   const workspaceNavigation = [
     {
-      name: 'Home',
+      name: 'Placement Dashboard',
       tabKey: 'dashboard',
       icon: HomeIcon,
+      badge: isGuest ? 'Locked' : undefined,
     },
     {
-      name: 'Career Roadmap',
-      tabKey: 'roadmap',
-      icon: DemostacksIcon,
-      badge: 'Roadmap',
-    },
-    {
-      name: 'Greenroom Studio',
-      tabKey: 'interview',
-      icon: VideosIcon,
-      badge: 'Live',
-    },
-    {
-      name: 'ATS Resume Scanner',
+      name: 'AI Resume Analyzer',
       tabKey: 'resume',
       icon: ShowcasesIcon,
+      badge: isGuest ? 'Demo Step 1' : 'AI Scan',
     },
     {
       name: 'Skill Gap Matrix',
       tabKey: 'skillgap',
       icon: GroupGenericIcon,
+      badge: isGuest ? 'Demo Step 2' : undefined,
+    },
+    {
+      name: 'Personalized Roadmap',
+      tabKey: 'roadmap',
+      icon: DemostacksIcon,
+      badge: isGuest ? 'Locked' : undefined,
     },
     {
       name: 'Learning Academy',
       tabKey: 'courses',
       icon: FigGraduationIcon,
+      badge: isGuest ? 'Locked' : undefined,
     },
     {
       name: 'Portfolio Projects',
       tabKey: 'projects',
       icon: DashboardFolderPlusIcon,
+      badge: isGuest ? 'Locked' : undefined,
+    },
+    {
+      name: 'Mock Interview Studio',
+      tabKey: 'interview',
+      icon: VideosIcon,
+      badge: isGuest ? 'Locked' : 'Live',
+    },
+    {
+      name: 'Progress Tracker',
+      tabKey: 'progress',
+      icon: FigPlayIcon,
+      badge: isGuest ? 'Locked' : undefined,
     },
     {
       name: 'Career Explorer',
       tabKey: 'careers',
       icon: FigLightbulbIcon,
+      badge: isGuest ? 'Locked' : undefined,
     },
   ];
 
@@ -151,19 +189,25 @@ export function DemostackAppLayout({
       name: 'Profile Setup',
       tabKey: 'setup',
       icon: UserIcon,
+      badge: isGuest ? 'Locked' : undefined,
     },
     {
       name: 'Placement Mentor AI',
       tabKey: 'chat_modal',
       icon: Bot,
-      badge: 'AI Live',
+      badge: isGuest ? 'Locked' : 'AI Live',
       onClick: onOpenChat,
     },
-    {
-      name: 'Admin Console',
-      tabKey: 'admin',
-      icon: BuildingIcon,
-    },
+    ...(currentUser.role === 'admin'
+      ? [
+          {
+            name: 'Admin Console',
+            tabKey: 'admin',
+            icon: BuildingIcon,
+            badge: 'Directorate',
+          },
+        ]
+      : []),
   ];
 
   const currentPage = [...workspaceNavigation, ...adminNavigation].find(
@@ -363,8 +407,17 @@ export function DemostackAppLayout({
                     <Icon className="size-4.5 shrink-0" />
                     {isSidebarOpen && <span className="truncate">{item.name}</span>}
                     {isSidebarOpen && item.badge && (
-                      <span className="ml-auto text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FEC163]/15 text-[#FEC163] border border-[#FEC163]/30">
-                        {item.badge}
+                      <span
+                        className={`ml-auto text-[10px] font-mono px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                          item.badge === 'Locked'
+                            ? 'bg-rose-950/40 text-rose-300 border border-rose-800/40'
+                            : item.badge.startsWith('Demo')
+                            ? 'bg-[#FEC163]/20 text-[#FEC163] border border-[#FEC163]/40 font-bold'
+                            : 'bg-[#FEC163]/15 text-[#FEC163] border border-[#FEC163]/30'
+                        }`}
+                      >
+                        {item.badge === 'Locked' && <Lock className="size-2.5" />}
+                        <span>{item.badge}</span>
                       </span>
                     )}
                   </button>
@@ -377,7 +430,7 @@ export function DemostackAppLayout({
           <div className="w-full">
             {isSidebarOpen && (
               <p className="text-xs font-semibold text-zinc-400 px-3 mb-2 uppercase tracking-wider">
-                Intelligence & Admin
+                {currentUser.role === 'admin' ? 'Intelligence & Directorate' : 'Intelligence & Tools'}
               </p>
             )}
             <div className="space-y-1 w-full">
@@ -411,8 +464,17 @@ export function DemostackAppLayout({
                     <Icon className="size-4.5 shrink-0" />
                     {isSidebarOpen && <span className="truncate">{item.name}</span>}
                     {isSidebarOpen && item.badge && (
-                      <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-600 text-white animate-pulse">
-                        {item.badge}
+                      <span
+                        className={`ml-auto text-[10px] font-mono px-2 py-0.5 rounded-full flex items-center gap-1 ${
+                          item.badge === 'Locked'
+                            ? 'bg-rose-950/40 text-rose-300 border border-rose-800/40'
+                            : item.badge === 'Public'
+                            ? 'bg-[#FEC163]/15 text-[#FEC163] border border-[#FEC163]/30'
+                            : 'bg-orange-600 text-white font-bold'
+                        }`}
+                      >
+                        {item.badge === 'Locked' && <Lock className="size-2.5" />}
+                        <span>{item.badge}</span>
                       </span>
                     )}
                   </button>
@@ -485,6 +547,21 @@ export function DemostackAppLayout({
                 >
                   <Bot className="size-4 text-orange-400" />
                   <span>Placement Mentor AI</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsProfileMenuOpen(false);
+                    onNavigate('admin');
+                  }}
+                  className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left transition-colors ${
+                    currentUser.role === 'admin'
+                      ? 'hover:bg-amber-500/20 text-amber-300'
+                      : 'hover:bg-white/[0.08] text-zinc-400 hover:text-white'
+                  }`}
+                  title={currentUser.role === 'admin' ? 'T&P Directorate Governance' : 'T&P Officer Authentication'}
+                >
+                  <BuildingIcon className="size-4 text-amber-400" />
+                  <span>{currentUser.role === 'admin' ? 'Admin Console' : 'T&P Officer Portal'}</span>
                 </button>
               </div>
 
@@ -591,8 +668,53 @@ export function DemostackAppLayout({
           </div>
         </header>
 
-        {/* Scrollable View Content Container */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 no-scrollbar">
+        {/* Scrollable View Content Container - Auto scrolls to top on navigation */}
+        <main ref={mainScrollRef} className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 no-scrollbar">
+          {currentUser?.isGuestPreview && (
+            <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-[#200A03] via-[#140602] to-[#0A0301] border border-[#FEC163]/40 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2.5">
+                <span className="size-2.5 rounded-full bg-[#FEC163] animate-pulse shrink-0" />
+                <div>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="font-extrabold text-white text-xs">
+                      {activeTab === 'resume'
+                        ? '⚡ Interactive Demo (Step 1 of 2: AI Resume Analyzer)'
+                        : activeTab === 'skillgap'
+                        ? '⚡ Interactive Demo (Step 2 of 2: Skill Gap Matrix)'
+                        : '🔒 Feature Locked in Demo Mode'}
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FEC163]/20 text-[#FEC163] border border-[#FEC163]/40">
+                      Sample Student Mode
+                    </span>
+                  </div>
+                  <span className="text-zinc-300">
+                    {activeTab === 'resume'
+                      ? 'Upload your resume or inspect sample ATS audit. When done, proceed to Skill Gap Matrix.'
+                      : activeTab === 'skillgap'
+                      ? 'Demo completed! To generate your week-by-week roadmap and access other features, sign up for a free account.'
+                      : 'This feature is reserved for registered students. Create an account to access the full placement engine.'}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => onOpenAuthModal?.(false)}
+                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-zinc-950 font-bold hover:brightness-110 active:scale-95 transition-all cursor-pointer shadow-md text-xs flex items-center gap-1.5"
+                >
+                  <span>Sign Up to Unlock Whole App</span>
+                  <ChevronRight className="size-3" />
+                </button>
+                <button
+                  type="button"
+                  onClick={onExitPreview || onLogout}
+                  className="px-2.5 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white transition-colors cursor-pointer text-xs"
+                >
+                  Exit Demo
+                </button>
+              </div>
+            </div>
+          )}
           {children}
         </main>
       </div>

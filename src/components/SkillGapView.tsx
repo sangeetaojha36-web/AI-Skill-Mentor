@@ -20,18 +20,21 @@ import {
   Clock,
   Briefcase,
   ChevronRight,
+  Lock,
 } from 'lucide-react';
 
 interface SkillGapViewProps {
   user: User;
   onNavigate: (tab: string) => void;
   onGenerateRoadmap: (careerId: string) => void;
+  onOpenAuth?: (isLogin: boolean) => void;
 }
 
 export const SkillGapView: React.FC<SkillGapViewProps> = ({
   user,
   onNavigate,
   onGenerateRoadmap,
+  onOpenAuth,
 }) => {
   const [careers, setCareers] = useState<Career[]>([]);
   const [selectedCareerId, setSelectedCareerId] = useState<string>('');
@@ -539,19 +542,77 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                 <button
                   type="button"
                   onClick={() => {
-                    if (selectedCareer) {
+                    if (user?.isGuestPreview) {
+                      if (onOpenAuth) onOpenAuth(false);
+                      else onNavigate('roadmap');
+                    } else if (selectedCareer) {
                       onGenerateRoadmap(selectedCareer.id);
                       onNavigate('roadmap');
                     }
                   }}
                   className="px-4 py-2 rounded-xl bg-[#FEC163] hover:bg-[#ffcd7d] text-zinc-950 font-bold text-xs transition-colors flex items-center gap-1.5 shadow-md cursor-pointer"
                 >
-                  <Sparkles className="size-3.5" />
-                  <span>Generate Adaptive Roadmap</span>
-                  <ArrowRight className="size-3" />
+                  {user?.isGuestPreview ? (
+                    <>
+                      <Lock className="size-3.5 text-zinc-950" />
+                      <span>Sign Up to Unlock Roadmap</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="size-3.5" />
+                      <span>Generate Adaptive Roadmap</span>
+                      <ArrowRight className="size-3" />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
+          </div>
+
+          {/* Next in Workflow: Proceed to Personalized Roadmap */}
+          <div className="p-5 rounded-2xl border border-white/[0.08] bg-[#120603]/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
+            <div className="flex items-center gap-3">
+              <div className="size-8 rounded-full bg-[#FEC163] text-black font-bold text-sm flex items-center justify-center font-mono shrink-0">
+                {user?.isGuestPreview ? <Lock className="size-4" /> : 4}
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-white">
+                  {user?.isGuestPreview
+                    ? 'Demo Step 2 Complete — Unlock Personalized Roadmap'
+                    : 'Generate Personalized Roadmap'}
+                </h4>
+                <p className="text-xs text-zinc-400">
+                  {user?.isGuestPreview
+                    ? 'You have completed the free demo (Resume Analysis & Skill Gaps). Sign up now to unlock your custom week-by-week placement syllabus, Capstones & Greenroom Studio!'
+                    : 'Transform identified skill gaps into a structured, week-by-week placement curriculum.'}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                if (user?.isGuestPreview) {
+                  if (onOpenAuth) onOpenAuth(false);
+                  else onNavigate('roadmap');
+                } else if (selectedCareer) {
+                  onGenerateRoadmap(selectedCareer.id);
+                  onNavigate('roadmap');
+                }
+              }}
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold text-xs shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center gap-2 whitespace-nowrap"
+            >
+              {user?.isGuestPreview ? (
+                <>
+                  <Lock className="size-3.5" />
+                  <span>Sign Up to Unlock Whole App</span>
+                </>
+              ) : (
+                <>
+                  <span>Proceed to Roadmap</span>
+                  <ArrowRight className="size-3.5" />
+                </>
+              )}
+            </button>
           </div>
         </div>
       ) : null}
