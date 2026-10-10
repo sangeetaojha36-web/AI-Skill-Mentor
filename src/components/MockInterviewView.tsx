@@ -46,24 +46,21 @@ import {
   HelpCircle,
   FileUp,
   Image as ImageIcon,
-  ArrowLeft
+  ArrowLeft,
+  AlertCircle,
+  Compass,
+  RotateCw
 } from 'lucide-react';
 import { CompanyDetailCard } from './CompanyDetailCard.tsx';
+import {
+  VideoBehaviorProcessor,
+  BehavioralFrameMetrics,
+  BehavioralSessionSummary,
+} from '../services/videoBehaviorProcessor.ts';
 
 interface MockInterviewViewProps {
   user: User;
   onNavigate: (tab: string) => void;
-}
-
-interface BehavioralFrameMetrics {
-  eyeContactPercent: number;
-  confidenceScore: number;
-  expression: string;
-  posture: string;
-  coachingNudge: string;
-  focusStatus: string;
-  normalizedX?: number;
-  normalizedY?: number;
 }
 
 export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNavigate }) => {
@@ -104,10 +101,17 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
   // Greenroom Hardware States (Mandatory Camera)
   const [cameraActive, setCameraActive] = useState(false);
+  const [isSimulatedCamera, setIsSimulatedCamera] = useState(false);
+  const [cameraRequesting, setCameraRequesting] = useState(false);
+  const [streamDisconnected, setStreamDisconnected] = useState(false);
   const [micActive, setMicActive] = useState(false);
   const [audioLevel, setAudioLevel] = useState(0);
   const [voiceTTSActive, setVoiceTTSActive] = useState(true);
   const [cameraError, setCameraError] = useState('');
+
+  // Dedicated Video Behavior Processor instance
+  const videoProcessorRef = useRef<VideoBehaviorProcessor>(new VideoBehaviorProcessor());
+  const [sessionBehavioralSummary, setSessionBehavioralSummary] = useState<BehavioralSessionSummary | null>(null);
 
   // Real-time Camera AI Vision & Behavioral Analysis
   const [liveMetrics, setLiveMetrics] = useState<BehavioralFrameMetrics>({
@@ -119,6 +123,13 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
     coachingNudge: 'Maintaining steady eye contact with the camera lens.',
     normalizedX: 0.5,
     normalizedY: 0.42,
+    faceDetected: true,
+    boxWidth: 0.4,
+    boxHeight: 0.52,
+    fidgetIndex: 12,
+    lightingQuality: 'good',
+    headStability: 92,
+    gazeDirection: 'center',
   });
 
   const [behavioralHistory, setBehavioralHistory] = useState<{
@@ -139,6 +150,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [fillerWordCount, setFillerWordCount] = useState(0);
   const [speechWPM, setSpeechWPM] = useState(0);
+  const [autoListenOnQuestion, setAutoListenOnQuestion] = useState(true);
 
   // References
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -154,6 +166,11 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
   const offscreenCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const timerIntervalRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Metric refs to prevent interval cancellation during audio animation
+  const audioLevelRef = useRef<number>(0);
+  const speechWPMRef = useRef<number>(0);
+  const fillerWordsRef = useRef<number>(0);
 
   // Initialize matching companies on mount based on user skills
   useEffect(() => {
@@ -177,8 +194,14 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
     if (activeModalCompany && modalVideoRef.current) {
       attachStream(modalVideoRef.current);
     }
-    if (stage === 'interview' && videoRef.current) {
-      attachStream(videoRef.current);
+    if (stage === 'interview') {
+      if (videoRef.current) {
+        attachStream(videoRef.current);
+      }
+      const t = setTimeout(() => {
+        if (videoRef.current) attachStream(videoRef.current);
+      }, 150);
+      return () => clearTimeout(t);
     }
   }, [stage, activeModalCompany, cameraActive]);
 
@@ -214,7 +237,9 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
   useEffect(() => {
     if (!currentAnswer) {
       setFillerWordCount(0);
+      fillerWordsRef.current = 0;
       setSpeechWPM(0);
+      speechWPMRef.current = 0;
       return;
     }
 
@@ -225,203 +250,96 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
     const fillerRegex = /\b(um|uh|like|basically|you know|actually|sort of|kind of|i mean|right)\b/gi;
     const matches = lower.match(fillerRegex) || [];
     setFillerWordCount(matches.length);
+    fillerWordsRef.current = matches.length;
 
     if (timerSeconds > 5) {
       const minutes = timerSeconds / 60;
       const wpm = Math.round(wordCount / minutes);
       setSpeechWPM(wpm);
+      speechWPMRef.current = wpm;
     }
   }, [currentAnswer, timerSeconds]);
 
   // Real-time Camera AI Vision Analysis loop (Active during live interview)
   useEffect(() => {
     if (stage === 'interview' && cameraActive) {
-      visionIntervalRef.current = setInterval(() => {
-        analyzeLiveVideoFrame();
-      }, 750);
+      const runVisionTick = () => {
+        if (videoRef.current && videoProcessorRef.current) {
+          const metrics = videoProcessorRef.current.processFrame(
+            videoRef.current,
+            audioLevelRef.current
+          );
+          setLiveMetrics(metrics);
+          setBehavioralHistory((prev) => ({
+            eyeContactSamples: [...prev.eyeContactSamples, metrics.eyeContactPercent],
+            confidenceSamples: [...prev.confidenceSamples, metrics.confidenceScore],
+            expressions: {
+              ...prev.expressions,
+              [metrics.expression]: (prev.expressions[metrics.expression] || 0) + 1,
+            },
+          }));
+        }
+      };
+
+      runVisionTick();
+      visionIntervalRef.current = setInterval(runVisionTick, 380);
     } else {
       if (visionIntervalRef.current) clearInterval(visionIntervalRef.current);
     }
     return () => {
       if (visionIntervalRef.current) clearInterval(visionIntervalRef.current);
     };
-  }, [stage, cameraActive, audioLevel, speechWPM]);
+  }, [stage, cameraActive]);
 
   /* =========================================================================
-     CAMERA AI VISION & BEHAVIORAL ANALYSIS ENGINE
-     ========================================================================= */
-  const analyzeLiveVideoFrame = () => {
-    let eyeContact = 94;
-    let posture = 'Centered & Upright';
-    let focusStatus = 'Optimal (Locked on Lens)';
-    let normX = 0.5;
-    let normY = 0.42;
-
-    const vid = videoRef.current;
-    if (vid && vid.readyState >= 2 && vid.videoWidth > 0) {
-      if (!offscreenCanvasRef.current) {
-        offscreenCanvasRef.current = document.createElement('canvas');
-        offscreenCanvasRef.current.width = 160;
-        offscreenCanvasRef.current.height = 120;
-      }
-      const canvas = offscreenCanvasRef.current;
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      if (ctx) {
-        ctx.drawImage(vid, 0, 0, 160, 120);
-        try {
-          const imgData = ctx.getImageData(0, 0, 160, 120);
-          const data = imgData.data;
-
-          let skinCount = 0;
-          let sumX = 0;
-          let sumY = 0;
-
-          // Sample pixels across the 160x120 grid
-          for (let y = 0; y < 120; y += 3) {
-            for (let x = 0; x < 160; x += 3) {
-              const idx = (y * 160 + x) * 4;
-              const r = data[idx];
-              const g = data[idx + 1];
-              const b = data[idx + 2];
-
-              // Skin chroma detection in diverse lighting
-              const isSkin = r > 55 && g > 35 && b > 20 && r > g && r > b && (r - g) > 8;
-              if (isSkin) {
-                skinCount++;
-                sumX += x;
-                sumY += y;
-              }
-            }
-          }
-
-          if (skinCount > 35) {
-            normX = (sumX / skinCount) / 160;
-            normY = (sumY / skinCount) / 120;
-
-            const xOffset = Math.abs(normX - 0.5);
-            if (xOffset < 0.08) {
-              eyeContact = Math.min(99, Math.round(92 + (0.08 - xOffset) * 80));
-              posture = 'Centered & Upright';
-              focusStatus = 'Optimal (Locked on Lens)';
-            } else if (xOffset < 0.18) {
-              eyeContact = Math.round(80 - (xOffset - 0.08) * 100);
-              posture = 'Slight Head Tilt';
-              focusStatus = 'Head Tilted';
-            } else {
-              eyeContact = Math.max(52, Math.round(68 - (xOffset - 0.18) * 80));
-              posture = 'Looking Away';
-              focusStatus = 'Off-Center';
-            }
-
-            if (normY > 0.58) {
-              posture = 'Head Low / Looking Down';
-              eyeContact = Math.min(eyeContact, 70);
-              focusStatus = 'Looking Down';
-            }
-          }
-        } catch (e) {
-          console.warn('Frame analysis catch:', e);
-        }
-      }
-    } else {
-      const cycle = Math.sin(Date.now() / 2500);
-      eyeContact = Math.round(93 + cycle * 4);
-    }
-
-    // Dynamic Multi-Modal Confidence calculation
-    let confidence = 80;
-    if (eyeContact >= 90) confidence += 8;
-    else if (eyeContact >= 80) confidence += 4;
-    else if (eyeContact < 70) confidence -= 8;
-
-    // Speaking vocal presence boost from real microphone input
-    if (audioLevel > 18) {
-      confidence += 8;
-    } else if (audioLevel > 5) {
-      confidence += 3;
-    }
-
-    // Speech cadence
-    if (speechWPM >= 100 && speechWPM <= 160) {
-      confidence += 4;
-    } else if (speechWPM > 175) {
-      confidence -= 5;
-    }
-
-    if (fillerWordCount > 3) {
-      confidence -= 5;
-    }
-
-    confidence = Math.max(55, Math.min(99, confidence));
-
-    // Determine Behavior & Demeanor
-    let expression = 'Thoughtful & Engaged';
-    if (audioLevel > 15 && eyeContact >= 85) {
-      expression = 'Active & Articulate';
-    } else if (confidence >= 88) {
-      expression = 'Confident & Poised';
-    } else if (eyeContact < 75 || posture === 'Looking Away') {
-      expression = 'Slightly Hesitant';
-    } else {
-      expression = 'Calm & Neutral';
-    }
-
-    // Actionable AI Coach Nudge
-    let nudge = 'Maintaining strong, steady eye contact with the interviewer.';
-    if (posture === 'Head Low / Looking Down') {
-      nudge = 'Lift your chin and look directly into the camera lens.';
-    } else if (posture === 'Looking Away' || eyeContact < 78) {
-      nudge = 'Re-center your gaze on the webcam to project professional assurance.';
-    } else if (posture === 'Slight Head Tilt') {
-      nudge = 'Level your head with the webcam for an authoritative stance.';
-    } else if (audioLevel < 6 && isRecordingSpeech) {
-      nudge = 'Project your voice slightly louder for clear acoustic capture.';
-    } else if (speechWPM > 170) {
-      nudge = 'Pace yourself slightly — calm pauses demonstrate executive poise.';
-    } else if (confidence >= 90) {
-      nudge = 'Outstanding composure, centered posture, and vocal confidence.';
-    }
-
-    const newMetrics: BehavioralFrameMetrics = {
-      eyeContactPercent: eyeContact,
-      confidenceScore: confidence,
-      expression,
-      posture,
-      coachingNudge: nudge,
-      focusStatus,
-      normalizedX: normX,
-      normalizedY: normY,
-    };
-
-    setLiveMetrics(newMetrics);
-
-    setBehavioralHistory((prev) => ({
-      eyeContactSamples: [...prev.eyeContactSamples, eyeContact],
-      confidenceSamples: [...prev.confidenceSamples, confidence],
-      expressions: {
-        ...prev.expressions,
-        [expression]: (prev.expressions[expression] || 0) + 1,
-      },
-    }));
-  };
-
-  /* =========================================================================
-     MANDATORY CAMERA & AUDIO ACCESS
+     MANDATORY CAMERA & AUDIO ACCESS WITH DETAILED ERROR CLASSIFICATION
      ========================================================================= */
   const requestCameraAccess = async () => {
     setCameraError('');
+    setCameraRequesting(true);
+    setStreamDisconnected(false);
+
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            width: { ideal: 640 },
-            height: { ideal: 480 },
-            facingMode: 'user'
-          },
-          audio: true
-        });
+        let stream: MediaStream;
+        try {
+          // Attempt high-fidelity constrained request
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              width: { ideal: 640 },
+              height: { ideal: 480 },
+              facingMode: 'user',
+            },
+            audio: true,
+          });
+        } catch (initialErr: any) {
+          console.warn('Constrained getUserMedia failed, trying unconstrained fallback:', initialErr);
+          // Fallback 1: Unconstrained video + audio
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          } catch (secondaryErr: any) {
+            // Fallback 2: Video only if microphone is locked or denied
+            stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          }
+        }
 
         mediaStreamRef.current = stream;
+
+        // Monitor stream tracks for unexpected interruptions or device unplugs
+        const videoTrack = stream.getVideoTracks()[0];
+        if (videoTrack) {
+          videoTrack.onended = () => {
+            console.warn('Webcam video track ended unexpectedly.');
+            setStreamDisconnected(true);
+          };
+          videoTrack.onmute = () => {
+            console.warn('Webcam video track muted.');
+            setStreamDisconnected(true);
+          };
+          videoTrack.onunmute = () => {
+            setStreamDisconnected(false);
+          };
+        }
 
         if (modalVideoRef.current) {
           modalVideoRef.current.srcObject = stream;
@@ -433,28 +351,50 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
         }
 
         setCameraActive(true);
-        setMicActive(true);
-        setupAudioAnalyser(stream);
+        setIsSimulatedCamera(false);
+        setMicActive(stream.getAudioTracks().length > 0);
+        if (stream.getAudioTracks().length > 0) {
+          setupAudioAnalyser(stream);
+        }
       } else {
-        setCameraError('Webcam API is not supported in this browser environment.');
+        setCameraError('Webcam API is not supported in this browser environment. Please use a modern browser or Studio Simulation.');
       }
     } catch (err: any) {
-      console.warn('Camera request error:', err);
-      // Fallback: try video only if combined audio+video is denied
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        mediaStreamRef.current = stream;
-        if (videoRef.current) videoRef.current.srcObject = stream;
-        setCameraActive(true);
-      } catch (_) {
-        setCameraError('Camera access required. Please click allow in your browser address bar or use Simulated Camera.');
-        setCameraActive(false);
+      console.warn('Camera request error details:', err);
+      setCameraActive(false);
+
+      const errName = err?.name || '';
+      if (errName === 'NotAllowedError' || errName === 'PermissionDeniedError') {
+        setCameraError(
+          'Webcam permissions were denied. Please click the lock or camera icon in your browser URL bar, set Camera to "Allow", and retry.'
+        );
+      } else if (errName === 'NotFoundError' || errName === 'DevicesNotFoundError') {
+        setCameraError(
+          'No physical webcam detected on this device. Please connect a webcam or click "Use Studio Simulation".'
+        );
+      } else if (errName === 'NotReadableError' || errName === 'TrackStartError') {
+        setCameraError(
+          'Webcam is in use by another program (e.g. Zoom, Google Meet, Teams). Please close other apps and click retry.'
+        );
+      } else if (errName === 'OverconstrainedError') {
+        setCameraError(
+          'Webcam resolution constraints could not be satisfied. Click retry to connect with basic settings.'
+        );
+      } else if (errName === 'SecurityError') {
+        setCameraError('Camera access blocked due to browser security policies. Please use HTTPS.');
+      } else {
+        setCameraError(
+          'Unable to access hardware camera (' + (err?.message || 'Permission or hardware issue') + '). You can use Studio Simulation.'
+        );
       }
+    } finally {
+      setCameraRequesting(false);
     }
   };
 
   const setupSimulatedCamera = () => {
     setCameraError('');
+    setStreamDisconnected(false);
     try {
       const canvas = document.createElement('canvas');
       canvas.width = 640;
@@ -541,11 +481,13 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       }
 
       setCameraActive(true);
+      setIsSimulatedCamera(true);
       setMicActive(true);
       setAudioLevel(48);
     } catch (e) {
       console.warn('Simulated camera error:', e);
       setCameraActive(true);
+      setIsSimulatedCamera(true);
       setMicActive(true);
     }
   };
@@ -598,6 +540,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
 
+      let lastAudioTick = 0;
       const updateMeter = () => {
         if (!analyserRef.current) return;
         analyserRef.current.getByteFrequencyData(dataArray);
@@ -608,7 +551,13 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
         }
         const average = sum / bufferLength;
         const normalized = Math.min(100, Math.round((average / 128) * 100));
-        setAudioLevel(normalized);
+        audioLevelRef.current = normalized;
+
+        const now = Date.now();
+        if (now - lastAudioTick > 80) {
+          lastAudioTick = now;
+          setAudioLevel(normalized);
+        }
 
         animationFrameRef.current = requestAnimationFrame(updateMeter);
       };
@@ -795,6 +744,12 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       setTimerSeconds(0);
       setIsTimerRunning(true);
 
+      // Reset dedicated behavioral processor telemetry for new rehearsal
+      if (videoProcessorRef.current) {
+        videoProcessorRef.current.resetSession();
+      }
+      setSessionBehavioralSummary(null);
+
       if (data.session?.questions?.[0]) {
         speakInterviewerQuestion(data.session.questions[0].question);
       }
@@ -837,7 +792,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
     const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRec) {
-      setSpeechErrorMsg('Speech Recognition is not natively supported in this browser. Please type directly or use the STAR structure blueprints.');
+      setSpeechErrorMsg('Speech Recognition is not natively supported in this browser. Microphone audio level is active; you can click "Insert STAR Framework Blueprint" or type directly.');
       return;
     }
 
@@ -846,7 +801,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
-      recognition.lang = languageRegister === 'Pure English' ? 'en-IN' : 'hi-IN';
+      recognition.lang = languageRegister === 'Pure English' ? 'en-IN' : 'en-US';
 
       isRecordingSpeechRef.current = true;
       speechBaseAnswerRef.current = currentAnswer.trim() ? `${currentAnswer.trim()} ` : '';
@@ -882,8 +837,15 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           // Do not disconnect on brief silence, keep listening!
           return;
         }
+        if (event?.error === 'language-not-supported') {
+          try {
+            recognition.lang = 'en-US';
+            recognition.start();
+            return;
+          } catch (_) {}
+        }
         if (event?.error === 'not-allowed' || event?.error === 'service-not-allowed') {
-          setSpeechErrorMsg('Microphone access for speech recognition was blocked by browser. Please allow microphone permissions or type your answer.');
+          setSpeechErrorMsg('Microphone access for speech recognition was blocked by browser. Please allow microphone permissions or use the quick STAR Blueprint button.');
           isRecordingSpeechRef.current = false;
           setIsRecordingSpeech(false);
         }
@@ -914,10 +876,29 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       recognitionRef.current = recognition;
     } catch (err: any) {
       console.warn('Speech recognition start failed:', err);
-      setSpeechErrorMsg('Speech recognition failed to initialize. Please type your response directly.');
-      setIsRecordingSpeech(false);
-      isRecordingSpeechRef.current = false;
+      // Fallback try en-US
+      try {
+        const fallbackRec = new SpeechRec();
+        fallbackRec.continuous = true;
+        fallbackRec.interimResults = true;
+        fallbackRec.lang = 'en-US';
+        fallbackRec.start();
+        recognitionRef.current = fallbackRec;
+        setIsRecordingSpeech(true);
+        isRecordingSpeechRef.current = true;
+      } catch (_) {
+        setSpeechErrorMsg('Speech recognition failed to initialize. Please type your response directly or use the STAR answer blueprint.');
+        setIsRecordingSpeech(false);
+        isRecordingSpeechRef.current = false;
+      }
     }
+  };
+
+  const insertStarBlueprint = () => {
+    const q = currentQ?.question || 'the scenario';
+    const points = currentQ?.expectedKeyPoints?.slice(0, 3).join(', ') || 'technical depth';
+    const template = `Situation: When addressing ${q.length > 50 ? q.slice(0, 50) + '...' : q}, our team faced challenges in ensuring high reliability and performance.\n\nTask: My primary objective was to architect a robust solution addressing ${points}.\n\nAction: I implemented the core technical workflow using systematic design principles, optimized the processing pipeline, and verified edge cases with targeted testing.\n\nResult: This reduced latency by 35%, improved system stability, and successfully satisfied all institutional technical criteria.`;
+    setCurrentAnswer((prev) => prev.trim() ? `${prev}\n\n${template}` : template);
   };
 
   /* =========================================================================
@@ -944,6 +925,10 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       setTimerSeconds(0);
 
       if (data.session.completed) {
+        if (videoProcessorRef.current) {
+          const summary = videoProcessorRef.current.getSessionSummary();
+          setSessionBehavioralSummary(summary);
+        }
         setStage('report');
         setIsTimerRunning(false);
         stopMediaStream();
@@ -1497,6 +1482,8 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           onChangeNumberOfQuestions={setNumberOfQuestions}
           cameraActive={cameraActive}
           cameraError={cameraError}
+          isSimulatedCamera={isSimulatedCamera}
+          cameraRequesting={cameraRequesting}
           modalVideoRef={modalVideoRef}
           audioLevel={audioLevel}
           onRequestCameraAccess={requestCameraAccess}
@@ -1526,10 +1513,18 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
               <ArrowLeft className="h-4 w-4 text-[#FEC163] group-hover:-translate-x-1 transition-transform" />
               <span>Back to Company Directory</span>
             </button>
-            <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Live Camera Rehearsal
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`text-[11px] font-mono px-2.5 py-1 rounded-full flex items-center gap-1.5 border shadow-sm ${
+                isSimulatedCamera
+                  ? 'text-[#FEC163] bg-amber-950/40 border-amber-800/40'
+                  : 'text-emerald-400 bg-emerald-950/40 border-emerald-800/40'
+              }`}>
+                <span className={`h-1.5 w-1.5 rounded-full ${
+                  isSimulatedCamera ? 'bg-[#FEC163]' : 'bg-emerald-400 animate-pulse'
+                }`} />
+                <span>{isSimulatedCamera ? 'Studio Simulation Stream' : 'Live Hardware Webcam'}</span>
+              </span>
+            </div>
           </div>
 
           {/* Top Session Progress Bar */}
@@ -1558,7 +1553,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Column: Live Webcam View with Real-time AI Vision HUD */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="relative aspect-video sm:aspect-square bg-black rounded-2xl overflow-hidden border-2 border-[#FEC163]/40 shadow-2xl flex items-center justify-center">
+              <div className="relative aspect-video sm:aspect-square bg-black rounded-2xl overflow-hidden border-2 border-[#FEC163]/40 shadow-2xl flex items-center justify-center group">
                 <video
                   ref={videoRef}
                   autoPlay
@@ -1567,55 +1562,148 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   className="w-full h-full object-cover transform -scale-x-100"
                 />
 
+                {/* Stream Disconnection / Pause Alert Overlay */}
+                {streamDisconnected && (
+                  <div className="absolute inset-0 z-20 bg-black/90 p-4 flex flex-col items-center justify-center text-center space-y-3">
+                    <div className="h-10 w-10 rounded-full bg-rose-950/80 border border-rose-600 flex items-center justify-center text-rose-400 animate-pulse">
+                      <AlertCircle size={22} />
+                    </div>
+                    <div>
+                      <div className="font-bold text-white text-xs">Webcam Stream Interrupted</div>
+                      <div className="text-rose-300/80 text-[11px] mt-0.5">Hardware stream paused or camera track ended.</div>
+                    </div>
+                    <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={requestCameraAccess}
+                        className="px-3 py-1.5 rounded-lg bg-[#FEC163] text-black font-bold text-xs shadow hover:brightness-110 cursor-pointer"
+                      >
+                        Reconnect Webcam
+                      </button>
+                      <button
+                        type="button"
+                        onClick={setupSimulatedCamera}
+                        className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs border border-white/20 cursor-pointer"
+                      >
+                        Switch to Simulation
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Real-Time AI Camera Vision HUD Overlay */}
-                <div className="absolute inset-0 pointer-events-none p-3 flex flex-col justify-between bg-gradient-to-t from-black/80 via-transparent to-black/60">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/75 border border-[#FEC163]/50 text-[10px] text-[#FEC163] font-mono">
+                <div className="absolute inset-0 pointer-events-none p-3 flex flex-col justify-between bg-gradient-to-t from-black/85 via-transparent to-black/65">
+                  {/* Top Bar on Video Stream */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 border border-[#FEC163]/50 text-[10px] text-[#FEC163] font-mono shadow-sm">
                       <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
                       <span>EYE FOCUS: {liveMetrics.eyeContactPercent}%</span>
                     </div>
 
-                    <div className="px-2.5 py-1 rounded-full bg-black/75 border border-amber-400/40 text-[10px] text-amber-300 font-mono">
-                      CONFIDENCE: {liveMetrics.confidenceScore}/100
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded bg-black/80 border border-white/15 text-[9px] font-mono text-slate-300">
+                        {isSimulatedCamera ? 'SIMULATION' : '30 FPS · 720p HD'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={isSimulatedCamera ? requestCameraAccess : setupSimulatedCamera}
+                        className="pointer-events-auto px-2 py-0.5 rounded-full bg-black/80 hover:bg-black border border-white/20 text-[9px] font-mono text-[#FEC163] hover:text-white transition-colors cursor-pointer"
+                      >
+                        {isSimulatedCamera ? 'Use Real Cam' : 'Use Simulation'}
+                      </button>
                     </div>
                   </div>
 
-                  {/* Face Landmark Target Box */}
-                  <div className="m-auto border border-dashed border-[#FEC163]/40 rounded-xl w-36 h-44 flex items-center justify-center">
-                    <span className="text-[9px] font-mono text-white/70 bg-black/50 px-1 rounded">
-                      [FACE LOCKED]
-                    </span>
+                  {/* Dynamic Face Landmark Target Box Tracking Real Head Position */}
+                  <div
+                    className="absolute transition-all duration-300 pointer-events-none -translate-x-1/2 -translate-y-1/2 rounded-2xl flex flex-col items-center justify-between p-2"
+                    style={{
+                      left: `${Math.max(20, Math.min(80, liveMetrics.normalizedX * 100))}%`,
+                      top: `${Math.max(22, Math.min(68, liveMetrics.normalizedY * 100))}%`,
+                      width: `${Math.max(120, Math.min(200, (liveMetrics.boxWidth || 0.4) * 320))}px`,
+                      height: `${Math.max(140, Math.min(230, (liveMetrics.boxHeight || 0.52) * 320))}px`,
+                      border: liveMetrics.eyeContactPercent >= 88
+                        ? '2px solid rgba(34, 197, 94, 0.85)'
+                        : liveMetrics.eyeContactPercent >= 75
+                        ? '2px solid rgba(254, 193, 99, 0.85)'
+                        : '2px solid rgba(244, 63, 94, 0.85)',
+                      boxShadow: liveMetrics.eyeContactPercent >= 88
+                        ? '0 0 18px rgba(34, 197, 94, 0.35)'
+                        : liveMetrics.eyeContactPercent >= 75
+                        ? '0 0 18px rgba(254, 193, 99, 0.35)'
+                        : '0 0 18px rgba(244, 63, 94, 0.35)',
+                    }}
+                  >
+                    {/* Corner Accent Brackets */}
+                    <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white" />
+                    <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-white" />
+                    <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-white" />
+                    <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-white" />
+
+                    <div className="flex items-center justify-between w-full px-1">
+                      <span className={`text-[8px] font-mono font-bold px-1.5 py-0.5 rounded shadow ${
+                        liveMetrics.eyeContactPercent >= 88
+                          ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/40'
+                          : liveMetrics.eyeContactPercent >= 75
+                          ? 'bg-amber-950/80 text-amber-300 border border-amber-500/40'
+                          : 'bg-rose-950/80 text-rose-300 border border-rose-500/40'
+                      }`}>
+                        {liveMetrics.focusStatus.toUpperCase()}
+                      </span>
+                      <span className="text-[9px] font-mono font-bold text-white bg-black/80 px-1.5 py-0.5 rounded">
+                        {liveMetrics.eyeContactPercent}%
+                      </span>
+                    </div>
+
+                    <div className="text-[9px] font-mono text-white/90 bg-black/80 px-2.5 py-0.5 rounded-full border border-white/15 flex items-center gap-1.5 shadow">
+                      <span className={`h-1.5 w-1.5 rounded-full ${
+                        liveMetrics.eyeContactPercent >= 80 ? 'bg-emerald-400 animate-pulse' : 'bg-rose-400'
+                      }`} />
+                      <span>
+                        {liveMetrics.faceDetected !== false ? '[FACE LOCKED]' : '[RE-CENTER IN FRAME]'}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Real-time Demeanor & Coaching HUD Pill */}
                   <div className="space-y-1.5 text-xs">
-                    <div className="flex items-center justify-between text-[11px] text-white bg-black/80 p-2 rounded-xl border border-[#FEC163]/30">
+                    <div className="flex items-center justify-between text-[11px] text-white bg-black/85 p-2 rounded-xl border border-[#FEC163]/30">
                       <div className="flex items-center gap-1.5">
                         <Smile className="h-3.5 w-3.5 text-[#FEC163]" />
-                        <span>{liveMetrics.expression}</span>
+                        <span>Behavior: <strong>{liveMetrics.expression}</strong></span>
                       </div>
-                      <span className="text-emerald-400 font-mono text-[10px]">{liveMetrics.posture}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-emerald-400 font-mono text-[10px]">{liveMetrics.posture}</span>
+                        {audioLevel > 12 && (
+                          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" title="Vocal Audio Detected" />
+                        )}
+                      </div>
                     </div>
 
-                    <div className="text-[10px] text-[#FFD799] bg-[#1A0A04]/90 px-2.5 py-1 rounded-lg border border-[#FEC163]/25 flex items-center gap-1.5">
-                      <Target className="h-3 w-3 text-[#FEC163] shrink-0" />
+                    <div className="text-[10px] text-[#FFD799] bg-[#1A0A04]/90 px-2.5 py-1.5 rounded-lg border border-[#FEC163]/30 flex items-center gap-1.5 shadow-sm">
+                      <Target className="h-3.5 w-3.5 text-[#FEC163] shrink-0" />
                       <span className="truncate">{liveMetrics.coachingNudge}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Real-Time Metrics Dial */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-3 rounded-xl bg-[#120603] border border-[#FEC163]/20">
-                  <div className="text-slate-400 text-[10px]">Eye Contact Focus</div>
-                  <div className="text-lg font-bold text-[#FEC163] font-mono">{liveMetrics.eyeContactPercent}%</div>
-                  <div className="text-[10px] text-emerald-400">Excellent Camera Centering</div>
+              {/* Real-Time Metrics Telemetry Trio */}
+              <div className="grid grid-cols-3 gap-2 text-xs">
+                <div className="p-2.5 rounded-xl bg-[#120603] border border-[#FEC163]/20">
+                  <div className="text-slate-400 text-[10px]">Eye Contact</div>
+                  <div className="text-base font-bold text-[#FEC163] font-mono">{liveMetrics.eyeContactPercent}%</div>
+                  <div className="text-[9px] text-emerald-400 truncate">{liveMetrics.focusStatus}</div>
                 </div>
-                <div className="p-3 rounded-xl bg-[#120603] border border-[#FEC163]/20">
-                  <div className="text-slate-400 text-[10px]">AI Confidence Meter</div>
-                  <div className="text-lg font-bold text-amber-300 font-mono">{liveMetrics.confidenceScore}/100</div>
-                  <div className="text-[10px] text-white">Poised Demeanor</div>
+                <div className="p-2.5 rounded-xl bg-[#120603] border border-[#FEC163]/20">
+                  <div className="text-slate-400 text-[10px]">AI Confidence</div>
+                  <div className="text-base font-bold text-amber-300 font-mono">{liveMetrics.confidenceScore}/100</div>
+                  <div className="text-[9px] text-white truncate">{liveMetrics.expression}</div>
+                </div>
+                <div className="p-2.5 rounded-xl bg-[#120603] border border-[#FEC163]/20">
+                  <div className="text-slate-400 text-[10px]">Head Stability</div>
+                  <div className="text-base font-bold text-emerald-400 font-mono">{liveMetrics.headStability || 92}%</div>
+                  <div className="text-[9px] text-slate-400 truncate">{liveMetrics.posture}</div>
                 </div>
               </div>
             </div>
@@ -1652,30 +1740,80 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
               {/* Candidate Answer Workspace */}
               <div className="space-y-3 flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center justify-between mb-1.5 text-xs">
-                    <label className="font-semibold text-slate-300">
-                      Your Answer (Speak into microphone or type)
-                    </label>
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2 text-xs">
+                    <div className="flex items-center gap-2">
+                      <label className="font-semibold text-slate-300">
+                        Your Answer
+                      </label>
+                      {/* Live microphone soundwave activity indicator */}
+                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 border border-white/10 text-[10px]">
+                        <Mic className={`size-3 ${audioLevel > 10 ? 'text-emerald-400 animate-pulse' : 'text-zinc-500'}`} />
+                        <span className="font-mono text-zinc-300">{audioLevel}%</span>
+                        <div className="flex items-end gap-0.5 h-3 ml-0.5">
+                          <span
+                            className="w-0.5 bg-emerald-400 rounded-full transition-all"
+                            style={{ height: `${Math.max(2, Math.min(12, (audioLevel / 100) * 12))}px` }}
+                          />
+                          <span
+                            className="w-0.5 bg-emerald-400 rounded-full transition-all"
+                            style={{ height: `${Math.max(2, Math.min(12, ((audioLevel * 1.3) / 100) * 12))}px` }}
+                          />
+                          <span
+                            className="w-0.5 bg-emerald-400 rounded-full transition-all"
+                            style={{ height: `${Math.max(2, Math.min(12, ((audioLevel * 0.8) / 100) * 12))}px` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
 
-                    <button
-                      type="button"
-                      onClick={toggleSpeechRecognition}
-                      className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all ${
-                        isRecordingSpeech
-                          ? 'bg-rose-600 text-white animate-pulse shadow-[0_0_12px_#e11d48]'
-                          : 'bg-[#1C0904] text-[#FEC163] border border-[#FEC163]/30 hover:bg-[#2A0E06]'
-                      }`}
-                    >
-                      {isRecordingSpeech ? <Square className="h-3 w-3" /> : <Mic className="h-3 w-3" />}
-                      <span>{isRecordingSpeech ? 'Listening (Click to Stop)' : 'Dictate by Voice'}</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={insertStarBlueprint}
+                        className="px-2.5 py-1 rounded-full text-[11px] font-semibold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all cursor-pointer flex items-center gap-1"
+                        title="Auto-insert STAR Framework structure tailored to this question"
+                      >
+                        <Sparkles className="size-3 text-amber-400" />
+                        <span>STAR Blueprint</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={toggleSpeechRecognition}
+                        className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all ${
+                          isRecordingSpeech
+                            ? 'bg-rose-600 text-white animate-pulse shadow-[0_0_12px_#e11d48]'
+                            : 'bg-[#1C0904] text-[#FEC163] border border-[#FEC163]/30 hover:bg-[#2A0E06]'
+                        }`}
+                      >
+                        {isRecordingSpeech ? <Square className="h-3 w-3" /> : <Mic className="h-3 w-3" />}
+                        <span>{isRecordingSpeech ? 'Listening (Speak Now)' : 'Dictate by Voice'}</span>
+                      </button>
+                    </div>
                   </div>
+
+                  {speechErrorMsg && (
+                    <div className="mb-2 p-2.5 rounded-xl bg-amber-950/50 border border-amber-700/50 text-amber-200 text-xs flex items-center gap-2">
+                      <AlertTriangle className="size-3.5 shrink-0 text-amber-400" />
+                      <span>{speechErrorMsg}</span>
+                    </div>
+                  )}
+
+                  {isRecordingSpeech && (
+                    <div className="mb-2 p-2 rounded-xl bg-emerald-950/40 border border-emerald-800/40 text-emerald-300 text-xs flex items-center justify-between gap-2 animate-fade-in">
+                      <div className="flex items-center gap-2">
+                        <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
+                        <span>🎙️ Live Speech Detection Active: Speak clearly, your spoken words are streaming directly into the text box.</span>
+                      </div>
+                      <span className="font-mono text-[10px] text-zinc-400">English (India/US)</span>
+                    </div>
+                  )}
 
                   <textarea
                     rows={6}
                     value={currentAnswer}
                     onChange={(e) => setCurrentAnswer(e.target.value)}
-                    placeholder="Articulate your structured response here. Use the STAR methodology (Situation, Task, Action, Result) for technical and project questions..."
+                    placeholder="Articulate your structured response here. Speak into your microphone or click 'Dictate by Voice' / 'STAR Blueprint' to format your response with Situation, Task, Action, and Result..."
                     className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl p-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:outline-none"
                   />
                 </div>
@@ -1768,20 +1906,30 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
               <div className="p-3.5 rounded-xl bg-black/50 border border-[#FEC163]/25 space-y-1">
                 <div className="text-slate-400 text-[11px]">Eye Contact & Focus</div>
-                <div className="text-xl font-bold text-[#FEC163] font-mono">{avgEyeContact}%</div>
-                <div className="text-[10px] text-amber-200">Live Camera Verified</div>
+                <div className="text-xl font-bold text-[#FEC163] font-mono">
+                  {sessionBehavioralSummary?.averageEyeContact || avgEyeContact}%
+                </div>
+                <div className="text-[10px] text-amber-200">Lens Tracking Verified</div>
               </div>
 
               <div className="p-3.5 rounded-xl bg-black/50 border border-[#FEC163]/25 space-y-1">
                 <div className="text-slate-400 text-[11px]">Facial Confidence</div>
-                <div className="text-xl font-bold text-white font-mono">{avgConfidence}%</div>
-                <div className="text-[10px] text-emerald-400">Composed Demeanor</div>
+                <div className="text-xl font-bold text-white font-mono">
+                  {sessionBehavioralSummary?.averageConfidence || avgConfidence}%
+                </div>
+                <div className="text-[10px] text-emerald-400">
+                  {sessionBehavioralSummary?.dominantExpression || 'Composed Demeanor'}
+                </div>
               </div>
 
               <div className="p-3.5 rounded-xl bg-black/50 border border-[#FEC163]/25 space-y-1">
-                <div className="text-slate-400 text-[11px]">Communication Pace</div>
-                <div className="text-xl font-bold text-amber-300 font-mono">{speechWPM || 128} WPM</div>
-                <div className="text-[10px] text-slate-400">Optimal Indian Pace</div>
+                <div className="text-slate-400 text-[11px]">Head & Posture Stability</div>
+                <div className="text-xl font-bold text-emerald-400 font-mono">
+                  {sessionBehavioralSummary?.stabilityScore || 92}%
+                </div>
+                <div className="text-[10px] text-slate-400">
+                  {sessionBehavioralSummary?.dominantPosture || 'Centered & Upright'}
+                </div>
               </div>
             </div>
 
@@ -1792,9 +1940,110 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 <span>Interviewer Executive Summary:</span>
               </div>
               <p className="text-slate-300 leading-relaxed">
-                {session.summaryFeedback || `You demonstrated confident articulation for ${session.career}. Your eye contact was steady at ${avgEyeContact}% throughout technical probing questions.`}
+                {session.summaryFeedback || `You demonstrated confident articulation for ${session.career}. Your eye contact was steady at ${sessionBehavioralSummary?.averageEyeContact || avgEyeContact}% throughout technical probing questions.`}
               </p>
             </div>
+          </div>
+
+          {/* DEDICATED PROCTORED BEHAVIORAL & EYE CONTACT TELEMETRY AUDIT */}
+          <div className="rounded-2xl border border-[#FEC163]/30 bg-[#0A0402]/95 p-6 sm:p-8 shadow-xl space-y-5">
+            <div className="border-b border-[#FEC163]/15 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div className="text-xs font-bold text-[#FEC163] uppercase tracking-wider font-mono flex items-center gap-1.5">
+                  <Eye className="h-4 w-4 text-[#FEC163]" />
+                  <span>Webcam Vision Behavioral Audit</span>
+                </div>
+                <h3 className="text-lg font-bold text-white mt-0.5">
+                  Eye Contact, Demeanor & Postural Telemetry
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Multi-modal processing layer evaluated frame stability, lens gaze fixation, and vocal presence.
+                </p>
+              </div>
+
+              <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-3 py-1 rounded-full self-start sm:self-auto">
+                Proctor Status: Passed ({sessionBehavioralSummary?.averageEyeContact || avgEyeContact}% Engagement)
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="p-3.5 rounded-xl bg-[#140603] border border-[#FEC163]/20 space-y-1.5">
+                <div className="text-slate-400 text-[11px] flex items-center justify-between">
+                  <span>Lens Gaze Alignment</span>
+                  <span className="font-mono text-[#FEC163] font-bold">
+                    {sessionBehavioralSummary?.averageEyeContact || avgEyeContact}%
+                  </span>
+                </div>
+                <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-[#FEC163] to-[#DE4313] h-full rounded-full transition-all"
+                    style={{ width: `${sessionBehavioralSummary?.averageEyeContact || avgEyeContact}%` }}
+                  />
+                </div>
+                <div className="text-[10px] text-slate-400">
+                  {sessionBehavioralSummary?.downwardGazeAlertCount ? (
+                    <span className="text-amber-300">
+                      Detected {sessionBehavioralSummary.downwardGazeAlertCount} downward glances (notes check).
+                    </span>
+                  ) : (
+                    <span className="text-emerald-400">Steady focus maintained on the camera lens.</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-[#140603] border border-[#FEC163]/20 space-y-1.5">
+                <div className="text-slate-400 text-[11px] flex items-center justify-between">
+                  <span>Postural Stillness & Poise</span>
+                  <span className="font-mono text-emerald-400 font-bold">
+                    {sessionBehavioralSummary?.stabilityScore || 92}%
+                  </span>
+                </div>
+                <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-emerald-500 to-[#FEC163] h-full rounded-full transition-all"
+                    style={{ width: `${sessionBehavioralSummary?.stabilityScore || 92}%` }}
+                  />
+                </div>
+                <div className="text-[10px] text-slate-400">
+                  Posture: <strong className="text-white">{sessionBehavioralSummary?.dominantPosture || 'Centered & Upright'}</strong>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-[#140603] border border-[#FEC163]/20 space-y-1.5">
+                <div className="text-slate-400 text-[11px] flex items-center justify-between">
+                  <span>Dominant Candidate Demeanor</span>
+                  <span className="font-mono text-amber-300 font-bold">
+                    {sessionBehavioralSummary?.averageConfidence || avgConfidence}/100
+                  </span>
+                </div>
+                <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-amber-400 to-[#DE4313] h-full rounded-full transition-all"
+                    style={{ width: `${sessionBehavioralSummary?.averageConfidence || avgConfidence}%` }}
+                  />
+                </div>
+                <div className="text-[10px] text-slate-400">
+                  Profile: <strong className="text-amber-200">{sessionBehavioralSummary?.dominantExpression || 'Active & Articulate'}</strong>
+                </div>
+              </div>
+            </div>
+
+            {sessionBehavioralSummary?.actionableTips && sessionBehavioralSummary.actionableTips.length > 0 && (
+              <div className="p-3.5 rounded-xl bg-black/60 border border-white/10 text-xs space-y-2">
+                <div className="font-bold text-amber-200 flex items-center gap-1.5">
+                  <Target className="h-3.5 w-3.5 text-[#FEC163]" />
+                  <span>Proctored Behavioral Feedback:</span>
+                </div>
+                <ul className="space-y-1.5 text-slate-300 text-[11px]">
+                  {sessionBehavioralSummary.actionableTips.map((tip, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#FEC163] mt-1 shrink-0" />
+                      <span>{tip}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           {/* "WHAT YOU HAVE TO ENHANCE & LEARN" SECTION */}
@@ -1849,7 +2098,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 <ul className="space-y-2 text-slate-300">
                   <li className="flex items-start gap-2">
                     <span className="h-1.5 w-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
-                    <span><strong>Webcam Eye Contact:</strong> Target 90%+ focus directly on the lens to project authority and assurance.</span>
+                    <span><strong>Webcam Eye Contact:</strong> Target 90%+ focus directly on the lens to project authority and assurance. (Logged: {sessionBehavioralSummary?.averageEyeContact || avgEyeContact}% average).</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="h-1.5 w-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />

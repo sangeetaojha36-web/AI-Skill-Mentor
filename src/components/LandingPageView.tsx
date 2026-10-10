@@ -16,6 +16,7 @@ import {
   Layers,
   Code2,
   Building,
+  Shield,
   ShieldCheck,
   Bot,
   Zap,
@@ -32,8 +33,8 @@ import {
 import { CareerConstellationCanvas } from './auth/CareerConstellationCanvas.tsx';
 
 interface LandingPageViewProps {
-  onOpenAuth: (isLogin: boolean) => void;
-  onStartGuestPreview: () => void;
+  onOpenAuth: (isLogin: boolean, isAdmin?: boolean) => void;
+  onStartGuestPreview?: () => void;
 }
 
 // 6-Step Workflow defined in the exact user specification
@@ -341,12 +342,12 @@ export function LandingPageView({
           <div className="flex items-center gap-2.5">
             <button
               type="button"
-              onClick={onStartGuestPreview}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-[#FEC163] bg-[#FEC163]/10 hover:bg-[#FEC163]/20 border border-[#FEC163]/30 transition-all cursor-pointer"
-              title="Preview AI Resume Analyzer & Skill Gap Matrix without signing up"
+              onClick={() => onOpenAuth(true, true)}
+              className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-amber-300/80 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 transition-all cursor-pointer"
+              title="Official Institutional & Placement Directorate Admin Login"
             >
-              <Zap className="size-3.5 text-[#FEC163]" />
-              <span>Free Sample Preview</span>
+              <Shield className="size-3.5 text-amber-400" />
+              <span>Admin Portal</span>
             </button>
 
             <button
@@ -430,12 +431,11 @@ export function LandingPageView({
 
           <button
             type="button"
-            onClick={onStartGuestPreview}
+            onClick={() => onOpenAuth(true)}
             className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-[#140603] hover:bg-[#200A04] border border-[#FEC163]/40 text-white font-semibold text-sm transition-all cursor-pointer flex items-center justify-center gap-2 group shadow-md"
-            title="Preview Resume Analyzer & Skill Gap Matrix without signing up"
           >
-            <Play className="size-3.5 text-[#FEC163] group-hover:scale-110 transition-transform fill-[#FEC163]" />
-            <span>Try Sample Preview (Resume & Skills)</span>
+            <span>Sign In to Student Account</span>
+            <ArrowRight className="size-3.5 text-[#FEC163] group-hover:translate-x-1 transition-transform" />
           </button>
         </motion.div>
 
@@ -1166,10 +1166,10 @@ export function LandingPageView({
 
             <button
               type="button"
-              onClick={onStartGuestPreview}
+              onClick={() => onOpenAuth(true)}
               className="w-full sm:w-auto px-6 py-4 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-white font-semibold text-sm transition-all cursor-pointer flex items-center justify-center gap-2"
             >
-              <span>Try Free Sample Preview (Resume & Skills)</span>
+              <span>Sign In to Existing Account</span>
             </button>
           </div>
         </div>
@@ -1200,10 +1200,11 @@ export function LandingPageView({
             </button>
             <button
               type="button"
-              onClick={onStartGuestPreview}
-              className="hover:text-white transition-colors cursor-pointer text-[#FEC163]"
+              onClick={() => onOpenAuth(true, true)}
+              className="hover:text-amber-300 transition-colors cursor-pointer text-amber-400/90 flex items-center gap-1"
             >
-              Free Resume Preview
+              <Shield className="size-3" />
+              <span>Admin Portal</span>
             </button>
             <span>© 2026 SkillBridge. All rights reserved.</span>
           </div>

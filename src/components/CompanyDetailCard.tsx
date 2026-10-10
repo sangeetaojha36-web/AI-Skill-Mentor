@@ -112,6 +112,8 @@ interface CompanyDetailCardProps {
   // Webcam & Mic
   cameraActive: boolean;
   cameraError: string | null;
+  isSimulatedCamera?: boolean;
+  cameraRequesting?: boolean;
   modalVideoRef: React.RefObject<HTMLVideoElement | null>;
   audioLevel: number;
   onRequestCameraAccess: () => void;
@@ -141,6 +143,8 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
   onChangeNumberOfQuestions,
   cameraActive,
   cameraError,
+  isSimulatedCamera = false,
+  cameraRequesting = false,
   modalVideoRef,
   audioLevel,
   onRequestCameraAccess,
@@ -774,7 +778,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
 
                   <div className="rounded-xl border border-white/10 bg-[#080B12] overflow-hidden flex flex-col items-center justify-center p-4 space-y-3 relative">
                     {cameraActive ? (
-                      <div className="w-full aspect-video max-h-52 bg-black rounded-lg overflow-hidden relative border border-white/15">
+                      <div className="w-full aspect-video max-h-56 bg-black rounded-lg overflow-hidden relative border border-white/15">
                         <video
                           ref={modalVideoRef}
                           autoPlay
@@ -782,37 +786,90 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                           muted
                           className="w-full h-full object-cover transform -scale-x-100"
                         />
-                        <div className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-black/70 border border-emerald-400/50 text-[10px] text-emerald-400 font-mono flex items-center gap-1.5">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                          <span>WEBCAM VERIFIED & ACTIVE</span>
+
+                        {/* Top Badges */}
+                        <div className="absolute top-2 left-2 right-2 flex items-center justify-between gap-2 pointer-events-none">
+                          <div className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono flex items-center gap-1.5 shadow-md ${
+                            isSimulatedCamera
+                              ? 'bg-amber-950/85 border border-[#FEC163]/60 text-[#FEC163]'
+                              : 'bg-black/75 border border-emerald-400/50 text-emerald-400'
+                          }`}>
+                            <span className={`h-1.5 w-1.5 rounded-full ${
+                              isSimulatedCamera ? 'bg-[#FEC163] animate-pulse' : 'bg-emerald-400 animate-pulse'
+                            }`} />
+                            <span>
+                              {isSimulatedCamera ? 'STUDIO SIMULATION SENSOR' : 'HARDWARE WEBCAM VERIFIED'}
+                            </span>
+                          </div>
+
+                          <span className="px-2 py-0.5 rounded bg-black/70 border border-white/10 text-[9px] font-mono text-slate-300">
+                            30 FPS · PROCTORED
+                          </span>
                         </div>
 
-                        {/* Mic Audio Meter Overlay */}
-                        <div className="absolute bottom-2 left-2 right-2 px-3 py-1 rounded bg-black/75 border border-white/10 flex items-center justify-between text-[10px] font-mono text-slate-300">
+                        {/* Face Centering Reticle Overlay */}
+                        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                          <div className="w-36 h-44 border border-dashed border-emerald-400/40 rounded-2xl relative flex flex-col justify-between p-1.5">
+                            <div className="flex justify-between">
+                              <span className="w-2.5 h-2.5 border-t-2 border-l-2 border-emerald-400" />
+                              <span className="w-2.5 h-2.5 border-t-2 border-r-2 border-emerald-400" />
+                            </div>
+                            <div className="text-center">
+                              <span className="text-[8px] font-mono uppercase tracking-widest text-emerald-300 bg-black/60 px-1.5 py-0.5 rounded">
+                                Face Aligned
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="w-2.5 h-2.5 border-b-2 border-l-2 border-emerald-400" />
+                              <span className="w-2.5 h-2.5 border-b-2 border-r-2 border-emerald-400" />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Mic Audio Meter Overlay & Mode Switcher */}
+                        <div className="absolute bottom-2 left-2 right-2 px-3 py-1.5 rounded-lg bg-black/85 border border-white/10 flex items-center justify-between text-[10px] font-mono text-slate-300">
                           <div className="flex items-center gap-1.5">
-                            <Mic size={12} className="text-emerald-400" />
-                            <span>Mic Input Level:</span>
+                            <Mic size={12} className={audioLevel > 15 ? 'text-emerald-400 animate-pulse' : 'text-slate-400'} />
+                            <span>Mic Input:</span>
+                            <div className="flex items-center gap-0.5 ml-1">
+                              {[12, 24, 38, 52, 68, 84].map((t) => (
+                                <span
+                                  key={t}
+                                  className={`h-2.5 w-1 rounded-xs transition-all duration-75 ${
+                                    audioLevel >= t ? 'bg-emerald-400' : 'bg-slate-700/60'
+                                  }`}
+                                />
+                              ))}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1">
-                            {[15, 30, 45, 60, 75, 90].map((t) => (
-                              <span
-                                key={t}
-                                className={`h-2.5 w-1 rounded-sm transition-all ${
-                                  audioLevel >= t ? 'bg-emerald-400' : 'bg-slate-700'
-                                }`}
-                              />
-                            ))}
-                          </div>
+
+                          <button
+                            type="button"
+                            onClick={isSimulatedCamera ? onRequestCameraAccess : onSetupSimulatedCamera}
+                            className="pointer-events-auto px-2 py-0.5 rounded bg-white/10 hover:bg-white/20 text-[10px] text-amber-200 transition-colors cursor-pointer"
+                          >
+                            {isSimulatedCamera ? 'Switch to Hardware' : 'Switch to Simulation'}
+                          </button>
+                        </div>
+                      </div>
+                    ) : cameraRequesting ? (
+                      <div className="flex flex-col items-center justify-center text-center space-y-3 py-6">
+                        <div className="h-12 w-12 rounded-full bg-[#120603] border border-[#FEC163]/50 flex items-center justify-center text-[#FEC163] animate-pulse">
+                          <RotateCw size={22} className="animate-spin text-[#FEC163]" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-white text-xs">Requesting Hardware Webcam Access...</div>
+                          <div className="text-amber-200/80 text-[11px] mt-0.5">Please click "Allow" in your browser permissions prompt.</div>
                         </div>
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center justify-center text-center space-y-2.5 py-2">
+                      <div className="flex flex-col items-center justify-center text-center space-y-2.5 py-3">
                         <div className="h-11 w-11 rounded-full bg-rose-950/50 border border-rose-600/40 flex items-center justify-center text-rose-400">
                           <Video size={20} />
                         </div>
                         <div>
-                          <div className="font-bold text-white text-xs">Camera access required</div>
-                          <div className="text-slate-400 text-[11px] mt-0.5">Live proctoring will evaluate your focus and eye contact.</div>
+                          <div className="font-bold text-white text-xs">Camera Access Required for Live Rehearsal</div>
+                          <div className="text-slate-400 text-[11px] mt-0.5">Live AI proctoring tracks your eye contact, focus alignment, and posture.</div>
                         </div>
 
                         <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
@@ -837,15 +894,23 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                     )}
 
                     {cameraError && (
-                      <div className="w-full p-2 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-[11px] flex items-center justify-between gap-2">
-                        <span>{cameraError}</span>
-                        <button
-                          type="button"
-                          onClick={onSetupSimulatedCamera}
-                          className="px-2 py-0.5 rounded bg-[#FEC163] text-black font-bold text-[10px] shrink-0"
-                        >
-                          Use Simulation
-                        </button>
+                      <div className="w-full p-2.5 rounded-xl bg-rose-950/70 border border-rose-800 text-rose-200 text-[11px] flex flex-col gap-1.5">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-start gap-1.5">
+                            <AlertCircle size={14} className="text-rose-400 mt-0.5 shrink-0" />
+                            <span>{cameraError}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={onSetupSimulatedCamera}
+                            className="px-2.5 py-1 rounded bg-[#FEC163] hover:bg-[#ffcd7d] text-black font-bold text-[10px] shrink-0 cursor-pointer shadow-sm"
+                          >
+                            Use Simulation
+                          </button>
+                        </div>
+                        <div className="text-[10px] text-rose-300/80 pl-5">
+                          Tip: To unblock, click the camera or lock icon in your browser URL address bar and change permissions to "Allow", then click Enable Hardware Webcam.
+                        </div>
                       </div>
                     )}
                   </div>

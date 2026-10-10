@@ -80,6 +80,10 @@ export function DemostackAppLayout({
         mainScrollRef.current.scrollTo({ top: 0, left: 0, behavior: 'instant' });
         mainScrollRef.current.scrollTop = 0;
       }
+      const allMains = document.querySelectorAll('main');
+      allMains.forEach((el) => {
+        el.scrollTop = 0;
+      });
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
@@ -87,7 +91,16 @@ export function DemostackAppLayout({
 
     scrollToTop();
     const rId = requestAnimationFrame(scrollToTop);
-    return () => cancelAnimationFrame(rId);
+    const t1 = setTimeout(scrollToTop, 20);
+    const t2 = setTimeout(scrollToTop, 80);
+    const t3 = setTimeout(scrollToTop, 180);
+
+    return () => {
+      cancelAnimationFrame(rId);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
   }, [activeTab]);
 
   // Close popovers on click outside
@@ -132,55 +145,50 @@ export function DemostackAppLayout({
       name: 'Placement Dashboard',
       tabKey: 'dashboard',
       icon: HomeIcon,
-      badge: isGuest ? 'Locked' : undefined,
     },
     {
       name: 'AI Resume Analyzer',
       tabKey: 'resume',
       icon: ShowcasesIcon,
-      badge: isGuest ? 'Demo Step 1' : 'AI Scan',
+      badge: 'AI Scan',
     },
     {
       name: 'Skill Gap Matrix',
       tabKey: 'skillgap',
       icon: GroupGenericIcon,
-      badge: isGuest ? 'Demo Step 2' : undefined,
+      badge: 'Analysis',
     },
     {
       name: 'Personalized Roadmap',
       tabKey: 'roadmap',
       icon: DemostacksIcon,
-      badge: isGuest ? 'Locked' : undefined,
     },
     {
       name: 'Learning Academy',
       tabKey: 'courses',
       icon: FigGraduationIcon,
-      badge: isGuest ? 'Locked' : undefined,
+      badge: 'Syllabus',
     },
     {
       name: 'Portfolio Projects',
       tabKey: 'projects',
       icon: DashboardFolderPlusIcon,
-      badge: isGuest ? 'Locked' : undefined,
     },
     {
       name: 'Mock Interview Studio',
       tabKey: 'interview',
       icon: VideosIcon,
-      badge: isGuest ? 'Locked' : 'Live',
+      badge: 'Live AI',
     },
     {
       name: 'Progress Tracker',
       tabKey: 'progress',
       icon: FigPlayIcon,
-      badge: isGuest ? 'Locked' : undefined,
     },
     {
       name: 'Career Explorer',
       tabKey: 'careers',
       icon: FigLightbulbIcon,
-      badge: isGuest ? 'Locked' : undefined,
     },
   ];
 
@@ -189,13 +197,12 @@ export function DemostackAppLayout({
       name: 'Profile Setup',
       tabKey: 'setup',
       icon: UserIcon,
-      badge: isGuest ? 'Locked' : undefined,
     },
     {
       name: 'Placement Mentor AI',
       tabKey: 'chat_modal',
       icon: Bot,
-      badge: isGuest ? 'Locked' : 'AI Live',
+      badge: 'AI Live',
       onClick: onOpenChat,
     },
     ...(currentUser.role === 'admin'
@@ -548,21 +555,19 @@ export function DemostackAppLayout({
                   <Bot className="size-4 text-orange-400" />
                   <span>Placement Mentor AI</span>
                 </button>
-                <button
-                  onClick={() => {
-                    setIsProfileMenuOpen(false);
-                    onNavigate('admin');
-                  }}
-                  className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left transition-colors ${
-                    currentUser.role === 'admin'
-                      ? 'hover:bg-amber-500/20 text-amber-300'
-                      : 'hover:bg-white/[0.08] text-zinc-400 hover:text-white'
-                  }`}
-                  title={currentUser.role === 'admin' ? 'T&P Directorate Governance' : 'T&P Officer Authentication'}
-                >
-                  <BuildingIcon className="size-4 text-amber-400" />
-                  <span>{currentUser.role === 'admin' ? 'Admin Console' : 'T&P Officer Portal'}</span>
-                </button>
+                {currentUser.role === 'admin' && (
+                  <button
+                    onClick={() => {
+                      setIsProfileMenuOpen(false);
+                      onNavigate('admin');
+                    }}
+                    className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left transition-colors hover:bg-amber-500/20 text-amber-300"
+                    title="T&P Directorate Governance & Institutional Console"
+                  >
+                    <BuildingIcon className="size-4 text-amber-400" />
+                    <span>Admin Console</span>
+                  </button>
+                )}
               </div>
 
               <div className="pt-1 border-t border-white/[0.08]">
@@ -669,52 +674,12 @@ export function DemostackAppLayout({
         </header>
 
         {/* Scrollable View Content Container - Auto scrolls to top on navigation */}
-        <main ref={mainScrollRef} className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 no-scrollbar">
-          {currentUser?.isGuestPreview && (
-            <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-[#200A03] via-[#140602] to-[#0A0301] border border-[#FEC163]/40 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2.5">
-                <span className="size-2.5 rounded-full bg-[#FEC163] animate-pulse shrink-0" />
-                <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <span className="font-extrabold text-white text-xs">
-                      {activeTab === 'resume'
-                        ? '⚡ Interactive Demo (Step 1 of 2: AI Resume Analyzer)'
-                        : activeTab === 'skillgap'
-                        ? '⚡ Interactive Demo (Step 2 of 2: Skill Gap Matrix)'
-                        : '🔒 Feature Locked in Demo Mode'}
-                    </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FEC163]/20 text-[#FEC163] border border-[#FEC163]/40">
-                      Sample Student Mode
-                    </span>
-                  </div>
-                  <span className="text-zinc-300">
-                    {activeTab === 'resume'
-                      ? 'Upload your resume or inspect sample ATS audit. When done, proceed to Skill Gap Matrix.'
-                      : activeTab === 'skillgap'
-                      ? 'Demo completed! To generate your week-by-week roadmap and access other features, sign up for a free account.'
-                      : 'This feature is reserved for registered students. Create an account to access the full placement engine.'}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-                <button
-                  type="button"
-                  onClick={() => onOpenAuthModal?.(false)}
-                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-zinc-950 font-bold hover:brightness-110 active:scale-95 transition-all cursor-pointer shadow-md text-xs flex items-center gap-1.5"
-                >
-                  <span>Sign Up to Unlock Whole App</span>
-                  <ChevronRight className="size-3" />
-                </button>
-                <button
-                  type="button"
-                  onClick={onExitPreview || onLogout}
-                  className="px-2.5 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-zinc-300 hover:text-white transition-colors cursor-pointer text-xs"
-                >
-                  Exit Demo
-                </button>
-              </div>
-            </div>
-          )}
+        <main
+          key={activeTab}
+          ref={mainScrollRef}
+          style={{ overflowAnchor: 'none' }}
+          className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 no-scrollbar"
+        >
           {children}
         </main>
       </div>

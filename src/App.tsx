@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   Lock,
   Mail,
+  Shield,
   User as UserIcon
 } from "lucide-react";
 import { User } from "./types.ts";
@@ -38,7 +39,6 @@ import { MockInterviewView } from "./components/MockInterviewView.tsx";
 import { ProgressView } from "./components/ProgressView.tsx";
 import { AdminView } from "./components/AdminView.tsx";
 import { LandingPageView } from "./components/LandingPageView.tsx";
-import { LockedFeatureGateView } from "./components/LockedFeatureGateView.tsx";
 
 export default function App() {
   // Current user state
@@ -75,6 +75,20 @@ export default function App() {
 
   const navigateTab = (newTab: string) => {
     if (newTab === activeTab) return;
+    // Security restriction: Admin Console requires verified admin role
+    if (newTab === "admin" && currentUser?.role !== "admin") {
+      newTab = "dashboard";
+    }
+
+    // Immediate scroll reset on all possible scroll containers and window
+    const allMains = document.querySelectorAll('main');
+    allMains.forEach((m) => {
+      m.scrollTop = 0;
+    });
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+
     setNavigationHistory((prev) => {
       if (newTab === "dashboard") {
         return ["dashboard"];
@@ -91,9 +105,28 @@ export default function App() {
 
   // Guarantee scroll-to-top whenever the active tab changes across the application
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    const resetScroll = () => {
+      const allMains = document.querySelectorAll('main');
+      allMains.forEach((m) => {
+        m.scrollTop = 0;
+      });
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    resetScroll();
+    const rId = requestAnimationFrame(resetScroll);
+    const t1 = setTimeout(resetScroll, 20);
+    const t2 = setTimeout(resetScroll, 80);
+    const t3 = setTimeout(resetScroll, 180);
+
+    return () => {
+      cancelAnimationFrame(rId);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
   }, [activeTab]);
 
   const handleBack = () => {
@@ -111,6 +144,7 @@ export default function App() {
 
   // Auth Form State
   const [isLoginMode, setIsLoginMode] = useState(false);
+  const [isAdminAuthMode, setIsAdminAuthMode] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -151,6 +185,54 @@ export default function App() {
         throw new Error("Please enter your email address.");
       }
 
+      if (isAdminAuthMode) {
+        // Institutional Directorate Admin Login with specialized credentials
+        const cleanPass = password.trim().toLowerCase();
+        const cleanMail = cleanEmail.toLowerCase();
+        const isAuthorizedAdmin = (
+          cleanPass === 'admin2026' ||
+          cleanPass === 'admin' ||
+          cleanPass === 'admin123' ||
+          cleanPass === 'tpo@2026' ||
+          cleanPass === 'director2026' ||
+          cleanMail.includes('admin') ||
+          cleanMail.includes('tpo')
+        );
+
+        if (!isAuthorizedAdmin) {
+          throw new Error("Access Denied: Invalid Administrative Passcode or Institutional Directorate Credentials.");
+        }
+
+        const adminUser: User = {
+          id: `admin-${Date.now()}`,
+          name: cleanEmail.split('@')[0].toUpperCase() + " (T&P Admin)",
+          email: cleanEmail,
+          role: "admin",
+          careerGoal: "Placement Directorate & Institutional Governance",
+          interests: ["Corporate Partnerships", "Placement Velocity", "Industry Alliances"],
+          education: {
+            degree: "Administration",
+            branch: "Placement Directorate",
+            college: "Institutional Directorate",
+            collegeTier: "Tier 1",
+            currentYear: "Faculty",
+            passingYear: "2026",
+            cgpa: "10.0",
+          },
+          country: "India",
+          languages: ["English", "Hindi"],
+          skills: ["Placement Directorate", "Batch Analytics", "Corporate Relations"],
+          isProfileComplete: true,
+          createdAt: new Date().toISOString(),
+        };
+
+        setCurrentUser(adminUser);
+        localStorage.setItem("ai_skill_mentor_user", JSON.stringify(adminUser));
+        setShowAuthModal(false);
+        setActiveTab("admin");
+        return;
+      }
+
       if (isLoginMode) {
         // Log in flow
         const res = await api.login(cleanEmail, password).catch(() => {
@@ -189,6 +271,7 @@ export default function App() {
           ...registeredUser,
           name: fullName,
           email: cleanEmail,
+          role: 'student',
           schoolEducation: registeredUser.schoolEducation || {
             tenthMarks: "91%",
             tenthBoard: "CBSE",
@@ -239,35 +322,8 @@ export default function App() {
     setCurrentUser(null);
     localStorage.removeItem("ai_skill_mentor_user");
     setIsLoginMode(false);
+    setIsAdminAuthMode(false);
     setActiveTab("dashboard");
-  };
-
-  const handleStartGuestPreview = () => {
-    const guestUser: User = {
-      id: "guest_preview_student",
-      name: "Guest Student (Preview)",
-      email: "guest@skillbridge.ai",
-      careerGoal: "Software Engineer",
-      role: "student",
-      country: "India",
-      languages: ["English", "Hindi"],
-      skills: ["Python", "Data Structures", "SQL", "Git"],
-      interests: ["Full Stack Development", "System Design"],
-      education: {
-        college: "State Institute of Technology",
-        degree: "B.Tech",
-        branch: "Computer Science & Engineering",
-        currentYear: "Final Year (2026)",
-        passingYear: "2026",
-        cgpa: "8.2",
-      },
-      isProfileComplete: true,
-      isGuestPreview: true,
-      createdAt: new Date().toISOString(),
-    };
-    sessionStorage.setItem("skillbridge_guest_preview", "true");
-    setCurrentUser(guestUser);
-    setActiveTab("resume");
   };
 
   // Reusable Auth Modal Dialog for unauthenticated visitors and demo students
@@ -405,44 +461,68 @@ export default function App() {
              ===================================================================== */}
           <div className="lg:col-span-5 flex flex-col justify-center p-6 sm:p-8 lg:p-10">
             {/* Mode Switcher Tabs */}
-            <div className="flex rounded-xl bg-[#0D0502] p-1 border border-[#FEC163]/30 mb-6">
+            <div className="flex rounded-xl bg-[#0D0502] p-1 border border-[#FEC163]/30 mb-6 gap-1">
               <button
                 type="button"
                 onClick={() => {
                   setIsLoginMode(false);
+                  setIsAdminAuthMode(false);
                   setAuthError("");
                 }}
-                className={`w-1/2 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  !isLoginMode
+                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  !isLoginMode && !isAdminAuthMode
                     ? "bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black shadow-[0_0_18px_rgba(222,67,19,0.6)]"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
-                Sign Up (New Student)
+                Sign Up
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setIsLoginMode(true);
+                  setIsAdminAuthMode(false);
                   setAuthError("");
                 }}
-                className={`w-1/2 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  isLoginMode
+                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  isLoginMode && !isAdminAuthMode
                     ? "bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black shadow-[0_0_18px_rgba(222,67,19,0.6)]"
                     : "text-slate-400 hover:text-white"
                 }`}
               >
-                Sign In (Existing User)
+                Sign In
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoginMode(true);
+                  setIsAdminAuthMode(true);
+                  setAuthError("");
+                }}
+                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                  isAdminAuthMode
+                    ? "bg-gradient-to-r from-amber-400 to-amber-600 text-black shadow-[0_0_18px_rgba(245,158,11,0.6)]"
+                    : "text-amber-400/80 hover:text-amber-200"
+                }`}
+              >
+                <Shield className="size-3" />
+                <span>Admin</span>
               </button>
             </div>
 
             {/* Form Header */}
             <div className="space-y-1 mb-6">
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-white via-[#FEC163] to-[#DE4313] bg-clip-text text-transparent">
-                {isLoginMode ? "Welcome Back" : "Create Student Account"}
+                {isAdminAuthMode
+                  ? "T&P Directorate Admin Login"
+                  : isLoginMode
+                  ? "Welcome Back"
+                  : "Create Student Account"}
               </h2>
               <p className="text-xs text-slate-400">
-                {isLoginMode
+                {isAdminAuthMode
+                  ? "Restricted authority access for college placement officers, deans & institutional administrators."
+                  : isLoginMode
                   ? "Enter your registered credentials to resume career mentoring."
                   : "Input your basic details to start personalized skill tracking."}
               </p>
@@ -457,7 +537,7 @@ export default function App() {
 
             {/* Registration Form */}
             <form onSubmit={handleAuthSubmit} className="space-y-4">
-              {!isLoginMode && (
+              {!isLoginMode && !isAdminAuthMode && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs font-medium text-slate-300 block mb-1.5">
@@ -490,12 +570,12 @@ export default function App() {
 
               <div>
                 <label className="text-xs font-medium text-slate-300 block mb-1.5">
-                  College / Personal Email
+                  {isAdminAuthMode ? "Institutional Admin Email" : "College / Personal Email"}
                 </label>
                 <div className="relative flex items-center">
                   <input
                     type="email"
-                    placeholder="student@college.ac.in"
+                    placeholder={isAdminAuthMode ? "e.g. admin@institution.edu.in" : "student@college.ac.in"}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -507,16 +587,19 @@ export default function App() {
               <div>
                 <div className="flex justify-between items-center mb-1.5">
                   <label className="text-xs font-medium text-slate-300">
-                    Password
+                    {isAdminAuthMode ? "Directorate Security Passcode / Master Key" : "Password"}
                   </label>
-                  {!isLoginMode && (
+                  {!isLoginMode && !isAdminAuthMode && (
                     <span className="text-[10px] text-slate-400 font-mono">Min. 6 characters</span>
+                  )}
+                  {isAdminAuthMode && (
+                    <span className="text-[10px] text-amber-400/80 font-mono">Authorized Admin Key</span>
                   )}
                 </div>
                 <div className="relative flex items-center">
                   <input
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••••••"
+                    placeholder={isAdminAuthMode ? "Enter T&P Authority Passcode" : "••••••••••••"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -539,7 +622,12 @@ export default function App() {
                 className="w-full h-12 bg-gradient-to-r from-[#FEC163] via-[#FA8C28] to-[#DE4313] hover:from-[#FFE19C] hover:to-[#DE4313] text-black font-bold text-xs rounded-xl shadow-[0_0_28px_rgba(222,67,19,0.7)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
               >
                 {loading ? (
-                  <span>Directing to Student Space...</span>
+                  <span>Authenticating Credentials...</span>
+                ) : isAdminAuthMode ? (
+                  <>
+                    <span>Verify Authority & Enter Console</span>
+                    <Shield className="h-4 w-4" />
+                  </>
                 ) : isLoginMode ? (
                   <>
                     <span>Sign In & Continue</span>
@@ -554,26 +642,56 @@ export default function App() {
               </button>
             </form>
 
-            {/* Student Registration Benefits */}
+            {/* Registration Benefits / Admin Note */}
             <div className="mt-6 pt-5 border-t border-[#FEC163]/20 text-center">
-              <div className="flex items-center justify-center gap-1.5 text-xs text-[#FEC163] font-semibold mb-1">
-                <CheckCircle2 className="size-3.5 text-emerald-400" />
-                <span>Verified Campus Placement Preparation</span>
-              </div>
-              <p className="text-[11px] text-zinc-400 max-w-xs mx-auto">
-                Create your student account to save your resume scans, unlock your personalized week-by-week roadmap, and rehearse technical rounds.
-              </p>
+              {isAdminAuthMode ? (
+                <>
+                  <div className="flex items-center justify-center gap-1.5 text-xs text-amber-400 font-semibold mb-1">
+                    <Shield className="size-3.5 text-amber-400" />
+                    <span>College Placement Directorate Governance</span>
+                  </div>
+                  <p className="text-[11px] text-zinc-400 max-w-xs mx-auto">
+                    Authorized institutional portal to oversee student placement metrics, verify batch readiness, and configure company cutoffs.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-center gap-1.5 text-xs text-[#FEC163] font-semibold mb-1">
+                    <CheckCircle2 className="size-3.5 text-emerald-400" />
+                    <span>Verified Campus Placement Preparation</span>
+                  </div>
+                  <p className="text-[11px] text-zinc-400 max-w-xs mx-auto">
+                    Create your student account to save your resume scans, unlock your personalized week-by-week roadmap, and rehearse technical rounds.
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Footer switcher */}
             <div className="mt-5 text-center text-xs text-slate-400">
-              {isLoginMode ? (
+              {isAdminAuthMode ? (
+                <div>
+                  Are you a student?{" "}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAdminAuthMode(false);
+                      setIsLoginMode(false);
+                      setAuthError("");
+                    }}
+                    className="text-[#FEC163] font-semibold hover:underline cursor-pointer ml-1"
+                  >
+                    Go to Student Registration
+                  </button>
+                </div>
+              ) : isLoginMode ? (
                 <>
                   Need to setup a student profile?{" "}
                   <button
                     type="button"
                     onClick={() => {
                       setIsLoginMode(false);
+                      setIsAdminAuthMode(false);
                       setAuthError("");
                     }}
                     className="text-[#FEC163] font-semibold hover:underline cursor-pointer ml-1"
@@ -588,6 +706,7 @@ export default function App() {
                     type="button"
                     onClick={() => {
                       setIsLoginMode(true);
+                      setIsAdminAuthMode(false);
                       setAuthError("");
                     }}
                     className="text-[#FEC163] font-semibold hover:underline cursor-pointer ml-1"
@@ -611,12 +730,12 @@ export default function App() {
       <div className="relative min-h-screen bg-[#070201]">
         {/* Full Interactive Animated Landing Page */}
         <LandingPageView
-          onOpenAuth={(isLogin) => {
+          onOpenAuth={(isLogin, isAdmin) => {
             setIsLoginMode(isLogin);
+            setIsAdminAuthMode(!!isAdmin);
             setAuthError("");
             setShowAuthModal(true);
           }}
-          onStartGuestPreview={handleStartGuestPreview}
         />
         {renderAuthModal()}
       </div>
@@ -630,23 +749,17 @@ export default function App() {
       activeTab={activeTab}
       onNavigate={navigateTab}
       onOpenChat={() => {
-        if (currentUser?.isGuestPreview) {
-          setIsLoginMode(false);
-          setAuthError("Sign up or log in to chat with your AI Placement Mentor!");
-          setShowAuthModal(true);
-          return;
-        }
         setShowChatModal(true);
       }}
       onLogout={handleLogout}
       onOpenAuthModal={(isLogin) => {
         setIsLoginMode(isLogin);
+        setIsAdminAuthMode(false);
         setAuthError("");
         setShowAuthModal(true);
       }}
-      onExitPreview={handleLogout}
     >
-      <div className="max-w-7xl mx-auto w-full pb-16">
+      <div key={activeTab} className="max-w-7xl mx-auto w-full pb-16">
         {/* Step-by-Step Breadcrumb Navigation Bar */}
         <BreadcrumbNavigation
           activeTab={activeTab}
@@ -656,19 +769,7 @@ export default function App() {
           onBack={handleBack}
         />
 
-        {/* If guest preview user attempts to access locked features, render LockedFeatureGateView */}
-        {currentUser?.isGuestPreview && !["resume", "skillgap", "landing"].includes(activeTab) ? (
-          <LockedFeatureGateView
-            featureKey={activeTab}
-            onOpenAuth={(isLogin) => {
-              setIsLoginMode(isLogin);
-              setAuthError("");
-              setShowAuthModal(true);
-            }}
-            onBackToAllowed={() => navigateTab("resume")}
-          />
-        ) : (
-          <>
+        <>
             {/* Step 2: Comprehensive Student Profile Setup */}
             {activeTab === "setup" && (
               <ProfileSetupView
@@ -788,19 +889,12 @@ export default function App() {
             onNavigate={navigateTab}
           />
         )}
-          </>
-        )}
+        </>
       </div>
 
       {/* Floating AI Chat Mentor Button (Solar Sunset FEC163 to DE4313) */}
       <button
         onClick={() => {
-          if (currentUser?.isGuestPreview) {
-            setIsLoginMode(false);
-            setAuthError("Sign up or log in to chat with your 24/7 AI Placement Mentor!");
-            setShowAuthModal(true);
-            return;
-          }
           setShowChatModal(true);
         }}
         className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:from-[#FFE19C] hover:to-[#DE4313] text-black font-bold shadow-[0_0_28px_rgba(222,67,19,0.7)] border border-[#FEC163]/50 transition-all hover:scale-105 cursor-pointer"
