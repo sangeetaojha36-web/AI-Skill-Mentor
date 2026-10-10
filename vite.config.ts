@@ -2,16 +2,17 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import {defineConfig, Plugin} from 'vite';
-import express from 'express';
-import {apiRouter} from './server/apiRouter.ts';
+import { defineConfig, Plugin } from 'vite';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = fileURLToPath(new URL('.', import.meta.url));
 
 function apiServerPlugin(): Plugin {
   return {
     name: 'api-server-plugin',
-    configureServer(server) {
+    async configureServer(server) {
+      const expressModule = await import('express');
+      const express = expressModule.default;
+      const { apiRouter } = await import('./server/apiRouter.ts');
       const app = express();
       app.use(express.json({ limit: '10mb' }));
       app.use('/api', apiRouter);
@@ -25,16 +26,30 @@ export default defineConfig(() => {
     plugins: [react(), tailwindcss(), apiServerPlugin()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
+        '@': path.resolve(rootDir, './src'),
+      },
+    },
+    build: {
+      chunkSizeWarningLimit: 1500,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/recharts')) {
+              return 'vendor-charts';
+            }
+            if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+              return 'vendor-react';
+            }
+            if (id.includes('node_modules/lucide-react')) {
+              return 'vendor-icons';
+            }
+          },
+        },
       },
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify—file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };
 });
-
