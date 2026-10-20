@@ -19,6 +19,14 @@ apiRouter.use((req, _res, next) => {
   next();
 });
 
+apiRouter.get('/health', (_req: Request, res: Response) => {
+  return res.json({
+    status: 'ok',
+    service: 'AI Skill Mentor API',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Helper: Extract current user from mock auth header or default to demo student
 function getCurrentUser(req: Request): User {
   const userId = (req.headers['x-user-id'] as string) || req.query.userId as string;

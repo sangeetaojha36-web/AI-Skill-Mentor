@@ -16,6 +16,31 @@ function getHeaders(userId?: string): HeadersInit {
   return headers;
 }
 
+async function handleResponse<T = any>(res: Response, fallbackError = 'Request failed'): Promise<T> {
+  let text = '';
+  try {
+    text = await res.text();
+  } catch (_) {
+    text = '';
+  }
+
+  let data: any = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch (_) {
+      data = null;
+    }
+  }
+
+  if (!res.ok) {
+    const errorMsg = data?.error || data?.message || (res.status === 404 ? 'Service endpoint not found' : `Error ${res.status}: ${fallbackError}`);
+    throw new Error(errorMsg);
+  }
+
+  return (data !== null ? data : {}) as T;
+}
+
 export const api = {
   // Auth & Profile
   async login(email: string, password?: string): Promise<{ user: User; token: string }> {
@@ -24,8 +49,7 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify({ email, password }),
     });
-    if (!res.ok) throw new Error((await res.json()).error || 'Login failed');
-    return res.json();
+    return handleResponse<{ user: User; token: string }>(res, 'Login failed');
   },
 
   async register(data: Partial<User>): Promise<{ user: User; token: string }> {
@@ -34,15 +58,14 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error((await res.json()).error || 'Registration failed');
-    return res.json();
+    return handleResponse<{ user: User; token: string }>(res, 'Registration failed');
   },
 
   async getProfile(userId: string): Promise<{ user: User }> {
     const res = await fetch(`${API_BASE}/user/profile`, {
       headers: getHeaders(userId),
     });
-    return res.json();
+    return handleResponse<{ user: User }>(res, 'Failed to fetch profile');
   },
 
   async updateProfile(userId: string, updates: Partial<User>): Promise<{ user: User }> {
@@ -51,7 +74,7 @@ export const api = {
       headers: getHeaders(userId),
       body: JSON.stringify(updates),
     });
-    return res.json();
+    return handleResponse<{ user: User }>(res, 'Failed to update profile');
   },
 
   // Dashboard
@@ -59,13 +82,13 @@ export const api = {
     const res = await fetch(`${API_BASE}/dashboard`, {
       headers: getHeaders(userId),
     });
-    return res.json();
+    return handleResponse(res, 'Failed to fetch dashboard');
   },
 
   // Careers & Recommendations
   async getCareers(): Promise<{ careers: Career[] }> {
     const res = await fetch(`${API_BASE}/careers`);
-    return res.json();
+    return handleResponse<{ careers: Career[] }>(res, 'Failed to fetch careers');
   },
 
   async getCareerRecommendations(userId: string): Promise<{ recommendations: CareerMatchScore[] }> {
@@ -73,7 +96,7 @@ export const api = {
       method: 'POST',
       headers: getHeaders(userId),
     });
-    return res.json();
+    return handleResponse<{ recommendations: CareerMatchScore[] }>(res, 'Failed to get recommendations');
   },
 
   async getSkillGapAnalysis(userId: string, careerId?: string) {
@@ -82,7 +105,7 @@ export const api = {
       headers: getHeaders(userId),
       body: JSON.stringify({ careerId }),
     });
-    return res.json();
+    return handleResponse(res, 'Failed to get skill gap analysis');
   },
 
   // Resume
@@ -92,15 +115,14 @@ export const api = {
       headers: getHeaders(userId),
       body: JSON.stringify({ resumeText, fileName }),
     });
-    if (!res.ok) throw new Error((await res.json()).error || 'Analysis failed');
-    return res.json();
+    return handleResponse<{ analysis: ResumeAnalysis; nlpDetails: any[] }>(res, 'Analysis failed');
   },
 
   async getResumeHistory(userId: string): Promise<{ resumes: ResumeAnalysis[] }> {
     const res = await fetch(`${API_BASE}/resume/history`, {
       headers: getHeaders(userId),
     });
-    return res.json();
+    return handleResponse<{ resumes: ResumeAnalysis[] }>(res, 'Failed to get resume history');
   },
 
   // Roadmaps
@@ -108,7 +130,7 @@ export const api = {
     const res = await fetch(`${API_BASE}/roadmaps/current`, {
       headers: getHeaders(userId),
     });
-    return res.json();
+    return handleResponse<{ roadmap: Roadmap }>(res, 'Failed to get roadmap');
   },
 
   async generateRoadmap(userId: string, careerId: string): Promise<{ roadmap: Roadmap }> {
@@ -117,7 +139,7 @@ export const api = {
       headers: getHeaders(userId),
       body: JSON.stringify({ careerId }),
     });
-    return res.json();
+    return handleResponse<{ roadmap: Roadmap }>(res, 'Failed to generate roadmap');
   },
 
   async toggleRoadmapStep(userId: string, stepId: string): Promise<{ roadmap: Roadmap }> {
@@ -126,18 +148,18 @@ export const api = {
       headers: getHeaders(userId),
       body: JSON.stringify({ stepId }),
     });
-    return res.json();
+    return handleResponse<{ roadmap: Roadmap }>(res, 'Failed to toggle roadmap step');
   },
 
   // Courses & Projects
   async getCourses(): Promise<{ courses: Course[] }> {
     const res = await fetch(`${API_BASE}/courses`);
-    return res.json();
+    return handleResponse<{ courses: Course[] }>(res, 'Failed to fetch courses');
   },
 
   async getProjects(): Promise<{ projects: Project[] }> {
     const res = await fetch(`${API_BASE}/projects`);
-    return res.json();
+    return handleResponse<{ projects: Project[] }>(res, 'Failed to fetch projects');
   },
 
   async analyzeProject(data: {
@@ -198,14 +220,14 @@ export const api = {
       headers: getHeaders(userId),
       body: JSON.stringify({ message }),
     });
-    return res.json();
+    return handleResponse(res, 'Chat request failed');
   },
 
   async getChatHistory(userId: string): Promise<{ history: ChatMessage[] }> {
     const res = await fetch(`${API_BASE}/chat/history`, {
       headers: getHeaders(userId),
     });
-    return res.json();
+    return handleResponse<{ history: ChatMessage[] }>(res, 'Failed to fetch chat history');
   },
 
   // Mock Interview
@@ -215,7 +237,7 @@ export const api = {
       headers: getHeaders(userId),
       body: JSON.stringify(data),
     });
-    return res.json();
+    return handleResponse<{ extractedSkills: string[]; analyzedSource: string }>(res, 'Failed to match companies');
   },
 
   async startInterview(userId: string, career: string, interviewType?: string, difficulty?: string, companyName?: string, targetRole?: string): Promise<{ session: MockInterviewSession }> {
@@ -224,7 +246,7 @@ export const api = {
       headers: getHeaders(userId),
       body: JSON.stringify({ career, interviewType, difficulty, companyName, targetRole }),
     });
-    return res.json();
+    return handleResponse<{ session: MockInterviewSession }>(res, 'Failed to start interview');
   },
 
   async submitInterviewAnswer(userId: string, sessionId: string, questionIndex: number, answer: string): Promise<{ session: MockInterviewSession }> {
@@ -233,20 +255,20 @@ export const api = {
       headers: getHeaders(userId),
       body: JSON.stringify({ sessionId, questionIndex, answer }),
     });
-    return res.json();
+    return handleResponse<{ session: MockInterviewSession }>(res, 'Failed to submit interview answer');
   },
 
   async getInterviewHistory(userId: string): Promise<{ interviews: MockInterviewSession[] }> {
     const res = await fetch(`${API_BASE}/interview/history`, {
       headers: getHeaders(userId),
     });
-    return res.json();
+    return handleResponse<{ interviews: MockInterviewSession[] }>(res, 'Failed to fetch interview history');
   },
 
   // Admin
   async getAdminStats() {
     const res = await fetch(`${API_BASE}/admin/stats`);
-    return res.json();
+    return handleResponse(res, 'Failed to fetch admin stats');
   },
 
   async addAdminCareer(careerData: Partial<Career>) {
@@ -255,13 +277,13 @@ export const api = {
       headers: getHeaders(),
       body: JSON.stringify(careerData),
     });
-    return res.json();
+    return handleResponse(res, 'Failed to add career');
   },
 
   async deleteAdminCareer(id: string) {
     const res = await fetch(`${API_BASE}/admin/careers/${id}`, {
       method: 'DELETE',
     });
-    return res.json();
+    return handleResponse(res, 'Failed to delete career');
   }
 };

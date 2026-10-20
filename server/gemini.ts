@@ -6,14 +6,16 @@
 import { GoogleGenAI, Type } from '@google/genai';
 
 const apiKey = process.env.GEMINI_API_KEY || '';
-export const ai = new GoogleGenAI({
-  apiKey: apiKey,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
-    },
-  },
-});
+export const ai = apiKey
+  ? new GoogleGenAI({
+      apiKey: apiKey,
+      httpOptions: {
+        headers: {
+          'User-Agent': 'aistudio-build',
+        },
+      },
+    })
+  : (null as unknown as GoogleGenAI);
 
 export const MODEL_NAME = 'gemini-3.8-flash';
 

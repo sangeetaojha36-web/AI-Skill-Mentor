@@ -1,4 +1,4 @@
-// api/index.ts
+// server/apiEntry.ts
 import express from "express";
 
 // server/apiRouter.ts
@@ -1576,14 +1576,14 @@ function retrieveRelevantKnowledge(query, topK = 3) {
 // server/gemini.ts
 import { GoogleGenAI, Type } from "@google/genai";
 var apiKey = process.env.GEMINI_API_KEY || "";
-var ai = new GoogleGenAI({
+var ai = apiKey ? new GoogleGenAI({
   apiKey,
   httpOptions: {
     headers: {
       "User-Agent": "aistudio-build"
     }
   }
-});
+}) : null;
 var MODEL_NAME = "gemini-3.8-flash";
 async function generateChatResponse(userMessage, userProfileSummary, ragContext) {
   if (!apiKey) {
@@ -1833,6 +1833,13 @@ Return strictly JSON matching the required schema.`;
 var apiRouter = Router();
 apiRouter.use((req, _res, next) => {
   next();
+});
+apiRouter.get("/health", (_req, res) => {
+  return res.json({
+    status: "ok",
+    service: "AI Skill Mentor API",
+    timestamp: (/* @__PURE__ */ new Date()).toISOString()
+  });
 });
 function getCurrentUser(req) {
   const userId = req.headers["x-user-id"] || req.query.userId;
@@ -2398,12 +2405,19 @@ apiRouter.get("/admin/users", (_req, res) => {
   return res.json({ users: DB.users });
 });
 
-// api/index.ts
+// server/apiEntry.ts
 var app = express();
 app.use(express.json({ limit: "10mb" }));
+app.get(["/", "/api", "/api/index", "/api/health"], (_req, res) => {
+  res.json({
+    status: "ok",
+    service: "AI Skill Mentor API",
+    timestamp: (/* @__PURE__ */ new Date()).toISOString()
+  });
+});
 app.use("/api", apiRouter);
 app.use("/", apiRouter);
-var index_default = app;
+var apiEntry_default = app;
 export {
-  index_default as default
+  apiEntry_default as default
 };
