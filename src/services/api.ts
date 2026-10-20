@@ -281,7 +281,6 @@ export const api = {
       }
     } catch (_) {}
 
-    // Resilient local analyzer
     const detectedSkills = ['Python', 'SQL', 'React', 'Data Structures', 'REST APIs', 'Git', 'FastAPI'].filter((s) =>
       resumeText.toLowerCase().includes(s.toLowerCase())
     );
