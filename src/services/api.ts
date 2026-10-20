@@ -5,8 +5,60 @@
 
 import { User, Career, Course, Project, ResumeAnalysis, Roadmap, RoadmapStep, MockInterviewSession, ChatMessage, CareerMatchScore } from '../types.ts';
 import { COMPREHENSIVE_CAREERS } from '../data/careersData.ts';
+import { supabase } from '../lib/supabase.ts';
 
 const API_BASE = '/api';
+
+function mapProfileToUser(row: any): User {
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    role: (row.role as 'student' | 'admin') || 'student',
+    careerGoal: row.career_goal || 'Software Engineer',
+    country: row.country || 'India',
+    languages: Array.isArray(row.languages) ? row.languages : ['English', 'Hindi'],
+    skills: Array.isArray(row.skills) ? row.skills : [],
+    interests: Array.isArray(row.interests) ? row.interests : [],
+    education: row.education || {
+      degree: 'B.Tech',
+      branch: 'Computer Science & Engineering',
+      college: 'National Institute of Technology',
+      currentYear: '3rd Year',
+      passingYear: '2026',
+      cgpa: '8.5',
+    },
+    schoolEducation: row.school_education,
+    experience: Array.isArray(row.experience) ? row.experience : [],
+    achievements: Array.isArray(row.achievements) ? row.achievements : [],
+    studentProjects: Array.isArray(row.student_projects) ? row.student_projects : [],
+    studentCourses: Array.isArray(row.student_courses) ? row.student_courses : [],
+    isProfileComplete: Boolean(row.is_profile_complete),
+    createdAt: row.created_at || new Date().toISOString(),
+  };
+}
+
+function mapUserToProfileRow(user: User): any {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email.toLowerCase().trim(),
+    role: user.role,
+    career_goal: user.careerGoal,
+    country: user.country,
+    languages: user.languages,
+    skills: user.skills,
+    interests: user.interests,
+    education: user.education,
+    school_education: user.schoolEducation,
+    experience: user.experience,
+    achievements: user.achievements,
+    student_projects: user.studentProjects,
+    student_courses: user.studentCourses,
+    is_profile_complete: user.isProfileComplete,
+    updated_at: new Date().toISOString(),
+  };
+}
 
 function getHeaders(userId?: string): HeadersInit {
   const headers: Record<string, string> = {
@@ -81,6 +133,37 @@ function createFallbackUser(email: string, name?: string): User {
 export const api = {
   // Auth & Profile
   async login(email: string, password?: string): Promise<{ user: User; token: string }> {
+    if (supabase) {
+      try {
+        const cleanMail = email.trim().toLowerCase();
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('email', cleanMail)
+          .maybeSingle();
+
+        if (!error && profile) {
+          const user = mapProfileToUser(profile);
+          localStorage.setItem('ai_skill_mentor_user', JSON.stringify(user));
+          return { user, token: `sb-token-${Date.now()}` };
+        } else if (!error && !profile) {
+          const newUser = createFallbackUser(email);
+          const { data: inserted, error: insErr } = await supabase
+            .from('profiles')
+            .insert(mapUserToProfileRow(newUser))
+            .select()
+            .single();
+          if (!insErr && inserted) {
+            const user = mapProfileToUser(inserted);
+            localStorage.setItem('ai_skill_mentor_user', JSON.stringify(user));
+            return { user, token: `sb-token-${Date.now()}` };
+          }
+        }
+      } catch (sbErr) {
+        console.warn('Supabase login check:', sbErr);
+      }
+    }
+
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
@@ -108,6 +191,26 @@ export const api = {
   },
 
   async register(data: Partial<User>): Promise<{ user: User; token: string }> {
+    if (supabase) {
+      try {
+        const baseUser = createFallbackUser(data.email || 'student@example.com', data.name);
+        const user: User = { ...baseUser, ...data };
+        const row = mapUserToProfileRow(user);
+        const { data: upserted, error } = await supabase
+          .from('profiles')
+          .upsert(row)
+          .select()
+          .single();
+        if (!error && upserted) {
+          const mapped = mapProfileToUser(upserted);
+          localStorage.setItem('ai_skill_mentor_user', JSON.stringify(mapped));
+          return { user: mapped, token: `sb-token-${Date.now()}` };
+        }
+      } catch (sbErr) {
+        console.warn('Supabase register error:', sbErr);
+      }
+    }
+
     try {
       const res = await fetch(`${API_BASE}/auth/register`, {
         method: 'POST',
@@ -126,6 +229,19 @@ export const api = {
   },
 
   async getProfile(userId: string): Promise<{ user: User }> {
+    if (supabase) {
+      try {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .maybeSingle();
+        if (!error && profile) {
+          return { user: mapProfileToUser(profile) };
+        }
+      } catch (_) {}
+    }
+
     try {
       const res = await fetch(`${API_BASE}/user/profile`, {
         headers: getHeaders(userId),
@@ -145,6 +261,24 @@ export const api = {
   },
 
   async updateProfile(userId: string, updates: Partial<User>): Promise<{ user: User }> {
+    if (supabase) {
+      try {
+        const saved = localStorage.getItem('ai_skill_mentor_user');
+        let currentUser: User = createFallbackUser('student@example.com');
+        if (saved) {
+          try {
+            currentUser = JSON.parse(saved);
+          } catch (_) {}
+        }
+        const updated = { ...currentUser, ...updates, id: userId };
+        await supabase.from('profiles').upsert(mapUserToProfileRow(updated));
+        localStorage.setItem('ai_skill_mentor_user', JSON.stringify(updated));
+        return { user: updated };
+      } catch (sbErr) {
+        console.warn('Supabase updateProfile error:', sbErr);
+      }
+    }
+
     try {
       const res = await fetch(`${API_BASE}/user/profile`, {
         method: 'PUT',
