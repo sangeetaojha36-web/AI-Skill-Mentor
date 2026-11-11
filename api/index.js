@@ -1829,6 +1829,21 @@ Return strictly JSON matching the required schema.`;
   }
 }
 
+// server/supabase.ts
+import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
+dotenv.config();
+var supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
+var supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || "";
+var isServerSupabaseConfigured = Boolean(
+  supabaseUrl && supabaseKey && !supabaseUrl.includes("your-project-id") && !supabaseKey.includes("your-anon-key")
+);
+var serverSupabase = isServerSupabaseConfigured ? createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: false
+  }
+}) : null;
+
 // server/apiRouter.ts
 var apiRouter = Router();
 apiRouter.use((req, _res, next) => {
@@ -1838,9 +1853,87 @@ apiRouter.get("/health", (_req, res) => {
   return res.json({
     status: "ok",
     service: "AI Skill Mentor API",
+    database: serverSupabase ? "supabase-postgresql" : "in-memory",
     timestamp: (/* @__PURE__ */ new Date()).toISOString()
   });
 });
+apiRouter.get("/database/status", async (_req, res) => {
+  let isConnected = false;
+  if (serverSupabase) {
+    try {
+      const { error } = await serverSupabase.from("profiles").select("id").limit(1);
+      isConnected = !error;
+    } catch (_) {
+      isConnected = false;
+    }
+  }
+  return res.json({
+    status: "ok",
+    provider: serverSupabase ? "supabase" : "in-memory",
+    connected: isConnected,
+    totalUsers: DB.users.length,
+    totalCareers: DB.careers.length,
+    totalRoadmaps: DB.roadmaps.length,
+    timestamp: (/* @__PURE__ */ new Date()).toISOString()
+  });
+});
+function mapProfileToUser(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    password: "password123",
+    passwordHash: "password123",
+    role: row.role || "student",
+    careerGoal: row.career_goal || "Software Engineer",
+    country: row.country || "India",
+    languages: Array.isArray(row.languages) ? row.languages : ["English", "Hindi"],
+    skills: Array.isArray(row.skills) ? row.skills : [],
+    interests: Array.isArray(row.interests) ? row.interests : [],
+    education: row.education || {
+      degree: "B.Tech",
+      branch: "Computer Science & Engineering",
+      college: "National Institute of Technology",
+      currentYear: "3rd Year",
+      passingYear: "2026",
+      cgpa: "8.5"
+    },
+    schoolEducation: row.school_education || {
+      tenthMarks: "90%",
+      tenthBoard: "CBSE",
+      twelfthMarks: "85%",
+      twelfthBoard: "CBSE",
+      twelfthStream: "Science (PCM)"
+    },
+    experience: Array.isArray(row.experience) ? row.experience : [],
+    achievements: Array.isArray(row.achievements) ? row.achievements : [],
+    studentProjects: Array.isArray(row.student_projects) ? row.student_projects : [],
+    studentCourses: Array.isArray(row.student_courses) ? row.student_courses : [],
+    isProfileComplete: Boolean(row.is_profile_complete),
+    createdAt: row.created_at || (/* @__PURE__ */ new Date()).toISOString()
+  };
+}
+function mapUserToProfileRow(user) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email.toLowerCase().trim(),
+    role: user.role,
+    career_goal: user.careerGoal,
+    country: user.country || "India",
+    languages: user.languages,
+    skills: user.skills,
+    interests: user.interests,
+    education: user.education,
+    school_education: user.schoolEducation,
+    experience: user.experience,
+    achievements: user.achievements,
+    student_projects: user.studentProjects,
+    student_courses: user.studentCourses,
+    is_profile_complete: user.isProfileComplete,
+    updated_at: (/* @__PURE__ */ new Date()).toISOString()
+  };
+}
 function getCurrentUser(req) {
   const userId = req.headers["x-user-id"] || req.query.userId;
   if (userId) {
@@ -1849,19 +1942,20 @@ function getCurrentUser(req) {
   }
   return DB.users[0];
 }
-apiRouter.post("/auth/register", (req, res) => {
+apiRouter.post("/auth/register", async (req, res) => {
   const { name, email, password } = req.body;
   if (!email || !name) {
     return res.status(400).json({ error: "Name and email are required." });
   }
-  const existing = DB.users.find((u) => u.email.toLowerCase() === email.toLowerCase());
+  const cleanEmail = email.toLowerCase().trim();
+  const existing = DB.users.find((u) => u.email.toLowerCase() === cleanEmail);
   if (existing) {
-    return res.status(400).json({ error: "An account with this email already exists. Please log in." });
+    return res.json({ user: existing, token: `token-${existing.id}` });
   }
   const newUser = {
-    id: `user-${Date.now()}`,
+    id: `user-${cleanEmail.replace(/[^a-z0-9]/g, "-") || Date.now()}`,
     name,
-    email,
+    email: cleanEmail,
     password: password || "password123",
     passwordHash: password || "password123",
     role: "student",
@@ -1869,22 +1963,22 @@ apiRouter.post("/auth/register", (req, res) => {
     location: "",
     languages: ["English", "Hindi"],
     schoolEducation: {
-      tenthMarks: "",
+      tenthMarks: "90%",
       tenthBoard: "CBSE",
-      twelfthMarks: "",
+      twelfthMarks: "85%",
       twelfthBoard: "CBSE",
       twelfthStream: "Science (PCM)"
     },
     education: {
       degree: "B.Tech",
       branch: "Computer Science & Engineering",
-      college: "",
+      college: "National Institute of Technology",
       currentYear: "1st Year",
       passingYear: "2028",
-      cgpa: ""
+      cgpa: "8.5"
     },
-    skills: [],
-    interests: [],
+    skills: ["Python", "SQL", "Data Structures", "React"],
+    interests: ["Full Stack Development", "Artificial Intelligence"],
     careerGoal: "Software Engineer",
     targetCompanies: [],
     experience: [],
@@ -1895,19 +1989,63 @@ apiRouter.post("/auth/register", (req, res) => {
     createdAt: (/* @__PURE__ */ new Date()).toISOString()
   };
   DB.users.push(newUser);
+  if (serverSupabase) {
+    try {
+      await serverSupabase.from("profiles").upsert(mapUserToProfileRow(newUser));
+    } catch (e) {
+      console.warn("Supabase register error:", e);
+    }
+  }
   return res.status(201).json({ user: newUser, token: `token-${newUser.id}` });
 });
-apiRouter.post("/auth/login", (req, res) => {
+apiRouter.post("/auth/login", async (req, res) => {
   const { email, password } = req.body;
   if (!email) {
     return res.status(400).json({ error: "Please enter your email." });
   }
-  const user = DB.users.find((u) => u.email.toLowerCase() === (email || "").toLowerCase().trim());
-  if (!user) {
-    return res.status(401).json({ error: "Account not found with this email. Please sign up." });
+  const cleanEmail = email.toLowerCase().trim();
+  let user = DB.users.find((u) => u.email.toLowerCase() === cleanEmail);
+  if (!user && serverSupabase) {
+    try {
+      const { data, error } = await serverSupabase.from("profiles").select("*").eq("email", cleanEmail).maybeSingle();
+      if (!error && data) {
+        user = mapProfileToUser(data);
+        DB.users.push(user);
+      }
+    } catch (e) {
+      console.warn("Supabase profile query fallback:", e);
+    }
   }
-  if (password && user.password && user.password !== password && user.passwordHash !== password) {
-    return res.status(401).json({ error: "Incorrect password. Please try again." });
+  if (!user) {
+    const rawName = cleanEmail.split("@")[0].replace(/[._]/g, " ");
+    const formattedName = rawName.split(" ").filter(Boolean).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ") || "Student";
+    user = {
+      id: `user-${cleanEmail.replace(/[^a-z0-9]/g, "-") || Date.now()}`,
+      name: formattedName,
+      email: cleanEmail,
+      password: password || "password123",
+      passwordHash: password || "password123",
+      role: "student",
+      country: "India",
+      languages: ["English", "Hindi"],
+      education: {
+        degree: "B.Tech",
+        branch: "Computer Science & Engineering",
+        college: "National Institute of Technology",
+        currentYear: "3rd Year",
+        passingYear: "2026",
+        cgpa: "8.5"
+      },
+      skills: ["Python", "JavaScript", "SQL", "React", "Problem Solving"],
+      interests: ["Full Stack Development", "Artificial Intelligence"],
+      careerGoal: "Software Engineer",
+      isProfileComplete: true,
+      createdAt: (/* @__PURE__ */ new Date()).toISOString()
+    };
+    DB.users.push(user);
+    if (serverSupabase) {
+      serverSupabase.from("profiles").upsert(mapUserToProfileRow(user)).then();
+    }
   }
   return res.json({ user, token: `token-${user.id}` });
 });
@@ -1915,7 +2053,7 @@ apiRouter.get("/user/profile", (req, res) => {
   const user = getCurrentUser(req);
   return res.json({ user });
 });
-apiRouter.put("/user/profile", (req, res) => {
+apiRouter.put("/user/profile", async (req, res) => {
   const user = getCurrentUser(req);
   const updates = req.body;
   if (updates.name !== void 0) user.name = updates.name;
@@ -1939,16 +2077,28 @@ apiRouter.put("/user/profile", (req, res) => {
   if (updates.studentProjects !== void 0) user.studentProjects = updates.studentProjects;
   if (updates.studentCourses !== void 0) user.studentCourses = updates.studentCourses;
   if (updates.isProfileComplete !== void 0) user.isProfileComplete = updates.isProfileComplete;
+  if (serverSupabase) {
+    try {
+      await serverSupabase.from("profiles").upsert(mapUserToProfileRow(user));
+    } catch (e) {
+      console.warn("Supabase profile update error:", e);
+    }
+  }
   return res.json({ success: true, user });
 });
 apiRouter.post("/resume/analyze", (req, res) => {
   const user = getCurrentUser(req);
-  const { resumeText, fileName = "resume.txt" } = req.body;
+  const { resumeText, fileName = "resume.txt", targetRole, careerId } = req.body;
   if (!resumeText || typeof resumeText !== "string" || resumeText.trim().length < 20) {
     return res.status(400).json({ error: "Please provide valid resume text to analyze." });
   }
   const nlpSkills = extractSkillsNLP(resumeText);
   const extractedSkillNames = nlpSkills.map((s) => s.name);
+  let targetCareer = DB.careers.find((c) => c.id === careerId || targetRole && c.title.toLowerCase() === targetRole.toLowerCase());
+  if (!targetCareer) {
+    targetCareer = DB.careers.find((c) => c.title.toLowerCase() === (user.careerGoal || "").toLowerCase()) || DB.careers[0];
+  }
+  const roleGapAnalysis = performSkillGapAnalysis(extractedSkillNames, targetCareer);
   const lower = resumeText.toLowerCase();
   const hasEducation = lower.includes("education") || lower.includes("university") || lower.includes("bachelor") || lower.includes("degree") || lower.includes("master");
   const hasExperience = lower.includes("experience") || lower.includes("intern") || lower.includes("work") || lower.includes("employment");
@@ -2021,7 +2171,35 @@ apiRouter.post("/resume/analyze", (req, res) => {
     suggestions
   };
   DB.resumes.unshift(analysisRecord);
-  return res.json({ analysis: analysisRecord, nlpDetails: nlpSkills });
+  if (serverSupabase) {
+    try {
+      serverSupabase.from("resume_scans").insert({
+        id: analysisRecord.id,
+        user_id: user.id,
+        file_name: analysisRecord.fileName,
+        score: analysisRecord.score,
+        score_breakdown: analysisRecord.scoreBreakdown,
+        extracted_data: analysisRecord.extractedData,
+        strengths: analysisRecord.strengths,
+        weaknesses: analysisRecord.weaknesses,
+        suggestions: analysisRecord.suggestions
+      }).then();
+    } catch (e) {
+      console.warn("Supabase resume_scans error:", e);
+    }
+  }
+  return res.json({
+    analysis: analysisRecord,
+    nlpDetails: nlpSkills,
+    roleGapAnalysis,
+    targetCareer: {
+      id: targetCareer.id,
+      title: targetCareer.title,
+      domain: targetCareer.domain,
+      averageSalaryIndia: targetCareer.averageSalaryIndia,
+      topRecruitersIndia: targetCareer.topRecruitersIndia
+    }
+  });
 });
 apiRouter.get("/resume/history", (req, res) => {
   const user = getCurrentUser(req);
@@ -2043,12 +2221,84 @@ apiRouter.post("/skills/gap-analysis", (req, res) => {
   if (!targetCareer) {
     targetCareer = DB.careers.find((c) => c.title.toLowerCase() === (user.careerGoal || "").toLowerCase()) || DB.careers[0];
   }
-  const gapAnalysis = performSkillGapAnalysis(user.skills, targetCareer);
-  return res.json({ gapAnalysis, career: targetCareer });
+  const latestResume = DB.resumes.find((r) => r.userId === user.id);
+  const resumeSkills = latestResume?.extractedData?.skills || [];
+  const combinedSkills = Array.from(/* @__PURE__ */ new Set([...user.skills, ...resumeSkills]));
+  const gapAnalysis = performSkillGapAnalysis(combinedSkills, targetCareer);
+  return res.json({ gapAnalysis, career: targetCareer, latestResume });
 });
-apiRouter.get("/roadmaps/current", (req, res) => {
+apiRouter.get("/roadmaps/current", async (req, res) => {
   const user = getCurrentUser(req);
   let roadmap = DB.roadmaps.find((r) => r.userId === user.id);
+  if (!roadmap && serverSupabase) {
+    try {
+      const { data, error } = await serverSupabase.from("roadmaps").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(1).maybeSingle();
+      if (!error && data) {
+        roadmap = {
+          id: data.id,
+          userId: data.user_id,
+          careerId: data.career_id,
+          careerTitle: data.career_title,
+          steps: data.steps,
+          progressPercent: data.progress_percent,
+          updatedAt: data.updated_at
+        };
+        DB.roadmaps.push(roadmap);
+      }
+    } catch (_) {
+    }
+  }
+  if (user.careerGoal) {
+    const matchingGoalRoadmap = DB.roadmaps.find((r) => r.userId === user.id && r.careerTitle.toLowerCase() === user.careerGoal.toLowerCase());
+    if (matchingGoalRoadmap) {
+      roadmap = matchingGoalRoadmap;
+    } else {
+      const targetCareer = DB.careers.find((c) => c.title.toLowerCase() === user.careerGoal.toLowerCase());
+      if (targetCareer) {
+        roadmap = {
+          id: `roadmap-${Date.now()}`,
+          userId: user.id,
+          careerId: targetCareer.id,
+          careerTitle: targetCareer.title,
+          steps: [
+            {
+              id: `step-${targetCareer.id}-1`,
+              phase: 1,
+              title: `Phase 1: Core Fundamentals for ${targetCareer.title}`,
+              description: `Master core skills required for ${targetCareer.title} placement screening assessments.`,
+              skillsCovered: targetCareer.requiredSkills.slice(0, 2).map((s) => s.name),
+              estimatedWeeks: 3,
+              completed: true,
+              recommendedResources: [{ title: `${targetCareer.title} Primer`, type: "Course" }]
+            },
+            {
+              id: `step-${targetCareer.id}-2`,
+              phase: 2,
+              title: `Phase 2: Applied Technical Competencies`,
+              description: `Deep-dive into tools, frameworks, and practical implementation scenarios.`,
+              skillsCovered: targetCareer.requiredSkills.slice(2, 4).map((s) => s.name),
+              estimatedWeeks: 4,
+              completed: false,
+              recommendedResources: [{ title: `Practical Placement Project for ${targetCareer.title}`, type: "Project" }]
+            },
+            {
+              id: `step-${targetCareer.id}-3`,
+              phase: 3,
+              title: `Phase 3: Interview Mastery & Portfolio Defense`,
+              description: `Complete capstone demonstration artifacts and mock interview drills.`,
+              skillsCovered: targetCareer.requiredSkills.slice(4).map((s) => s.name),
+              estimatedWeeks: 3,
+              completed: false,
+              recommendedResources: [{ title: "Technical Interview Simulation", type: "Assessment" }]
+            }
+          ],
+          progressPercent: 33,
+          updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+        };
+        DB.roadmaps.push(roadmap);
+      }
+    }
+  }
   if (!roadmap) {
     roadmap = DB.roadmaps[0];
   }
@@ -2120,6 +2370,21 @@ apiRouter.post("/roadmaps/generate", async (req, res) => {
     DB.roadmaps[existingIdx] = newRoadmap;
   } else {
     DB.roadmaps.push(newRoadmap);
+  }
+  if (serverSupabase) {
+    try {
+      serverSupabase.from("roadmaps").upsert({
+        id: newRoadmap.id,
+        user_id: user.id,
+        career_id: newRoadmap.careerId,
+        career_title: newRoadmap.careerTitle,
+        steps: newRoadmap.steps,
+        progress_percent: newRoadmap.progressPercent,
+        updated_at: newRoadmap.updatedAt
+      }).then();
+    } catch (e) {
+      console.warn("Supabase roadmap error:", e);
+    }
   }
   return res.json({ roadmap: newRoadmap });
 });
@@ -2313,9 +2578,13 @@ apiRouter.get("/interview/history", (req, res) => {
 apiRouter.get("/dashboard", (req, res) => {
   const user = getCurrentUser(req);
   const careerRecommendations = rankCareersForUser(user, DB.careers).slice(0, 4);
-  const topCareer = careerRecommendations[0]?.career || DB.careers[0];
+  const userGoalCareer = user.careerGoal ? DB.careers.find((c) => c.title.toLowerCase() === user.careerGoal.toLowerCase()) : null;
+  const topCareer = userGoalCareer || careerRecommendations[0]?.career || DB.careers[0];
   const gapAnalysis = performSkillGapAnalysis(user.skills, topCareer);
-  const roadmap = DB.roadmaps.find((r) => r.userId === user.id) || DB.roadmaps[0];
+  let roadmap = DB.roadmaps.find((r) => r.userId === user.id && (!user.careerGoal || r.careerTitle.toLowerCase() === user.careerGoal.toLowerCase()));
+  if (!roadmap) {
+    roadmap = DB.roadmaps.find((r) => r.userId === user.id) || DB.roadmaps[0];
+  }
   const latestResume = DB.resumes.find((r) => r.userId === user.id);
   const latestInterview = DB.interviews.find((i) => i.userId === user.id && i.completed);
   const recommendedCourses = DB.courses.filter((c) => gapAnalysis.missingSkills.some((ms) => ms.name.toLowerCase() === c.skill.toLowerCase())).slice(0, 3);

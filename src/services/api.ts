@@ -5,7 +5,7 @@
 
 import { User, Career, Course, Project, ResumeAnalysis, Roadmap, RoadmapStep, MockInterviewSession, ChatMessage, CareerMatchScore } from '../types.ts';
 import { COMPREHENSIVE_CAREERS } from '../data/careersData.ts';
-import { supabase } from '../lib/supabase.ts';
+import { supabase } from './supabaseClient.ts';
 
 const API_BASE = '/api';
 
@@ -378,84 +378,219 @@ export const api = {
         body: JSON.stringify({ careerId }),
       });
       if (res.ok) {
-        return await handleResponse(res, 'Failed to get skill gap analysis');
+        const data = await handleResponse<{ gapAnalysis: any; career: any; latestResume?: any }>(res, 'Failed to get skill gap analysis');
+        if (data?.gapAnalysis) {
+          // If server didn't have latestResume but local storage has it, attach it
+          if (!data.latestResume) {
+            try {
+              const saved = localStorage.getItem('latest_resume_analysis');
+              if (saved) data.latestResume = JSON.parse(saved);
+            } catch (_) {}
+          }
+          return data;
+        }
       }
     } catch (_) {}
 
     const targetCareer = COMPREHENSIVE_CAREERS.find((c) => c.id === careerId) || COMPREHENSIVE_CAREERS[0];
+    
+    // Retrieve latest resume analysis from localStorage if available
+    let latestResume: ResumeAnalysis | null = null;
+    let resumeSkills: string[] = [];
+    try {
+      const saved = localStorage.getItem('latest_resume_analysis');
+      if (saved) {
+        latestResume = JSON.parse(saved);
+        resumeSkills = latestResume?.extractedData?.skills || [];
+      }
+    } catch (_) {}
+
+    // Retrieve user profile skills
+    let profileSkills: string[] = [];
+    try {
+      const savedUser = localStorage.getItem('ai_skill_mentor_user');
+      if (savedUser) {
+        const u = JSON.parse(savedUser);
+        profileSkills = u.skills || [];
+      }
+    } catch (_) {}
+
+    const allSkills = Array.from(new Set([...profileSkills, ...resumeSkills]));
+    const normAllSkills = allSkills.map((s) => s.toLowerCase().trim());
+
+    const matched: string[] = [];
+    const missing: { name: string; importance: 'high' | 'medium' | 'low'; category: string; whyNeeded: string }[] = [];
+
+    let totalWeight = 0;
+    let earnedWeight = 0;
+
+    for (const skill of targetCareer.requiredSkills) {
+      const w = skill.importance === 'high' ? 3 : skill.importance === 'medium' ? 2 : 1;
+      totalWeight += w;
+      const sNorm = skill.name.toLowerCase().trim();
+      const hasSkill = normAllSkills.some((as) => as.includes(sNorm) || sNorm.includes(as));
+      if (hasSkill) {
+        matched.push(skill.name);
+        earnedWeight += w;
+      } else {
+        missing.push({
+          name: skill.name,
+          importance: skill.importance,
+          category: skill.category,
+          whyNeeded: skill.importance === 'high'
+            ? `Critical prerequisite for ${targetCareer.title} campus recruitment technical assessment.`
+            : `High-value competitive differentiator in round 2 technical interviews and system design checks.`,
+        });
+      }
+    }
+
+    const priorityOrder = { high: 1, medium: 2, low: 3 };
+    missing.sort((a, b) => priorityOrder[a.importance] - priorityOrder[b.importance]);
+    const matchPercent = totalWeight > 0 ? Math.round((earnedWeight / totalWeight) * 100) : 0;
+
     return {
       gapAnalysis: {
         career: targetCareer,
-        overallScore: 82,
-        skillMatchPercent: 70,
+        overallScore: Math.min(98, Math.max(45, Math.round(matchPercent * 0.75 + allSkills.length * 2))),
+        skillMatchPercent: matchPercent,
         interestAlignmentScore: 85,
         educationRelevanceScore: 90,
-        matchedSkills: targetCareer.requiredSkills.slice(0, 3).map((s) => s.name),
-        missingSkills: targetCareer.requiredSkills.slice(3).map((s) => ({
-          name: s.name,
-          importance: s.importance,
-          reason: 'High priority for interview technical rounds',
-        })),
-        matchExplanation: `Strong alignment with your profile. Close the remaining gaps through structured preparation.`,
+        matchedSkills: matched,
+        missingSkills: missing,
+        readinessLevel: matchPercent >= 75 ? 'Job Ready / Advanced' : matchPercent >= 45 ? 'Intermediate / Strong Foundation' : 'Early Stage / Needs Gap Remediation',
+        matchExplanation: `Computed against verified profile and ${latestResume ? `resume (${latestResume.fileName})` : 'system'} skills.`,
         isCrossDiscipline: false,
       },
+      career: targetCareer,
+      latestResume,
     };
   },
 
   // Resume
-  async analyzeResume(userId: string, resumeText: string, fileName?: string): Promise<{ analysis: ResumeAnalysis; nlpDetails: any[] }> {
+  async analyzeResume(
+    userId: string,
+    resumeText: string,
+    fileName?: string,
+    targetRole?: string,
+    careerId?: string
+  ): Promise<{
+    analysis: ResumeAnalysis;
+    nlpDetails: any[];
+    roleGapAnalysis?: {
+      careerTitle: string;
+      domain: string;
+      skillMatchPercentage: number;
+      matchedSkills: string[];
+      missingSkills: { name: string; importance: 'high' | 'medium' | 'low'; category: string; whyNeeded: string }[];
+      readinessLevel: string;
+    };
+    targetCareer?: any;
+  }> {
     try {
       const res = await fetch(`${API_BASE}/resume/analyze`, {
         method: 'POST',
         headers: getHeaders(userId),
-        body: JSON.stringify({ resumeText, fileName }),
+        body: JSON.stringify({ resumeText, fileName, targetRole, careerId }),
       });
       if (res.ok) {
-        return await handleResponse<{ analysis: ResumeAnalysis; nlpDetails: any[] }>(res, 'Analysis failed');
+        const data = await handleResponse<any>(res, 'Analysis failed');
+        if (data?.analysis) {
+          try {
+            localStorage.setItem('latest_resume_analysis', JSON.stringify(data.analysis));
+          } catch (_) {}
+          return data;
+        }
       }
     } catch (_) {}
 
-    const detectedSkills = ['Python', 'SQL', 'React', 'Data Structures', 'REST APIs', 'Git', 'FastAPI'].filter((s) =>
-      resumeText.toLowerCase().includes(s.toLowerCase())
-    );
+    const detectedSkills = [
+      'Python', 'SQL', 'React', 'Data Structures', 'REST APIs', 'Git', 'FastAPI',
+      'JavaScript', 'TypeScript', 'Node.js', 'Docker', 'AWS', 'PostgreSQL',
+      'Machine Learning', 'Pandas', 'NumPy', 'Java', 'C++', 'Kubernetes',
+      'Linux', 'System Design', 'Microservices', 'HTML', 'CSS', 'Tailwind',
+      'Express', 'MongoDB', 'Redis', 'GraphQL', 'Next.js', 'Spring Boot'
+    ].filter((s) => resumeText.toLowerCase().includes(s.toLowerCase()));
+
     const finalSkills = detectedSkills.length > 0 ? detectedSkills : ['Python', 'SQL', 'Problem Solving', 'Data Structures'];
+
+    const targetCareer = COMPREHENSIVE_CAREERS.find(
+      (c) => c.id === careerId || (targetRole && c.title.toLowerCase() === targetRole.toLowerCase())
+    ) || COMPREHENSIVE_CAREERS[0];
+
+    // Compute role-based matching
+    const normDetected = finalSkills.map((s) => s.toLowerCase());
+    const matched: string[] = [];
+    const missing: { name: string; importance: 'high' | 'medium' | 'low'; category: string; whyNeeded: string }[] = [];
+
+    let totalWeight = 0;
+    let earnedWeight = 0;
+
+    for (const skill of targetCareer.requiredSkills) {
+      const w = skill.importance === 'high' ? 3 : skill.importance === 'medium' ? 2 : 1;
+      totalWeight += w;
+      const sNorm = skill.name.toLowerCase();
+      const hasSkill = normDetected.some((ds) => ds.includes(sNorm) || sNorm.includes(ds));
+      if (hasSkill) {
+        matched.push(skill.name);
+        earnedWeight += w;
+      } else {
+        missing.push({
+          name: skill.name,
+          importance: skill.importance,
+          category: skill.category,
+          whyNeeded: skill.importance === 'high'
+            ? `Critical prerequisite for ${targetCareer.title} campus recruitment technical assessment.`
+            : `High-value differentiator in corporate hiring rounds and code interviews.`,
+        });
+      }
+    }
+
+    const priorityOrder = { high: 1, medium: 2, low: 3 };
+    missing.sort((a, b) => priorityOrder[a.importance] - priorityOrder[b.importance]);
+    const matchPercent = totalWeight > 0 ? Math.round((earnedWeight / totalWeight) * 100) : 0;
 
     const analysis: ResumeAnalysis = {
       id: `resume-${Date.now()}`,
       userId,
       fileName: fileName || 'Resume_Profile.pdf',
       createdAt: new Date().toISOString(),
-      score: 84,
+      score: Math.min(96, Math.max(65, Math.round(55 + (matchPercent * 0.35) + (finalSkills.length * 2)))),
       scoreBreakdown: {
-        skills: 88,
-        education: 85,
-        experience: 78,
+        skills: Math.min(95, Math.max(55, matchPercent)),
+        education: 88,
+        experience: 80,
         projects: 86,
-        achievements: 80,
+        achievements: 82,
         formatting: 90,
-        atsCompatibility: 88,
+        atsCompatibility: Math.min(94, Math.max(68, 70 + finalSkills.length * 2)),
       },
       extractedData: {
         skills: finalSkills,
         education: ['B.Tech Computer Science & Engineering'],
-        experience: [],
-        projects: ['Full Stack Placement Portal'],
+        experience: ['Technical Intern / Academic Practical Projects'],
+        projects: ['Industry-aligned Capstone Project'],
         certifications: [],
         languages: ['English', 'Hindi'],
-        softSkills: ['Problem Solving', 'Team Collaboration'],
+        softSkills: ['Problem Solving', 'Team Collaboration', 'Communication'],
       },
       strengths: [
-        'Clear academic credential presentation',
-        'Solid foundational engineering tech stack',
-        'Good technical project descriptions',
+        `Directly aligns with ${matched.length} key competencies for ${targetCareer.title}.`,
+        'Solid foundational engineering and technical skills.',
+        'Clear presentation of academic credentials.',
       ],
-      weaknesses: ['Add more quantified metrics and deployment URLs'],
+      weaknesses: missing.length > 0
+        ? [`Missing ${missing.length} role-specific skills required for ${targetCareer.title} shortlist.`]
+        : ['Quantify project impact metrics.'],
       suggestions: [
-        'Quantify achievements with clear metrics (e.g., "Reduced response latency by 35%")',
-        'Highlight production deployment links and GitHub repository links for capstone projects',
-        'Add standardized coursework details such as Database Management Systems and Object-Oriented Programming',
+        `Bridge priority skill gaps in: ${missing.slice(0, 3).map((m) => m.name).join(', ') || 'advanced domain tools'}.`,
+        'Add quantified project metrics (e.g., "Improved response throughput by 32%").',
+        'Include live hosted project links and active GitHub repository URLs.',
       ],
     };
+
+    try {
+      localStorage.setItem('latest_resume_analysis', JSON.stringify(analysis));
+    } catch (_) {}
 
     return {
       analysis,
@@ -465,6 +600,21 @@ export const api = {
         confidence: 0.94,
         category: 'Engineering',
       })),
+      roleGapAnalysis: {
+        careerTitle: targetCareer.title,
+        domain: targetCareer.domain,
+        skillMatchPercentage: matchPercent,
+        matchedSkills: matched,
+        missingSkills: missing,
+        readinessLevel: matchPercent >= 75 ? 'Job Ready / Advanced' : matchPercent >= 45 ? 'Intermediate / Strong Foundation' : 'Early Stage / Needs Gap Remediation',
+      },
+      targetCareer: {
+        id: targetCareer.id,
+        title: targetCareer.title,
+        domain: targetCareer.domain,
+        averageSalaryIndia: targetCareer.averageSalaryIndia,
+        topRecruitersIndia: targetCareer.topRecruitersIndia,
+      },
     };
   },
 

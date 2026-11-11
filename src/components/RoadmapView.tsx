@@ -364,7 +364,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
 
   useEffect(() => {
     loadRoadmap();
-  }, [user.id]);
+  }, [user.id, user.careerGoal]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

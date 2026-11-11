@@ -152,6 +152,14 @@ export default function App() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState("");
+  const [latestResumeAnalysis, setLatestResumeAnalysis] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem('latest_resume_analysis');
+      return saved ? JSON.parse(saved) : null;
+    } catch (_) {
+      return null;
+    }
+  });
 
   // Synchronize dashboard whenever user updates (only persist real authenticated accounts)
   useEffect(() => {
@@ -876,8 +884,17 @@ export default function App() {
         {activeTab === "skillgap" && (
           <SkillGapView
             user={currentUser}
+            latestResume={latestResumeAnalysis || dashboardData?.latestResume}
             onNavigate={navigateTab}
-            onGenerateRoadmap={(cid) => {
+            onCareerSelected={async (cid, title) => {
+              setCurrentUser((prev) => (prev ? { ...prev, careerGoal: title } : null));
+              await api.updateProfile(currentUser.id, { careerGoal: title });
+              await api.generateRoadmap(currentUser.id, cid);
+              refreshDashboard();
+            }}
+            onGenerateRoadmap={async (cid) => {
+              await api.generateRoadmap(currentUser.id, cid);
+              refreshDashboard();
               navigateTab("roadmap");
             }}
             onOpenAuth={(isLogin) => {
@@ -897,9 +914,23 @@ export default function App() {
         {activeTab === "resume" && (
           <ResumeAnalyzerView
             user={currentUser}
-            onSkillsUpdated={(newSkills) => {
+            onSkillsUpdated={async (newSkills) => {
               const merged = Array.from(new Set([...currentUser.skills, ...newSkills]));
               setCurrentUser((prev) => (prev ? { ...prev, skills: merged } : null));
+              await api.updateProfile(currentUser.id, { skills: merged });
+              refreshDashboard();
+            }}
+            onRoleSelected={async (roleTitle, careerId) => {
+              setCurrentUser((prev) => (prev ? { ...prev, careerGoal: roleTitle } : null));
+              await api.updateProfile(currentUser.id, { careerGoal: roleTitle });
+              await api.generateRoadmap(currentUser.id, careerId);
+              refreshDashboard();
+            }}
+            onResumeAnalyzed={(analysis) => {
+              setLatestResumeAnalysis(analysis);
+              try {
+                localStorage.setItem('latest_resume_analysis', JSON.stringify(analysis));
+              } catch (_) {}
               refreshDashboard();
             }}
             onNavigate={navigateTab}
