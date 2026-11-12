@@ -231,6 +231,35 @@ export function AwardWinningAuthModal({
               </button>
             </div>
 
+            {/* Quick Demo Credentials Bar */}
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-[10px] font-mono uppercase text-neutral-400">Quick Test:</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoginMode(true);
+                  setIsAdminAuthMode(false);
+                  setEmail('aarav.sharma@example.edu');
+                  setPassword('password123');
+                }}
+                className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-mono text-[#CCFF00] cursor-pointer"
+              >
+                Student Demo
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsLoginMode(true);
+                  setIsAdminAuthMode(true);
+                  setEmail('admin@institution.edu.in');
+                  setPassword('admin2026');
+                }}
+                className="px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-[10px] font-mono text-[#00F0FF] cursor-pointer"
+              >
+                Admin Demo
+              </button>
+            </div>
+
             {/* Form Header */}
             <div className="space-y-1 mb-6">
               <h2 className="text-2xl font-bold tracking-tight font-display text-white">
@@ -308,18 +337,6 @@ export function AwardWinningAuthModal({
                   <label className="text-xs font-mono uppercase text-neutral-300">
                     {isAdminAuthMode ? 'Directorate Passcode' : 'Password'}
                   </label>
-                  {isAdminAuthMode && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEmail('admin@institution.edu.in');
-                        setPassword('admin2026');
-                      }}
-                      className="text-[10px] text-[#00F0FF] font-mono hover:underline cursor-pointer"
-                    >
-                      Auto-fill Demo Key (admin2026)
-                    </button>
-                  )}
                 </div>
                 <div className="relative flex items-center">
                   <input

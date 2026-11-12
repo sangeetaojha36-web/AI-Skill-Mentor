@@ -110,7 +110,7 @@ export default function App() {
       // 2. Entrance animation for Dashboard Content Blocks with smooth staggered reveal
       if (contentEntranceRef.current) {
         const blocks = contentEntranceRef.current.querySelectorAll(
-          ".dashboard-entrance-block, section, [data-dashboard-block], .grid > div, .spotlight-card, > div > div"
+          ".dashboard-entrance-block, section, [data-dashboard-block], .grid > div, .spotlight-card, :scope > div > div, .rounded-2xl, .rounded-xl"
         );
 
         if (blocks.length > 0) {
@@ -521,7 +521,7 @@ export default function App() {
   // If user is not authenticated, render the Landing Page and the Auth Modal on demand
   if (!currentUser) {
     return (
-      <div className="relative min-h-screen bg-[#090A0D]">
+      <div className="relative min-h-screen bg-[#08090C]">
         {/* Full Interactive Animated Landing Page */}
         <LandingPageView
           onOpenAuth={(isLogin, isAdmin) => {
@@ -529,6 +529,38 @@ export default function App() {
             setIsAdminAuthMode(!!isAdmin);
             setAuthError("");
             setShowAuthModal(true);
+          }}
+          onStartGuestPreview={() => {
+            const guestUser: User = {
+              id: "guest-student-101",
+              name: "Aarav Sharma",
+              email: "aarav.sharma@example.edu",
+              role: "student",
+              isGuestPreview: false,
+              education: {
+                degree: "B.Tech",
+                branch: "Computer Science & Engineering",
+                college: "National Institute of Technology",
+                collegeTier: "Tier 1",
+                currentYear: "3rd Year",
+                passingYear: "2027",
+                cgpa: "8.8",
+              },
+              careerGoal: "Full Stack AI Engineer",
+              skills: ["Python", "React", "TypeScript", "SQL", "FastAPI", "Machine Learning", "Data Structures"],
+              interests: ["Full Stack Development", "Artificial Intelligence", "Cloud Architecture"],
+              country: "India",
+              languages: ["English", "Hindi"],
+              experience: [],
+              achievements: [],
+              studentProjects: [],
+              studentCourses: [],
+              isProfileComplete: true,
+              createdAt: new Date().toISOString(),
+            };
+            setCurrentUser(guestUser);
+            localStorage.setItem("ai_skill_mentor_user", JSON.stringify(guestUser));
+            setActiveTab("dashboard");
           }}
         />
         {renderAuthModal()}

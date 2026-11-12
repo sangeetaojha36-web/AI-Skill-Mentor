@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
 import {
   ArrowRight,
   ArrowUpRight,
@@ -38,9 +37,7 @@ interface LandingPageViewProps {
   onStartGuestPreview?: () => void;
 }
 
-// =========================================================================
-// ASSET PATHS (Verified Local High-Resolution Generated Images)
-// =========================================================================
+// High-resolution local visual assets
 const IMAGES = {
   hero: '/src/assets/images/hero_cinematic_career_constellation_1794476570452.jpg',
   software: '/src/assets/images/showcase_software_engineer_workspace_1794476571794.jpg',
@@ -48,9 +45,7 @@ const IMAGES = {
   greenroom: '/src/assets/images/showcase_greenroom_interview_studio_1794476572462.jpg',
 };
 
-// =========================================================================
-// CORE CONTRACT DATA - Preserved from existing implementation
-// =========================================================================
+// 6 Core Workflow Steps
 const WORKFLOW_STEPS = [
   {
     step: '01',
@@ -184,7 +179,7 @@ const FAQS = [
   },
   {
     q: 'Can non-CS students (Mechanical, Civil, Biotech) use this for high-paying roles?',
-    a: 'Yes. SkillBridge AI features dedicated pathways for core branches transitioning into high-growth interdisciplinary roles like Autonomous Robotics, BIM Automation, Bioinformatics, and Quant Analytics, bridging the skill gap with targeted milestone roadmaps.',
+    a: 'Yes. AI Skill Mentor features dedicated pathways for core branches transitioning into high-growth interdisciplinary roles like Autonomous Robotics, BIM Automation, Bioinformatics, and Quant Analytics, bridging the skill gap with targeted milestone roadmaps.',
   },
   {
     q: 'How does the Greenroom Mock Interview Studio evaluate answers?',
@@ -199,155 +194,95 @@ const FAQS = [
 // Interactive ATS candidate profiles for instant testing
 const ATS_CANDIDATE_SAMPLES = [
   {
-    id: 'ananya',
-    name: 'Ananya Verma',
-    target: 'Backend / Systems Engineer (Tier 1)',
-    initialScore: 54,
-    finalScore: 92,
-    bulletOld: 'Built a backend web API for an e-commerce platform using Node and MongoDB.',
-    bulletNew: 'Architected distributed Redis-backed ingestion API handling 4.2k req/sec with <45ms p99 latency.',
-    detectedKeywords: ['Distributed Systems', 'Redis Caching', 'PostgreSQL', 'Docker', 'Async Microservices'],
-    missingBefore: ['Horizontal Scale Proof', 'P99 Latency Metrics', 'Load Balancing'],
+    id: 'unoptimized',
+    name: 'Candidate A (Pre-Audit)',
+    branch: 'CSE / 3rd Year',
+    atsScore: 64,
+    gatekeepersPassed: '6 of 14',
+    summary: 'Generic keyword stuffing, unquantified impact statements, auto-reject risk.',
+    bullets: [
+      {
+        original: 'Worked on a library management website using React and Node.',
+        critique: 'Passive verb, no measurable impact metrics, generic scope.',
+        optimized:
+          'Architected full-stack portal with React 19 & Express, reducing checkout latency by 42% for 3,200+ active student users.',
+      },
+      {
+        original: 'Created machine learning model to predict student grades.',
+        critique: 'Missing dataset size, evaluation metric, and deployment details.',
+        optimized:
+          'Trained XGBoost regression pipeline on 14,000+ academic records, achieving 91.2% accuracy with FastAPI inference microservice.',
+      },
+    ],
   },
   {
-    id: 'rohan',
-    name: 'Rohan Sharma',
-    target: 'Robotics & Embedded Systems',
-    initialScore: 48,
-    finalScore: 89,
-    bulletOld: 'Worked on robotic car project using Arduino and ultrasonic sensors for obstacle avoidance.',
-    bulletNew: 'Engineered ROS2 autonomous navigation stack with LiDAR SLAM on NVIDIA Jetson, achieving 18Hz loop rate.',
-    detectedKeywords: ['ROS2 Galactic', 'C++17', 'LiDAR SLAM', 'CAN Bus Protocol', 'PID Motor Control'],
-    missingBefore: ['Hardware Latency Benchmarks', 'Firmware State Machines', 'RTOS'],
-  },
-  {
-    id: 'kunal',
-    name: 'Kunal Patel',
-    target: 'BIM Automation & Structural Infra',
-    initialScore: 51,
-    finalScore: 87,
-    bulletOld: 'Assisted in structural drawing and drafting using AutoCAD software.',
-    bulletNew: 'Automated Revit BIM parameter validation scripts in Python, eliminating 60+ clashes across 14-story MEP model.',
-    detectedKeywords: ['Autodesk Revit BIM', 'Dynamo Python', 'ETABS Analysis', 'Geospatial GIS', 'Clash Detection'],
-    missingBefore: ['Parametric Scripting', 'Structural Code Compliance', 'Version Control'],
+    id: 'optimized',
+    name: 'Candidate B (Post-Audit)',
+    branch: 'ECE / Final Year',
+    atsScore: 92,
+    gatekeepersPassed: '13 of 14',
+    summary: 'STAR-formatted bullets, verifiable production links, Tier-1 benchmark match.',
+    bullets: [
+      {
+        original: 'Wrote embedded code for microcontrollers in college lab.',
+        critique: 'Lacks hardware specs, protocol standards, and memory optimization.',
+        optimized:
+          'Programmed bare-metal ARM Cortex-M4 firmware via SPI/I2C protocols, reducing sensor sampling jitter to <2.1ms under RTOS.',
+      },
+      {
+        original: 'Developed PCB layout for an IoT smart weather station project.',
+        critique: 'Missing layer count, EDA tool, and verification benchmarks.',
+        optimized:
+          'Designed 4-layer impedance-matched PCB in KiCad with ESP32 telemetry, passing EMC pre-compliance across 48hr continuous runs.',
+      },
+    ],
   },
 ];
 
-export function LandingPageView({
-  onOpenAuth,
-  onStartGuestPreview,
-}: LandingPageViewProps) {
-  // State variables - 100% logic preservation
-  const [activeWorkflowIdx, setActiveWorkflowIdx] = useState(0);
-  const [selectedDiscipline, setSelectedDiscipline] = useState(DISCIPLINE_TRACKS[0]);
-  const [activeFaq, setActiveFaq] = useState<number | null>(null);
-  const [activePreviewTab, setActivePreviewTab] = useState<'ats' | 'roadmap' | 'greenroom'>('ats');
-
-  // Interactive ATS Scanner Simulator state
-  const [selectedCandidate, setSelectedCandidate] = useState(ATS_CANDIDATE_SAMPLES[0]);
-  const [isScanning, setIsScanning] = useState(false);
-  const [currentScore, setCurrentScore] = useState(ATS_CANDIDATE_SAMPLES[0].finalScore);
-  const [scanStep, setScanStep] = useState(2); // 0: ready, 1: scanning, 2: completed
-
-  // Interactive Placement Calculator state
-  const [selectedBranch, setSelectedBranch] = useState('CSE / IT');
-  const [cgpaValue, setCgpaValue] = useState(8.2);
-
-  // Audio Synth Toggle (Tactile Micro-Interactions)
-  const [soundEnabled, setSoundEnabled] = useState(false);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-
-  // DOM Refs
+export function LandingPageView({ onOpenAuth, onStartGuestPreview }: LandingPageViewProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const cursorDotRef = useRef<HTMLDivElement>(null);
   const cursorRingRef = useRef<HTMLDivElement>(null);
   const cursorLabelRef = useRef<HTMLSpanElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const counterOffersRef = useRef<HTMLSpanElement>(null);
   const counterAtsRef = useRef<HTMLSpanElement>(null);
   const counterTracksRef = useRef<HTMLSpanElement>(null);
 
-  // Synthesize clean harmonic clicks / chimes without external audio files
-  const playSound = (freq = 600, duration = 0.05, type: OscillatorType = 'sine') => {
+  const [activeStep, setActiveStep] = useState(0);
+  const [selectedDisciplineIndex, setSelectedDisciplineIndex] = useState(1);
+  const [activeCandidateIndex, setActiveCandidateIndex] = useState(0);
+  const [selectedBranch, setSelectedBranch] = useState('CSE');
+  const [cgpaValue, setCgpaValue] = useState(8.5);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  // Synthesize tactile audio feedback
+  const playSound = (freq = 440, duration = 0.08, type: OscillatorType = 'sine') => {
     if (!soundEnabled) return;
     try {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (!audioCtxRef.current) {
-        audioCtxRef.current = new AudioCtx();
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
       }
       const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') {
-        ctx.resume();
-      }
+      if (ctx.state === 'suspended') ctx.resume();
+
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = type;
       osc.frequency.setValueAtTime(freq, ctx.currentTime);
       gain.gain.setValueAtTime(0.04, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.start();
       osc.stop(ctx.currentTime + duration);
     } catch (_) {}
   };
-
-  // Run simulated laser ATS scan
-  const triggerScanSimulation = (cand = selectedCandidate) => {
-    setIsScanning(true);
-    setScanStep(1);
-    setCurrentScore(cand.initialScore);
-    playSound(440, 0.1, 'sine');
-
-    let current = cand.initialScore;
-    const interval = setInterval(() => {
-      current += 2;
-      if (current >= cand.finalScore) {
-        current = cand.finalScore;
-        clearInterval(interval);
-        setIsScanning(false);
-        setScanStep(2);
-        playSound(880, 0.25, 'triangle');
-      }
-      setCurrentScore(current);
-    }, 45);
-  };
-
-  // Switch candidate and re-run scan
-  const handleSelectCandidate = (cand: typeof ATS_CANDIDATE_SAMPLES[0]) => {
-    setSelectedCandidate(cand);
-    triggerScanSimulation(cand);
-  };
-
-  // Smooth Scrolling with Lenis + ScrollTrigger Sync
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
-
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
-      smoothWheel: true,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
-    });
-
-    lenis.on('scroll', ScrollTrigger.update);
-    const tickerCallback = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-    gsap.ticker.add(tickerCallback);
-    gsap.ticker.lagSmoothing(0);
-
-    return () => {
-      lenis.destroy();
-      gsap.ticker.remove(tickerCallback);
-      ScrollTrigger.getAll().forEach((t) => t.kill());
-    };
-  }, []);
 
   // Real-Time Interactive Particle Constellation Canvas
   useEffect(() => {
@@ -367,7 +302,6 @@ export function LandingPageView({
     };
     window.addEventListener('resize', handleResize);
 
-    // Particle nodes
     const particleCount = Math.min(65, Math.floor(width / 22));
     const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random() * width,
@@ -397,7 +331,7 @@ export function LandingPageView({
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Draw connecting lines
+      // Connecting lines
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
@@ -416,7 +350,7 @@ export function LandingPageView({
         }
       }
 
-      // Update and draw particles
+      // Particles
       particles.forEach((p) => {
         p.x += p.vx;
         p.y += p.vy;
@@ -424,7 +358,6 @@ export function LandingPageView({
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
 
-        // Subtle attraction to cursor
         const dx = mouseX - p.x;
         const dy = mouseY - p.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -460,23 +393,7 @@ export function LandingPageView({
     };
   }, []);
 
-  // Card Mouse Spotlight & 3D Tilt Coordinates
-  useEffect(() => {
-    const handleCardMouse = (e: MouseEvent) => {
-      const cards = document.querySelectorAll<HTMLElement>('.spotlight-card');
-      cards.forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
-      });
-    };
-    window.addEventListener('mousemove', handleCardMouse);
-    return () => window.removeEventListener('mousemove', handleCardMouse);
-  }, []);
-
-  // Custom Magnetic Cursor Logic
+  // Desktop Magnetic Cursor
   useEffect(() => {
     const isTouch = window.matchMedia('(pointer: coarse)').matches;
     if (isTouch) return;
@@ -521,21 +438,21 @@ export function LandingPageView({
         duration: 0.25,
       });
       if (label) {
-        gsap.to(label, { opacity: 0, duration: 0.2 });
+        gsap.to(label, { opacity: 0, duration: 0.15 });
       }
     };
 
     window.addEventListener('mousemove', handlePointerMove);
-    const interactives = document.querySelectorAll('button, a, input, select, .interactive-hover');
+    const interactives = document.querySelectorAll('button, a, [data-cursor]');
     interactives.forEach((el) => {
-      el.addEventListener('mouseenter', handleInteractiveEnter as EventListener);
+      el.addEventListener('mouseenter', handleInteractiveEnter as any);
       el.addEventListener('mouseleave', handleInteractiveLeave);
     });
 
     return () => {
       window.removeEventListener('mousemove', handlePointerMove);
       interactives.forEach((el) => {
-        el.removeEventListener('mouseenter', handleInteractiveEnter as EventListener);
+        el.removeEventListener('mouseenter', handleInteractiveEnter as any);
         el.removeEventListener('mouseleave', handleInteractiveLeave);
       });
     };
@@ -544,7 +461,6 @@ export function LandingPageView({
   // GSAP Animations (Hero line reveal, Counters, Progress bar)
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Scroll Progress Bar
       if (progressBarRef.current) {
         gsap.to(progressBarRef.current, {
           scaleX: 1,
@@ -558,7 +474,6 @@ export function LandingPageView({
         });
       }
 
-      // 2. Hero Headline Stagger Reveal
       gsap.fromTo(
         '.hero-line-inner',
         { yPercent: 120, opacity: 0 },
@@ -572,7 +487,6 @@ export function LandingPageView({
         }
       );
 
-      // 3. Viewport Animated Number Counters
       const setupCounter = (
         targetRef: React.RefObject<HTMLSpanElement | null>,
         endVal: number,
@@ -622,6 +536,9 @@ export function LandingPageView({
     return Math.min(99, base);
   }, [cgpaValue]);
 
+  const activeCandidate = ATS_CANDIDATE_SAMPLES[activeCandidateIndex];
+  const selectedDiscipline = DISCIPLINE_TRACKS[selectedDisciplineIndex];
+
   return (
     <div
       ref={rootRef}
@@ -651,10 +568,12 @@ export function LandingPageView({
         </span>
       </div>
 
-      {/* TOP BAR CONTRACT: Zone 1 (Wordmark) — Zone 2 (4-5 Nav Links) — Zone 3 (Sound & Primary CTA) */}
+      {/* =========================================================================
+          TOP NAVIGATION BAR (Wordmark · Links · Action & Audio Toggle)
+         ========================================================================= */}
       <header className="sticky top-0 z-40 bg-[#08090C]/85 backdrop-blur-md border-b border-white/[0.08]">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-8">
-          {/* Zone 1: Single text element wordmark */}
+          {/* Wordmark */}
           <a
             href="/"
             onClick={(e) => {
@@ -666,10 +585,12 @@ export function LandingPageView({
           >
             <span className="w-2.5 h-2.5 rounded-sm bg-[#CCFF00]" />
             <span>SKILLBRIDGE AI</span>
-            <span className="text-xs text-neutral-400 font-mono hidden sm:inline">· CAMPUS ARCHITECTURE</span>
+            <span className="text-xs text-neutral-400 font-mono hidden sm:inline">
+              · CAMPUS ARCHITECTURE
+            </span>
           </a>
 
-          {/* Zone 2: 4-5 concise single-line nav links */}
+          {/* Nav links */}
           <nav className="hidden lg:flex items-center gap-7 text-xs font-mono uppercase tracking-wider text-neutral-400">
             <a
               href="#pipeline"
@@ -708,9 +629,8 @@ export function LandingPageView({
             </a>
           </nav>
 
-          {/* Zone 3: 1 primary action + Sound switch */}
+          {/* Action CTAs & Sound Switch */}
           <div className="flex items-center gap-4 shrink-0">
-            {/* Tactile Web Audio Synth Toggle */}
             <button
               onClick={() => {
                 const next = !soundEnabled;
@@ -739,7 +659,7 @@ export function LandingPageView({
                 playSound(540, 0.08);
                 onOpenAuth(true);
               }}
-              className="hidden sm:inline-block text-xs font-mono uppercase tracking-wider text-neutral-300 hover:text-white transition-colors whitespace-nowrap shrink-0 px-3 py-2"
+              className="hidden sm:inline-block text-xs font-mono uppercase tracking-wider text-neutral-300 hover:text-white transition-colors whitespace-nowrap shrink-0 px-3 py-2 cursor-pointer"
               data-cursor="AUTH"
             >
               Sign In
@@ -750,7 +670,7 @@ export function LandingPageView({
                 playSound(720, 0.12);
                 onOpenAuth(false);
               }}
-              className="px-5 py-2.5 rounded-lg bg-[#CCFF00] text-[#08090C] text-xs font-bold font-mono uppercase tracking-wider hover:bg-[#b8e600] active:scale-[0.98] transition-all whitespace-nowrap shrink-0 flex items-center gap-2 shadow-lg shadow-[#CCFF00]/10"
+              className="px-5 py-2.5 rounded-lg bg-[#CCFF00] text-[#08090C] text-xs font-bold font-mono uppercase tracking-wider hover:bg-[#b8e600] active:scale-[0.98] transition-all whitespace-nowrap shrink-0 flex items-center gap-2 shadow-lg shadow-[#CCFF00]/10 cursor-pointer"
               data-cursor="START"
             >
               <span>Get Started</span>
@@ -761,7 +681,7 @@ export function LandingPageView({
       </header>
 
       {/* =========================================================================
-          SECTION 1: HERO VIEWPORT (Awwwards 16:9 Split with Real-Time Canvas)
+          SECTION 1: HERO VIEWPORT (16:9 Split with Particle Constellation)
          ========================================================================= */}
       <section className="relative min-h-[92vh] flex items-center border-b border-white/[0.08] overflow-hidden">
         {/* Interactive Neural Constellation Canvas */}
@@ -787,22 +707,22 @@ export function LandingPageView({
 
               {/* Fluid Masked Headline */}
               <h1 className="text-4xl sm:text-6xl xl:text-7xl font-bold font-display tracking-tight text-white leading-[1.05] mb-6">
-                <span className="char-mask block">
+                <span className="block overflow-hidden">
                   <span className="hero-line-inner block">THE ARCHITECTURE</span>
                 </span>
-                <span className="char-mask block">
+                <span className="block overflow-hidden">
                   <span className="hero-line-inner block text-neutral-300">
                     OF TIER-1 CAMPUS
                   </span>
                 </span>
-                <span className="char-mask block">
+                <span className="block overflow-hidden">
                   <span className="hero-line-inner block text-[#CCFF00]">
                     OFFERS & VELOCITY.
                   </span>
                 </span>
               </h1>
 
-              {/* Concrete Value Proposition (Anti-Slop Prose) */}
+              {/* Concrete Value Proposition */}
               <p className="text-base sm:text-lg text-neutral-300 max-w-xl font-normal leading-relaxed mb-8">
                 Engineered for engineering students across Computer Science, Robotics,
                 VLSI, and Civil. Connect your resume to real corporate cutoffs: instant
@@ -816,7 +736,7 @@ export function LandingPageView({
                     playSound(800, 0.1);
                     onOpenAuth(false);
                   }}
-                  className="px-8 py-4 rounded-lg bg-[#CCFF00] text-[#08090C] text-sm font-bold font-mono uppercase tracking-wider hover:bg-[#b8e600] active:scale-[0.98] transition-all flex items-center gap-3 shadow-xl shadow-[#CCFF00]/15"
+                  className="px-8 py-4 rounded-lg bg-[#CCFF00] text-[#08090C] text-sm font-bold font-mono uppercase tracking-wider hover:bg-[#b8e600] active:scale-[0.98] transition-all flex items-center gap-3 shadow-xl shadow-[#CCFF00]/15 cursor-pointer"
                   data-cursor="JOIN"
                 >
                   <span>Claim Placement Roadmap</span>
@@ -826,15 +746,29 @@ export function LandingPageView({
                 <a
                   href="#simulator"
                   onClick={() => playSound(480, 0.05)}
-                  className="px-6 py-4 rounded-lg border border-white/15 hover:border-white/30 text-white text-sm font-mono tracking-wider transition-colors flex items-center gap-2"
+                  className="px-6 py-4 rounded-lg border border-white/15 hover:border-white/30 text-white text-sm font-mono tracking-wider transition-colors flex items-center gap-2 cursor-pointer"
                   data-cursor="SIM"
                 >
                   <span>Test ATS Simulator</span>
                   <ArrowUpRight className="w-4 h-4 text-[#CCFF00]" />
                 </a>
+
+                {onStartGuestPreview && (
+                  <button
+                    onClick={() => {
+                      playSound(900, 0.1);
+                      onStartGuestPreview();
+                    }}
+                    className="px-5 py-4 rounded-lg border border-[#00F0FF]/30 hover:border-[#00F0FF] bg-[#00F0FF]/10 text-[#00F0FF] text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer"
+                    data-cursor="DEMO"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Instant Live Demo</span>
+                  </button>
+                )}
               </div>
 
-              {/* Adjacent Quantitative Proof Strip */}
+              {/* Quantitative Proof Strip */}
               <div className="grid grid-cols-3 gap-6 pt-8 border-t border-white/[0.08] max-w-lg">
                 <div>
                   <div className="text-2xl sm:text-3xl font-bold text-white font-tech tabular-nums">
@@ -857,608 +791,418 @@ export function LandingPageView({
               </div>
             </div>
 
-            {/* Right Column (Hero Visual Anchor with Live Hologram HUD) */}
+            {/* Right Column (Awwwards Live Hologram Telemetry HUD) */}
             <div className="lg:col-span-5 relative">
-              <div className="spotlight-card rounded-2xl border border-white/10 overflow-hidden shadow-2xl relative group">
-                <img
-                  src={IMAGES.hero}
-                  alt="Engineering student surveying future career constellations"
-                  referrerPolicy="no-referrer"
-                  className="w-full h-[460px] object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
+              <div className="p-6 sm:p-8 rounded-2xl bg-[#0E1015]/90 border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.9)] backdrop-blur-xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-[#CCFF00]/10 blur-3xl pointer-events-none" />
 
-                {/* Measured Contrast Scrim */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#08090C] via-transparent to-transparent opacity-80" />
-
-                {/* Floating Telemetry Glass Cards */}
-                <div className="absolute top-4 left-4 right-4 flex items-center justify-between text-[11px] font-mono text-neutral-300 bg-[#08090C]/80 backdrop-blur-md px-3.5 py-2 rounded-lg border border-white/10">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#CCFF00]" />
-                    <span>NEURAL AUDIT ENGINE</span>
-                  </div>
-                  <span className="text-[#CCFF00]">CALIBRATED 2026</span>
-                </div>
-
-                <div className="absolute bottom-4 left-4 right-4 bg-[#08090C]/90 backdrop-blur-md p-4 rounded-xl border border-white/10">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-mono text-neutral-400 uppercase">
-                      Direct Benchmark Match
-                    </span>
-                    <span className="text-xs font-mono text-[#CCFF00] font-bold">
-                      94.2% FIT
+                <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#CCFF00] animate-ping" />
+                    <span className="text-xs font-mono font-bold tracking-wider text-white">
+                      LIVE PLACEMENT RADAR
                     </span>
                   </div>
-                  <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-[#CCFF00] h-full w-[94%]" />
+                  <span className="text-[10px] font-mono text-[#00F0FF] px-2 py-0.5 rounded bg-[#00F0FF]/10 border border-[#00F0FF]/20">
+                    FORTUNE 500 BENCHMARK
+                  </span>
+                </div>
+
+                {/* Score Dial & Metrics */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="p-4 rounded-xl bg-[#14171E] border border-white/10">
+                    <div className="text-3xl font-bold font-tech text-[#CCFF00] mb-1">
+                      94/100
+                    </div>
+                    <div className="text-[11px] text-neutral-400 font-mono">
+                      ATS Calibrated Index
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between text-[11px] text-neutral-400 font-mono mt-2">
-                    <span>Google L4 · Microsoft SDE · Ather Robotics</span>
-                    <span className="text-white">Day-1 Verified</span>
+                  <div className="p-4 rounded-xl bg-[#14171E] border border-white/10">
+                    <div className="text-3xl font-bold font-tech text-[#00F0FF] mb-1">
+                      3.4x
+                    </div>
+                    <div className="text-[11px] text-neutral-400 font-mono">
+                      Interview Shortlist Lift
+                    </div>
                   </div>
                 </div>
+
+                {/* Telemetry rows */}
+                <div className="space-y-3 mb-6 font-mono text-xs">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10">
+                    <span className="text-neutral-300">STAR Metrics Enforced</span>
+                    <span className="text-[#CCFF00] font-bold">100% Passed</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10">
+                    <span className="text-neutral-300">Gatekeeper Skill Match</span>
+                    <span className="text-white font-bold">14 / 14 Extracted</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10">
+                    <span className="text-neutral-300">Greenroom Speech Telemetry</span>
+                    <span className="text-[#00F0FF] font-bold">138 WPM (Optimal)</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => onOpenAuth(false)}
+                  className="w-full py-3 rounded-xl bg-[#CCFF00] hover:bg-[#b8e600] text-[#08090C] text-xs font-bold font-mono uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Launch Assessment Terminal</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Kinetic Placement Proof Marquee */}
-      <div className="border-b border-white/[0.08] bg-[#0E1015]/60 py-3 overflow-hidden select-none">
-        <div className="animate-marquee whitespace-nowrap flex items-center gap-12 text-xs font-mono text-neutral-400 tracking-wider">
-          <span>GOOGLE TIER-1 OFFERS: ₹32 LPA</span>
-          <span className="text-[#CCFF00]">·</span>
-          <span>MICROSOFT CORE SYSTEMS: ₹28 LPA</span>
-          <span className="text-[#CCFF00]">·</span>
-          <span>ATHER ENERGY ROS2 ROBOTICS: ₹18.5 LPA</span>
-          <span className="text-[#CCFF00]">·</span>
-          <span>L&amp;T INFRASTRUCTURE BIM ANALYTICS: ₹14 LPA</span>
-          <span className="text-[#CCFF00]">·</span>
-          <span>QUALCOMM VLSI VERIFICATION: ₹22 LPA</span>
-          <span className="text-[#CCFF00]">·</span>
-          <span>AMAZON AWS CLOUD PLATFORM: ₹30 LPA</span>
-          <span className="text-[#CCFF00]">·</span>
-          <span>GOOGLE TIER-1 OFFERS: ₹32 LPA</span>
-          <span className="text-[#CCFF00]">·</span>
-          <span>MICROSOFT CORE SYSTEMS: ₹28 LPA</span>
-          <span className="text-[#CCFF00]">·</span>
-          <span>ATHER ENERGY ROS2 ROBOTICS: ₹18.5 LPA</span>
-        </div>
-      </div>
-
       {/* =========================================================================
-          SECTION 2: INTERACTIVE ATS LASER DIAGNOSTIC SCANNER SIMULATOR
-         ========================================================================= */}
-      <section id="simulator" className="py-24 border-b border-white/[0.08] relative">
-        <div className="max-w-7xl mx-auto px-6">
-          {/* Section Kicker & Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-            <div>
-              <div className="text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
-                02 · Interactive Optical Diagnostic
-              </div>
-              <h2 className="text-3xl sm:text-5xl font-bold font-display text-white tracking-tight">
-                Simulate Your ATS Laser Audit
-              </h2>
-            </div>
-            <p className="text-sm text-neutral-400 max-w-md font-mono">
-              Test how corporate ATS parsers analyze student resumes. Switch between candidates
-              or trigger the real-time laser audit to see STAR sentence transforms.
-            </p>
-          </div>
-
-          {/* Interactive Candidate Switcher */}
-          <div className="flex flex-wrap items-center gap-3 mb-8">
-            <span className="text-xs font-mono text-neutral-400 uppercase mr-2">
-              Select Sample Candidate:
-            </span>
-            {ATS_CANDIDATE_SAMPLES.map((cand) => (
-              <button
-                key={cand.id}
-                onClick={() => {
-                  playSound(640, 0.08);
-                  handleSelectCandidate(cand);
-                }}
-                className={`px-4 py-2 rounded-lg text-xs font-mono uppercase tracking-wider transition-all ${
-                  selectedCandidate.id === cand.id
-                    ? 'bg-[#CCFF00] text-[#08090C] font-bold shadow-md shadow-[#CCFF00]/20'
-                    : 'bg-[#14171E] text-neutral-300 hover:text-white border border-white/10'
-                }`}
-                data-cursor="SWITCH"
-              >
-                {cand.name} ({cand.target.split(' ')[0]})
-              </button>
-            ))}
-
-            <button
-              onClick={() => triggerScanSimulation()}
-              disabled={isScanning}
-              className="ml-auto px-4 py-2 rounded-lg bg-[#00F0FF]/15 hover:bg-[#00F0FF]/25 border border-[#00F0FF]/40 text-[#00F0FF] text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-all disabled:opacity-50"
-              data-cursor="RESYNC"
-            >
-              <RotateCcw className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
-              <span>{isScanning ? 'Auditing Resume...' : 'Re-Run Laser Scan'}</span>
-            </button>
-          </div>
-
-          {/* Simulated Scanner Terminal Window */}
-          <div className="spotlight-card rounded-2xl border border-white/10 p-6 sm:p-8 bg-[#0E1015] relative overflow-hidden">
-            {/* Real-time Neon Laser Beam Animation */}
-            {isScanning && (
-              <div className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#00F0FF] to-transparent shadow-[0_0_15px_#00F0FF] z-20 animate-laser pointer-events-none" />
-            )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              {/* Left Column: ATS Score Gauge */}
-              <div className="lg:col-span-4 flex flex-col items-center justify-center p-6 rounded-xl bg-[#08090C] border border-white/10 text-center">
-                <div className="relative w-36 h-36 flex items-center justify-center mb-4">
-                  <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="42"
-                      stroke="rgba(255, 255, 255, 0.1)"
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="42"
-                      stroke={currentScore >= 85 ? '#CCFF00' : '#00F0FF'}
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray="264"
-                      strokeDashoffset={264 - (264 * currentScore) / 100}
-                      strokeLinecap="round"
-                      className="transition-all duration-300"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-4xl font-bold font-tech text-white tabular-nums">
-                      {currentScore}%
-                    </span>
-                    <span className="text-[10px] font-mono text-neutral-400 uppercase">
-                      ATS Match
-                    </span>
-                  </div>
-                </div>
-
-                <div className="text-sm font-bold text-white font-display mb-1">
-                  {selectedCandidate.name}
-                </div>
-                <div className="text-xs text-neutral-400 font-mono mb-4">
-                  {selectedCandidate.target}
-                </div>
-
-                <div className="w-full py-2 px-3 rounded bg-white/5 border border-white/10 text-xs font-mono text-neutral-300 flex items-center justify-between">
-                  <span>Initial Baseline:</span>
-                  <span className="text-red-400 line-through">{selectedCandidate.initialScore}%</span>
-                  <span className="text-[#CCFF00] font-bold">+{selectedCandidate.finalScore - selectedCandidate.initialScore}% Boost</span>
-                </div>
-              </div>
-
-              {/* Center & Right Column: Bullet Transformation & Detected Keywords */}
-              <div className="lg:col-span-8 space-y-6">
-                <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-neutral-400 mb-2 flex items-center justify-between">
-                    <span>Weak Unquantified Bullet (Before):</span>
-                    <span className="text-red-400">Triggers ATS Gatekeeper Filter</span>
-                  </div>
-                  <div className="p-4 rounded-xl bg-red-950/20 border border-red-500/20 text-xs sm:text-sm text-neutral-300 font-mono leading-relaxed">
-                    "{selectedCandidate.bulletOld}"
-                  </div>
-                </div>
-
-                <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-[#CCFF00] mb-2 flex items-center justify-between">
-                    <span>Neural STAR Rewrite (Optimized):</span>
-                    <span className="text-[#CCFF00] font-bold">Passes Fortune 500 Screening</span>
-                  </div>
-                  <div className="p-4 rounded-xl bg-[#CCFF00]/5 border border-[#CCFF00]/30 text-xs sm:text-sm text-white font-mono leading-relaxed">
-                    "{selectedCandidate.bulletNew}"
-                  </div>
-                </div>
-
-                <div>
-                  <div className="text-xs font-mono uppercase tracking-wider text-neutral-400 mb-2">
-                    Verified Gatekeeper Keywords Extracted:
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCandidate.detectedKeywords.map((kw, i) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1 rounded bg-[#14171E] border border-white/10 text-xs font-mono text-[#00F0FF] flex items-center gap-1.5"
-                      >
-                        <Check className="w-3 h-3 text-[#CCFF00]" />
-                        <span>{kw}</span>
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Diagnostic Action Strip */}
-            <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-xs font-mono text-neutral-400">
-                Want to run this deep neural optical audit on your real PDF resume?
-              </div>
-              <button
-                onClick={() => {
-                  playSound(800, 0.1);
-                  onOpenAuth(false);
-                }}
-                className="px-6 py-3 rounded-lg bg-[#CCFF00] text-[#08090C] text-xs font-bold font-mono uppercase tracking-wider hover:bg-[#b8e600] active:scale-[0.98] transition-all flex items-center gap-2"
-                data-cursor="UPLOAD"
-              >
-                <span>Upload Resume for Live Analysis</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 3: THE 6-STEP RECRUITMENT PIPELINE (Awwwards Visual Grid)
+          SECTION 2: THE 6-STAGE ENGINE PIPELINE
          ========================================================================= */}
       <section id="pipeline" className="py-24 border-b border-white/[0.08] relative">
         <div className="max-w-7xl mx-auto px-6">
-          {/* Section Kicker */}
-          <div className="max-w-3xl mb-16">
-            <div className="text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
-              03 · The 6-Phase Execution System
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+            <div>
+              <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
+                <span>02</span>
+                <span aria-hidden="true">·</span>
+                <span>The Algorithmic Workflow</span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl font-bold font-display tracking-tight text-white">
+                Six Stages from Ingestion to Tier-1 Offer.
+              </h2>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-display text-white tracking-tight mb-4">
-              From Raw Resume to Day-1 Placement Offer
-            </h2>
-            <p className="text-base text-neutral-300">
-              A continuous, synchronized pipeline where every step feeds real telemetry
-              into the next, closing gaps and building production-grade proof of work.
-            </p>
+            <div className="text-xs font-mono text-neutral-400 max-w-xs">
+              Every stage calibrated to real placement cutoffs, eliminative ATS rules, and technical panels.
+            </div>
           </div>
 
-          {/* Interactive Step Switcher Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-10">
-            {WORKFLOW_STEPS.map((s, idx) => {
-              const StepIcon = s.icon;
-              const isActive = activeWorkflowIdx === idx;
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {WORKFLOW_STEPS.map((item, idx) => {
+              const Icon = item.icon;
               return (
-                <button
-                  key={s.step}
-                  onClick={() => {
-                    playSound(500 + idx * 80, 0.08);
-                    setActiveWorkflowIdx(idx);
-                  }}
-                  className={`p-3.5 rounded-xl border text-left transition-all ${
-                    isActive
-                      ? 'bg-[#161922] border-[#CCFF00] text-white shadow-lg shadow-[#CCFF00]/5'
-                      : 'bg-[#0E1015] border-white/10 text-neutral-400 hover:border-white/20 hover:text-neutral-200'
-                  }`}
-                  data-cursor={`STEP ${s.step}`}
+                <div
+                  key={item.step}
+                  className="p-7 rounded-2xl bg-[#0E1015] border border-white/10 hover:border-white/20 transition-all duration-300 flex flex-col justify-between group shadow-lg"
+                  data-cursor="STEP"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-mono text-neutral-500">
-                      PHASE {s.step}
-                    </span>
-                    <StepIcon
-                      className={`w-4 h-4 ${
-                        isActive ? 'text-[#CCFF00]' : 'text-neutral-500'
-                      }`}
-                    />
+                  <div>
+                    <div className="flex items-center justify-between mb-5">
+                      <div className="size-11 rounded-xl bg-[#14171E] border border-white/10 flex items-center justify-center text-[#CCFF00] group-hover:scale-105 transition-transform">
+                        <Icon className="size-5" />
+                      </div>
+                      <span className="text-xs font-mono font-bold text-neutral-400 px-2.5 py-1 rounded bg-white/5 border border-white/10">
+                        {item.step}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-bold text-white group-hover:text-[#CCFF00] transition-colors mb-1">
+                      {item.title}
+                    </h3>
+                    <div className="text-xs font-mono text-[#00F0FF] mb-3 uppercase tracking-wider">
+                      {item.subtitle}
+                    </div>
+                    <p className="text-sm text-neutral-400 leading-relaxed mb-6 font-normal">
+                      {item.desc}
+                    </p>
                   </div>
-                  <div className="text-xs font-bold font-display line-clamp-1">
-                    {s.title}
+
+                  <div className="pt-4 border-t border-white/[0.08] flex items-center justify-between text-xs font-mono">
+                    <span className="text-[#CCFF00] font-semibold">{item.metric}</span>
+                    <span className="text-neutral-500">{item.badge}</span>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
-
-          {/* Active Step Feature Showcase with Cinematic Asset */}
-          {(() => {
-            const activeStep = WORKFLOW_STEPS[activeWorkflowIdx];
-            const StepIcon = activeStep.icon;
-            return (
-              <div className="spotlight-card rounded-2xl border border-white/10 p-8 lg:p-12 bg-[#0E1015]">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-                  <div className="lg:col-span-6 space-y-6">
-                    <div className="flex items-center gap-3 text-xs font-mono text-[#CCFF00] uppercase tracking-wider">
-                      <StepIcon className="w-4 h-4" />
-                      <span>{activeStep.subtitle}</span>
-                      <span aria-hidden="true">·</span>
-                      <span className="text-neutral-400">{activeStep.metric}</span>
-                    </div>
-
-                    <h3 className="text-2xl sm:text-4xl font-bold font-display text-white">
-                      {activeStep.title}
-                    </h3>
-
-                    <p className="text-sm sm:text-base text-neutral-300 leading-relaxed">
-                      {activeStep.desc}
-                    </p>
-
-                    <div className="p-4 rounded-xl bg-white/5 border border-white/10">
-                      <div className="text-xs font-mono text-[#00F0FF] uppercase mb-1">
-                        Engineered Outcome
-                      </div>
-                      <div className="text-sm text-neutral-200 font-mono">
-                        {activeStep.highlight}
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        onClick={() => {
-                          playSound(840, 0.1);
-                          onOpenAuth(false);
-                        }}
-                        className="px-6 py-3.5 rounded-lg bg-[#CCFF00] text-[#08090C] text-xs font-bold font-mono uppercase tracking-wider hover:bg-[#b8e600] active:scale-[0.98] transition-all flex items-center gap-2"
-                        data-cursor="EXPERIENCE"
-                      >
-                        <span>Experience Phase {activeStep.step}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="lg:col-span-6 relative">
-                    <div className="rounded-xl border border-white/10 overflow-hidden relative group">
-                      <img
-                        src={activeStep.image}
-                        alt={activeStep.title}
-                        referrerPolicy="no-referrer"
-                        className="w-full h-80 object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#08090C] via-transparent to-transparent opacity-80" />
-                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs font-mono text-neutral-300 bg-[#08090C]/80 backdrop-blur-md px-4 py-2.5 rounded-lg border border-white/10">
-                        <span>PHASE {activeStep.step} VERIFICATION</span>
-                        <span className="text-[#CCFF00]">ACTIVE ENGINE</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
         </div>
       </section>
 
       {/* =========================================================================
-          SECTION 4: INTERACTIVE DISCIPLINE RADAR (CSE, MECH, ECE, CIVIL, BIOTECH)
+          SECTION 3: INTERACTIVE ATS RESUME SCANNER SIMULATOR
+         ========================================================================= */}
+      <section id="simulator" className="py-24 border-b border-white/[0.08] relative bg-[#0B0C10]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-3xl mb-12">
+            <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
+              <span>03</span>
+              <span aria-hidden="true">·</span>
+              <span>Interactive Telemetry</span>
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-bold font-display tracking-tight text-white mb-4">
+              Real-Time ATS Sentence Rewriter Simulator.
+            </h2>
+            <p className="text-base text-neutral-400 leading-relaxed">
+              Test how corporate ATS parsers analyze raw bullet points versus AI-calibrated STAR formulations with quantifiable metrics.
+            </p>
+          </div>
+
+          {/* Candidate Switcher */}
+          <div className="flex gap-3 mb-8">
+            {ATS_CANDIDATE_SAMPLES.map((cand, idx) => (
+              <button
+                key={cand.id}
+                onClick={() => {
+                  playSound(640 + idx * 80, 0.08);
+                  setActiveCandidateIndex(idx);
+                }}
+                className={`px-5 py-2.5 rounded-lg text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                  activeCandidateIndex === idx
+                    ? 'bg-[#CCFF00] text-[#08090C] font-bold shadow-md shadow-[#CCFF00]/15'
+                    : 'bg-[#14171E] text-neutral-400 hover:text-white border border-white/10'
+                }`}
+              >
+                {cand.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Interactive Inspection Terminal */}
+          <div className="p-8 rounded-2xl bg-[#0E1015] border border-white/15 shadow-2xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-white/10 mb-6">
+              <div className="flex items-center gap-4">
+                <div
+                  className={`size-16 rounded-xl flex items-center justify-center font-bold font-mono text-2xl ${
+                    activeCandidate.atsScore >= 80
+                      ? 'bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/30'
+                      : 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                  }`}
+                >
+                  {activeCandidate.atsScore}%
+                </div>
+                <div>
+                  <div className="text-xs font-mono text-neutral-400 uppercase">ATS Compatibility</div>
+                  <div className="text-base font-bold text-white">
+                    {activeCandidate.atsScore >= 80 ? 'Tier-1 Qualified' : 'Cutoff Risk'}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="text-xs font-mono text-neutral-400 uppercase mb-1">Gatekeeper Keywords</div>
+                <div className="text-xl font-bold font-mono text-white">
+                  {activeCandidate.gatekeepersPassed}
+                </div>
+                <div className="text-xs text-neutral-400 font-mono">Fortune 500 Threshold: 12</div>
+              </div>
+
+              <div>
+                <div className="text-xs font-mono text-neutral-400 uppercase mb-1">Audit Summary</div>
+                <div className="text-xs text-neutral-300 font-mono leading-relaxed">
+                  {activeCandidate.summary}
+                </div>
+              </div>
+            </div>
+
+            {/* Bullet Rewrites Before & After */}
+            <div className="space-y-4">
+              <div className="text-xs font-mono uppercase tracking-wider text-[#CCFF00]">
+                STAR Bullet Point Formulation
+              </div>
+              {activeCandidate.bullets.map((b, i) => (
+                <div
+                  key={i}
+                  className="p-5 rounded-xl bg-[#14171E] border border-white/10 space-y-3"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="px-2 py-0.5 rounded bg-red-500/20 text-red-400 text-[10px] font-mono shrink-0 font-bold">
+                      RAW
+                    </span>
+                    <p className="text-xs text-neutral-400 font-mono leading-relaxed line-through decoration-red-500/50">
+                      {b.original}
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="px-2 py-0.5 rounded bg-[#CCFF00]/20 text-[#CCFF00] text-[10px] font-mono shrink-0 font-bold">
+                      CALIBRATED
+                    </span>
+                    <p className="text-xs text-white font-mono leading-relaxed font-semibold">
+                      {b.optimized}
+                    </p>
+                  </div>
+                  <div className="text-[11px] text-[#00F0FF] font-mono pl-14">
+                    ⚡ Audit: {b.critique}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => onOpenAuth(false)}
+                className="px-8 py-3.5 rounded-lg bg-[#CCFF00] hover:bg-[#b8e600] text-[#08090C] text-xs font-bold font-mono uppercase tracking-wider transition-all hover:scale-105 cursor-pointer shadow-lg shadow-[#CCFF00]/15"
+              >
+                Scan &amp; Calibrate Your Resume Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION 4: DISCIPLINE RADAR & SALARY BENCHMARKS
          ========================================================================= */}
       <section id="disciplines" className="py-24 border-b border-white/[0.08] relative">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="max-w-3xl mb-14">
-            <div className="text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
-              04 · Cross-Discipline Placement Intelligence
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-display text-white tracking-tight mb-4">
-              Every Branch Has a High-Growth Pathway
-            </h2>
-            <p className="text-base text-neutral-300">
-              Select your academic discipline to view targeted high-paying roles,
-              exact gatekeeper competencies, and realistic campus CTC ranges.
-            </p>
-          </div>
-
-          {/* Discipline Selector Buttons */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-10">
-            {DISCIPLINE_TRACKS.map((t) => {
-              const isSel = selectedDiscipline.id === t.id;
-              return (
-                <button
-                  key={t.id}
-                  onClick={() => {
-                    playSound(600, 0.08);
-                    setSelectedDiscipline(t);
-                  }}
-                  className={`p-4 rounded-xl border text-left transition-all ${
-                    isSel
-                      ? 'bg-[#161922] border-[#CCFF00] text-white shadow-lg shadow-[#CCFF00]/5'
-                      : 'bg-[#0E1015] border-white/10 text-neutral-400 hover:border-white/20 hover:text-white'
-                  }`}
-                  data-cursor="DISCIPLINE"
-                >
-                  <div className="text-xs font-bold font-display mb-1">{t.name}</div>
-                  <div className="text-[11px] font-mono text-[#CCFF00]">{t.salary}</div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Active Discipline Card */}
-          <div className="spotlight-card rounded-2xl border border-white/10 p-8 lg:p-12 bg-[#0E1015]">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-7 space-y-4">
-                <div className="flex items-center gap-3 text-xs font-mono text-neutral-400 uppercase">
-                  <span>Target Corporate Role</span>
-                  <span aria-hidden="true">·</span>
-                  <span className="text-[#00F0FF]">{selectedDiscipline.demand}</span>
-                </div>
-
-                <h3 className="text-2xl sm:text-4xl font-bold font-display text-white">
-                  {selectedDiscipline.role}
-                </h3>
-
-                <div className="text-lg font-mono text-[#CCFF00] font-bold">
-                  Target CTC: {selectedDiscipline.salary}
-                </div>
-
-                <p className="text-sm text-neutral-300 font-mono">
-                  Crucial Gatekeeper Skills Tested in Technical Rounds:
-                </p>
-
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {selectedDiscipline.skills.map((sk, idx) => (
-                    <span
-                      key={idx}
-                      className="px-3.5 py-1.5 rounded-lg bg-[#14171E] border border-white/10 text-xs font-mono text-white flex items-center gap-2"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#CCFF00]" />
-                      <span>{sk}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="lg:col-span-5 bg-[#08090C] rounded-xl border border-white/10 p-6 flex flex-col justify-between space-y-6">
-                <div>
-                  <div className="text-xs font-mono text-neutral-400 uppercase mb-2">
-                    Automated Curriculum Readiness
-                  </div>
-                  <div className="text-2xl font-bold font-tech text-white mb-2">
-                    Ready to Deploy
-                  </div>
-                  <p className="text-xs text-neutral-400 font-mono leading-relaxed">
-                    Customized roadmap modules, capstone repositories, and mock questions
-                    are pre-calibrated for {selectedDiscipline.name}.
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => {
-                    playSound(750, 0.1);
-                    onOpenAuth(false);
-                  }}
-                  className="w-full py-3.5 rounded-lg bg-[#CCFF00] text-[#08090C] text-xs font-bold font-mono uppercase tracking-wider hover:bg-[#b8e600] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                  data-cursor="ENROLL"
-                >
-                  <span>Build {selectedDiscipline.name} Roadmap</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 5: INTERACTIVE PLACEMENT VELOCITY & CTC CALCULATOR
-         ========================================================================= */}
-      <section id="calculator" className="py-24 border-b border-white/[0.08] relative">
-        <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-3xl mb-12">
-            <div className="text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
-              05 · Placement Velocity Projection
+            <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
+              <span>04</span>
+              <span aria-hidden="true">·</span>
+              <span>Discipline Radar</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-display text-white tracking-tight mb-4">
-              Calculate Your Tier-1 Offer Trajectory
+            <h2 className="text-3xl sm:text-5xl font-bold font-display tracking-tight text-white mb-4">
+              Cross-Discipline Career Gateways.
             </h2>
-            <p className="text-base text-neutral-300">
-              Slide your current CGPA and choose your discipline to project hiring velocity,
-              median package range, and Day-1 shortlist probability.
+            <p className="text-base text-neutral-400 leading-relaxed">
+              Transition pathways for Core Engineering, IT, Biotech, and Finance into Tier-1 product compensation.
             </p>
           </div>
 
-          <div className="spotlight-card rounded-2xl border border-white/10 p-8 lg:p-12 bg-[#0E1015]">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-              {/* Controls Column */}
-              <div className="lg:col-span-6 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {DISCIPLINE_TRACKS.map((track, i) => (
+              <div
+                key={track.id}
+                className="p-6 rounded-2xl bg-[#0E1015] border border-white/10 hover:border-[#CCFF00]/40 transition-all flex flex-col justify-between group"
+              >
                 <div>
-                  <label className="block text-xs font-mono uppercase text-neutral-400 mb-3">
-                    Select Academic Discipline
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {['CSE / IT', 'Mechanical', 'ECE / EE', 'Civil / Other'].map((b) => (
-                      <button
-                        key={b}
-                        onClick={() => {
-                          playSound(550, 0.06);
-                          setSelectedBranch(b);
-                        }}
-                        className={`py-2 px-3 rounded-lg text-xs font-mono transition-all text-center ${
-                          selectedBranch === b
-                            ? 'bg-[#CCFF00] text-[#08090C] font-bold'
-                            : 'bg-[#14171E] text-neutral-300 hover:text-white border border-white/10'
-                        }`}
-                        data-cursor="BRANCH"
-                      >
-                        {b}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-xs font-mono text-neutral-300 mb-3">
-                    <span className="uppercase">Undergraduate CGPA</span>
-                    <span className="text-xl font-bold font-tech text-[#CCFF00] tabular-nums">
-                      {cgpaValue.toFixed(1)} / 10.0
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-xs font-mono text-neutral-400 uppercase tracking-wider">
+                      {track.name}
+                    </span>
+                    <span className="text-xs font-mono text-[#00F0FF] font-semibold">
+                      {track.demand}
                     </span>
                   </div>
-                  <input
-                    type="range"
-                    min="6.0"
-                    max="9.8"
-                    step="0.1"
-                    value={cgpaValue}
-                    onChange={(e) => {
-                      setCgpaValue(parseFloat(e.target.value));
-                      playSound(400 + parseFloat(e.target.value) * 50, 0.02);
-                    }}
-                    className="w-full accent-[#CCFF00] cursor-pointer h-2 bg-white/10 rounded-lg"
-                    data-cursor="SLIDE"
-                  />
-                  <div className="flex justify-between text-[11px] font-mono text-neutral-500 mt-2">
-                    <span>6.0 (Tier-3 Floor)</span>
-                    <span>7.5 (Standard Cutoff)</span>
-                    <span>9.0+ (Day-1 Fast-Track)</span>
-                  </div>
-                </div>
 
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-xs font-mono text-neutral-300 leading-relaxed">
-                  <span className="text-[#CCFF00] font-bold">Insight:</span> A 0.5 CGPA shift combined with 2 verified capstone blueprints and 85%+ ATS score triples shortlist probability across Tier-1 recruiters.
-                </div>
-              </div>
+                  <h3 className="text-lg font-bold text-white group-hover:text-[#CCFF00] transition-colors mb-2">
+                    {track.role}
+                  </h3>
+                  <div className="text-base font-bold text-[#CCFF00] font-mono mb-4">
+                    {track.salary}
+                  </div>
 
-              {/* Output Telemetry Column */}
-              <div className="lg:col-span-6 bg-[#08090C] rounded-xl border border-white/10 p-8 space-y-6">
-                <div>
-                  <div className="text-xs font-mono text-neutral-400 uppercase mb-1">
-                    Projected Campus CTC Range
-                  </div>
-                  <div className="text-3xl sm:text-4xl font-bold font-tech text-[#CCFF00] tabular-nums">
-                    {projectedLPA}
-                  </div>
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between text-xs font-mono text-neutral-400 uppercase mb-2">
-                    <span>Day-1 Shortlist Probability</span>
-                    <span className="text-white font-bold">{shortlistProb}%</span>
-                  </div>
-                  <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                    <div
-                      className="bg-[#CCFF00] h-full transition-all duration-300"
-                      style={{ width: `${shortlistProb}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="text-xs font-mono text-neutral-400 uppercase mb-2">
-                    Top Verified Recruiting Cohorts
-                  </div>
-                  <div className="flex flex-wrap gap-2 text-xs font-mono text-neutral-300">
-                    <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10">Google</span>
-                    <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10">Microsoft</span>
-                    <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10">Ather Energy</span>
-                    <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10">Qualcomm</span>
-                    <span className="px-2.5 py-1 rounded bg-white/5 border border-white/10">Tower Research</span>
+                  <div className="space-y-1.5 mb-6">
+                    <div className="text-[11px] font-mono text-neutral-400 uppercase">Core Competencies:</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {track.skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="px-2.5 py-1 rounded bg-white/5 border border-white/10 text-xs text-neutral-300 font-mono"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
                 <button
-                  onClick={() => {
-                    playSound(820, 0.1);
-                    onOpenAuth(false);
-                  }}
-                  className="w-full py-3.5 rounded-lg bg-[#CCFF00] text-[#08090C] text-xs font-bold font-mono uppercase tracking-wider hover:bg-[#b8e600] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                  data-cursor="UNLOCK"
+                  onClick={() => onOpenAuth(false)}
+                  className="w-full py-2.5 rounded-lg bg-white/5 hover:bg-[#CCFF00] text-white hover:text-[#08090C] text-xs font-bold font-mono uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span>Lock in This Placement Target</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>Select Pathway</span>
+                  <ArrowRight className="size-3.5" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION 5: PLACEMENT VELOCITY & CTC CALCULATOR
+         ========================================================================= */}
+      <section id="calculator" className="py-24 border-b border-white/[0.08] relative bg-[#0B0C10]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-6">
+              <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
+                <span>05</span>
+                <span aria-hidden="true">·</span>
+                <span>Placement Velocity</span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl font-bold font-display tracking-tight text-white mb-4">
+                Calculate Estimated Campus Package.
+              </h2>
+              <p className="text-neutral-400 text-sm sm:text-base leading-relaxed mb-6 font-normal">
+                Calibrated against 12,400+ campus hiring records across Tier-1 institutions, branch cutoffs, and target CTC bands.
+              </p>
+
+              {/* Branch Selector */}
+              <div className="space-y-3 mb-6">
+                <label className="text-xs font-mono text-neutral-300 uppercase block">
+                  Select Engineering Discipline:
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {['CSE / IT', 'ECE / Embedded', 'Mechanical / EV', 'Civil BIM', 'Biotech Data'].map(
+                    (branch) => (
+                      <button
+                        key={branch}
+                        onClick={() => {
+                          playSound(600, 0.05);
+                          setSelectedBranch(branch);
+                        }}
+                        className={`px-4 py-2 rounded-lg text-xs font-mono uppercase tracking-wider transition-all cursor-pointer ${
+                          selectedBranch === branch
+                            ? 'bg-[#CCFF00] text-[#08090C] font-bold'
+                            : 'bg-[#14171E] border border-white/10 text-neutral-300 hover:text-white'
+                        }`}
+                      >
+                        {branch}
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
+
+              {/* CGPA Slider */}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-xs font-mono">
+                  <span className="text-neutral-300 uppercase">Current CGPA:</span>
+                  <span className="text-[#CCFF00] font-bold text-base">{cgpaValue} / 10.0</span>
+                </div>
+                <input
+                  type="range"
+                  min="6.0"
+                  max="10.0"
+                  step="0.1"
+                  value={cgpaValue}
+                  onChange={(e) => setCgpaValue(parseFloat(e.target.value))}
+                  className="w-full accent-[#CCFF00] bg-white/10 h-2 rounded-lg cursor-pointer"
+                />
+              </div>
+            </div>
+
+            {/* Result Box */}
+            <div className="lg:col-span-6">
+              <div className="p-8 sm:p-10 rounded-2xl bg-[#0E1015] border border-white/15 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-[#CCFF00]/10 blur-3xl pointer-events-none" />
+
+                <div className="text-xs font-mono uppercase tracking-wider text-[#CCFF00] mb-2">
+                  Projected Campus Offering
+                </div>
+                <div className="text-4xl sm:text-6xl font-bold text-white font-tech tracking-tight mb-4">
+                  {projectedLPA}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/10 mb-6 font-mono">
+                  <div>
+                    <div className="text-xs text-neutral-400">Shortlist Probability</div>
+                    <div className="text-2xl font-bold text-[#CCFF00]">{shortlistProb}%</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-neutral-400">Tier-1 Company Pool</div>
+                    <div className="text-2xl font-bold text-white">40+ Firms</div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => onOpenAuth(false)}
+                  className="w-full py-4 rounded-xl bg-[#CCFF00] hover:bg-[#b8e600] text-[#08090C] font-bold text-xs font-mono uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#CCFF00]/15"
+                >
+                  <span>Unlock Roadmap for High Package</span>
+                  <ArrowRight className="size-4" />
                 </button>
               </div>
             </div>
@@ -1467,143 +1211,50 @@ export function LandingPageView({
       </section>
 
       {/* =========================================================================
-          SECTION 6: PROVEN STUDENT CASE STUDIES (Verified Proof of Work)
-         ========================================================================= */}
-      <section className="py-24 border-b border-white/[0.08] relative">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="max-w-3xl mb-14">
-            <div className="text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
-              06 · Verified Student Transformations
-            </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-display text-white tracking-tight mb-4">
-              Real Offers. Quantified Shifts.
-            </h2>
-            <p className="text-base text-neutral-300">
-              Documented trajectories of graduates who bridged technical gaps and
-              secured top offers across Product Tech, Auto Robotics, and BIM.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Student 1: Rohan Sharma */}
-            <div className="spotlight-card rounded-2xl border border-white/10 p-6 bg-[#0E1015] flex flex-col justify-between space-y-6">
-              <div>
-                <div className="flex items-center justify-between text-xs font-mono text-neutral-400 mb-4">
-                  <span>MECHANICAL → ROBOTICS</span>
-                  <span className="text-[#CCFF00] font-bold">₹18.5 LPA</span>
-                </div>
-                <h4 className="text-xl font-bold font-display text-white mb-2">
-                  Rohan Sharma
-                </h4>
-                <div className="text-xs text-neutral-400 font-mono mb-4">
-                  Placed at Ather Energy (Autonomous Systems)
-                </div>
-                <p className="text-xs text-neutral-300 leading-relaxed font-mono">
-                  "I was stuck with standard mechanical CAD drafting with low CTC offers.
-                  SkillBridge generated a 10-week ROS2 and C++17 roadmap with an autonomous
-                  slam capstone. Cleared round 2 in my first try."
-                </p>
-              </div>
-              <div className="pt-4 border-t border-white/10 text-[11px] font-mono text-neutral-400 flex items-center justify-between">
-                <span>ATS: 48% → 89%</span>
-                <span className="text-[#CCFF00]">10-Week Sprint</span>
-              </div>
-            </div>
-
-            {/* Student 2: Ananya Verma */}
-            <div className="spotlight-card rounded-2xl border border-white/10 p-6 bg-[#0E1015] flex flex-col justify-between space-y-6">
-              <div>
-                <div className="flex items-center justify-between text-xs font-mono text-neutral-400 mb-4">
-                  <span>CSE → DISTRIBUTED SYS</span>
-                  <span className="text-[#CCFF00] font-bold">₹32.0 LPA</span>
-                </div>
-                <h4 className="text-xl font-bold font-display text-white mb-2">
-                  Ananya Verma
-                </h4>
-                <div className="text-xs text-neutral-400 font-mono mb-4">
-                  Placed at Google (Core Cloud Services)
-                </div>
-                <p className="text-xs text-neutral-300 leading-relaxed font-mono">
-                  "The Greenroom interview speech telemetry was life-changing. It flagged
-                  my filler words and forced me to structure answers in the STAR format.
-                  My technical communication scored in the 98th percentile."
-                </p>
-              </div>
-              <div className="pt-4 border-t border-white/10 text-[11px] font-mono text-neutral-400 flex items-center justify-between">
-                <span>ATS: 54% → 94%</span>
-                <span className="text-[#CCFF00]">8-Week Sprint</span>
-              </div>
-            </div>
-
-            {/* Student 3: Kunal Patel */}
-            <div className="spotlight-card rounded-2xl border border-white/10 p-6 bg-[#0E1015] flex flex-col justify-between space-y-6">
-              <div>
-                <div className="flex items-center justify-between text-xs font-mono text-neutral-400 mb-4">
-                  <span>CIVIL → BIM ANALYTICS</span>
-                  <span className="text-[#CCFF00] font-bold">₹14.0 LPA</span>
-                </div>
-                <h4 className="text-xl font-bold font-display text-white mb-2">
-                  Kunal Patel
-                </h4>
-                <div className="text-xs text-neutral-400 font-mono mb-4">
-                  Placed at L&amp;T Technology Services
-                </div>
-                <p className="text-xs text-neutral-300 leading-relaxed font-mono">
-                  "Every company visiting campus wanted Python and automated BIM modeling.
-                  The platform roadmap had exact step-by-step ETABS and Python scripts
-                  that proved I had real production capabilities."
-                </p>
-              </div>
-              <div className="pt-4 border-t border-white/10 text-[11px] font-mono text-neutral-400 flex items-center justify-between">
-                <span>ATS: 51% → 87%</span>
-                <span className="text-[#CCFF00]">12-Week Sprint</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 7: ARCHITECTURAL FAQ ACCORDION
+          SECTION 6: FREQUENTLY ASKED QUESTIONS (FAQ)
          ========================================================================= */}
       <section id="faq" className="py-24 border-b border-white/[0.08] relative">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-16">
-            <div className="text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
-              07 · Technical Verification &amp; Inquiries
+            <div className="flex items-center justify-center gap-3 text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-3">
+              <span>06</span>
+              <span aria-hidden="true">·</span>
+              <span>FAQ</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-bold font-display text-white tracking-tight">
-              Frequently Asked Questions
+            <h2 className="text-3xl sm:text-5xl font-bold font-display tracking-tight text-white mb-3">
+              Frequently Asked Questions.
             </h2>
+            <p className="text-neutral-400 text-sm sm:text-base font-normal">
+              Direct insights into how our ATS calibration and placement roadmaps operate.
+            </p>
           </div>
 
           <div className="space-y-4">
-            {FAQS.map((faq, idx) => {
-              const isOpen = activeFaq === idx;
+            {FAQS.map((faq, index) => {
+              const isOpen = openFaq === index;
               return (
                 <div
-                  key={idx}
-                  className="spotlight-card rounded-xl border border-white/10 overflow-hidden bg-[#0E1015] transition-all"
+                  key={index}
+                  className="rounded-xl bg-[#0E1015] border border-white/10 overflow-hidden transition-colors"
                 >
                   <button
                     onClick={() => {
-                      playSound(500, 0.05);
-                      setActiveFaq(isOpen ? null : idx);
+                      playSound(550, 0.05);
+                      setOpenFaq(isOpen ? null : index);
                     }}
-                    className="w-full p-6 text-left flex items-center justify-between gap-4"
-                    data-cursor="TOGGLE"
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors"
                   >
-                    <span className="text-base sm:text-lg font-bold font-display text-white">
+                    <span className="text-sm sm:text-base font-semibold text-white">
                       {faq.q}
                     </span>
                     <ChevronDown
-                      className={`w-5 h-5 text-neutral-400 transition-transform duration-300 shrink-0 ${
-                        isOpen ? 'rotate-180 text-[#CCFF00]' : ''
+                      className={`size-4 text-[#CCFF00] transition-transform duration-300 shrink-0 ${
+                        isOpen ? 'rotate-180' : ''
                       }`}
                     />
                   </button>
                   {isOpen && (
-                    <div className="px-6 pb-6 text-sm sm:text-base text-neutral-300 font-mono leading-relaxed border-t border-white/5 pt-4">
+                    <div className="p-5 pt-0 text-xs sm:text-sm text-neutral-300 leading-relaxed border-t border-white/[0.05] font-normal">
                       {faq.a}
                     </div>
                   )}
@@ -1615,93 +1266,61 @@ export function LandingPageView({
       </section>
 
       {/* =========================================================================
-          SECTION 8: MONUMENTAL FINAL CONVERSION SECTION
+          SECTION 7: GRAND TERMINAL CTA & OBSIDIAN FOOTER
          ========================================================================= */}
-      <section className="py-28 relative overflow-hidden bg-[#0A0C10]">
-        <div className="absolute inset-0 bg-grid-hairline opacity-30 pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#CCFF00]/10 blur-[150px] pointer-events-none" />
+      <section className="py-24 relative overflow-hidden bg-[#08090C]">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="p-10 sm:p-14 rounded-2xl bg-[#0E1015] border border-white/15 text-center relative shadow-2xl overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-[#CCFF00]/10 blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
-          <div className="text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-6">
-            08 · Final Directive
+            <div className="relative z-10">
+              <div className="flex items-center justify-center gap-2 text-xs font-mono uppercase tracking-widest text-[#CCFF00] mb-4">
+                <span className="w-2 h-2 rounded-full bg-[#CCFF00] animate-ping" />
+                <span>Tier-1 Campus Architecture Terminal</span>
+              </div>
+
+              <h2 className="text-3xl sm:text-5xl font-bold font-display tracking-tight text-white mb-4">
+                Ready to Accelerate Your Placement Velocity?
+              </h2>
+              <p className="text-base sm:text-lg text-neutral-300 max-w-xl mx-auto mb-8 font-normal">
+                Join 12,400+ engineering students building verified proof-of-work, clearing corporate ATS cutoffs, and securing dream offers.
+              </p>
+
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <button
+                  onClick={() => {
+                    playSound(820, 0.1);
+                    onOpenAuth(false);
+                  }}
+                  className="px-8 py-4 rounded-lg bg-[#CCFF00] hover:bg-[#b8e600] text-[#08090C] font-bold text-sm font-mono uppercase tracking-wider flex items-center gap-2.5 shadow-xl shadow-[#CCFF00]/20 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <span>Start Free Right Now</span>
+                  <ArrowRight className="size-4" />
+                </button>
+
+                <button
+                  onClick={() => {
+                    playSound(550, 0.08);
+                    onOpenAuth(true);
+                  }}
+                  className="px-8 py-4 rounded-lg border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 text-white font-mono text-xs uppercase tracking-wider transition-all cursor-pointer"
+                >
+                  Sign In to Terminal
+                </button>
+              </div>
+            </div>
           </div>
 
-          <h2 className="text-4xl sm:text-6xl lg:text-7xl font-bold font-display text-white tracking-tight leading-tight mb-8">
-            YOUR TIER-1 PLACEMENT
-            <br />
-            <span className="text-[#CCFF00]">BEGINS TODAY.</span>
-          </h2>
-
-          <p className="text-base sm:text-xl text-neutral-300 max-w-2xl mx-auto font-normal leading-relaxed mb-10">
-            Audit your resume with optical precision, isolate your corporate skill gaps,
-            and build verified proof of work that recruiters cannot overlook.
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <button
-              onClick={() => {
-                playSound(900, 0.12);
-                onOpenAuth(false);
-              }}
-              className="px-9 py-4 rounded-xl bg-[#CCFF00] text-[#08090C] text-sm font-bold font-mono uppercase tracking-wider hover:bg-[#b8e600] active:scale-[0.98] transition-all flex items-center gap-3 shadow-2xl shadow-[#CCFF00]/25"
-              data-cursor="CLAIM"
-            >
-              <span>Get Started Free</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={() => {
-                playSound(600, 0.08);
-                onOpenAuth(true, true);
-              }}
-              className="px-6 py-4 rounded-xl border border-white/15 hover:border-white/30 text-neutral-300 hover:text-white text-sm font-mono tracking-wider transition-colors flex items-center gap-2"
-              data-cursor="ADMIN"
-            >
-              <Shield className="w-4 h-4 text-[#00F0FF]" />
-              <span>T&amp;P Directorate Terminal</span>
-            </button>
-          </div>
+          {/* Minimalist Obsidian Footer */}
+          <footer className="mt-16 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-neutral-400">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[#CCFF00]" />
+              <span>SKILLBRIDGE AI · ALL CAMPUS SERVICES OPERATIONAL</span>
+            </div>
+            <div>© {new Date().getFullYear()} AI Skill Mentor. All rights reserved.</div>
+          </footer>
         </div>
       </section>
-
-      {/* =========================================================================
-          FOOTER (Quiet Architectural 1-Row Contract)
-         ========================================================================= */}
-      <footer className="py-12 border-t border-white/[0.08] bg-[#08090C] text-xs font-mono text-neutral-500">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <span className="w-2 h-2 rounded-sm bg-[#CCFF00]" />
-            <span className="text-white font-bold font-display">SKILLBRIDGE AI</span>
-            <span>·</span>
-            <span>CAMPUS RECRUITMENT ARCHITECTURE 2026</span>
-          </div>
-
-          <div className="flex items-center gap-6">
-            <button
-              onClick={() => onOpenAuth(true, true)}
-              className="hover:text-white transition-colors"
-              data-cursor="GO"
-            >
-              Directorate Console
-            </button>
-            <button
-              onClick={() => onOpenAuth(true)}
-              className="hover:text-white transition-colors"
-              data-cursor="GO"
-            >
-              Student Sign In
-            </button>
-            <button
-              onClick={() => onOpenAuth(false)}
-              className="hover:text-white transition-colors text-[#CCFF00]"
-              data-cursor="GO"
-            >
-              Register Candidate
-            </button>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
