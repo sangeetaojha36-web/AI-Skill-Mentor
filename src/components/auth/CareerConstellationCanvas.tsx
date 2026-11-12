@@ -24,20 +24,20 @@ interface StardustParticle {
 }
 
 const SKILL_NODES = [
-  { label: 'AI & ML', category: 'career' as const, color: '#DE4313' },
-  { label: 'Data Analytics', category: 'career' as const, color: '#FEC163' },
-  { label: 'Software Eng', category: 'career' as const, color: '#FA8C28' },
-  { label: 'Python Systems', category: 'skill' as const, color: '#FFE19C' },
-  { label: 'SQL Architecture', category: 'skill' as const, color: '#FEC163' },
-  { label: 'System Design', category: 'skill' as const, color: '#FB923C' },
-  { label: 'Robotics & IoT', category: 'career' as const, color: '#DE4313' },
-  { label: 'Cloud Systems', category: 'skill' as const, color: '#FFD799' },
-  { label: 'FinTech', category: 'career' as const, color: '#DE4313' },
-  { label: 'ATS Engine', category: 'core' as const, color: '#FEC163' },
+  { label: 'AI & ML', category: 'career' as const, color: '#CCFF00' },
+  { label: 'Data Analytics', category: 'career' as const, color: '#CBD0DC' },
+  { label: 'Software Eng', category: 'career' as const, color: '#94979E' },
+  { label: 'Python Systems', category: 'skill' as const, color: '#CCFF00' },
+  { label: 'SQL Architecture', category: 'skill' as const, color: '#CBD0DC' },
+  { label: 'System Design', category: 'skill' as const, color: '#94979E' },
+  { label: 'Robotics & IoT', category: 'career' as const, color: '#CCFF00' },
+  { label: 'Cloud Systems', category: 'skill' as const, color: '#CBD0DC' },
+  { label: 'FinTech', category: 'career' as const, color: '#94979E' },
+  { label: 'ATS Engine', category: 'core' as const, color: '#CCFF00' },
   { label: 'Mock Studio', category: 'core' as const, color: '#FFFFFF' },
 ];
 
-const SOLAR_PALETTE = ['#FEC163', '#FFD285', '#FA8C28', '#FB923C', '#DE4313', '#FFFFFF'];
+const SOLAR_PALETTE = ['#CCFF00', '#CBD0DC', '#94979E', '#5F636E', '#FFFFFF'];
 
 export const CareerConstellationCanvas: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -67,9 +67,9 @@ export const CareerConstellationCanvas: React.FC = () => {
       return {
         x: width / 2 + Math.cos(angle) * distance,
         y: height / 2 + Math.sin(angle) * distance,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: (Math.random() - 0.5) * 0.35,
-        radius: item.category === 'career' ? 6 : item.category === 'core' ? 5 : 4.2,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
+        radius: item.category === 'career' ? 5 : item.category === 'core' ? 4.5 : 3.5,
         label: item.label,
         category: item.category,
         color: item.color,
@@ -77,31 +77,31 @@ export const CareerConstellationCanvas: React.FC = () => {
       };
     });
 
-    // Initialize celestial solar stardust ring particles
-    const stardustCount = 150;
+    // Initialize celestial subtle stardust ring particles
+    const stardustCount = 80;
     const stardust: StardustParticle[] = [];
     for (let i = 0; i < stardustCount; i++) {
       stardust.push({
         angle: Math.random() * Math.PI * 2,
         baseRadius: Math.min(width, height) * (0.22 + Math.random() * 0.17),
         radiusOffset: (Math.random() - 0.5) * 55,
-        angularSpeed: (0.0012 + Math.random() * 0.0022) * (Math.random() > 0.5 ? 1 : -1),
-        size: Math.random() * 2.3 + 0.8,
-        alpha: Math.random() * 0.85 + 0.25,
-        twinkleSpeed: 0.02 + Math.random() * 0.04,
+        angularSpeed: (0.0008 + Math.random() * 0.0014) * (Math.random() > 0.5 ? 1 : -1),
+        size: Math.random() * 1.8 + 0.6,
+        alpha: Math.random() * 0.4 + 0.1,
+        twinkleSpeed: 0.015 + Math.random() * 0.025,
         color: SOLAR_PALETTE[Math.floor(Math.random() * SOLAR_PALETTE.length)],
       });
     }
 
     // Particle pulses along links
     const pulses: { from: number; to: number; progress: number; speed: number; color: string }[] = [];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 4; i++) {
       pulses.push({
         from: Math.floor(Math.random() * nodes.length),
         to: Math.floor(Math.random() * nodes.length),
         progress: Math.random(),
-        speed: 0.006 + Math.random() * 0.008,
-        color: i % 2 === 0 ? '#FEC163' : '#DE4313',
+        speed: 0.004 + Math.random() * 0.005,
+        color: '#CCFF00',
       });
     }
 
@@ -132,7 +132,7 @@ export const CareerConstellationCanvas: React.FC = () => {
       const bgGrad = ctx.createLinearGradient(0, 0, width, height);
       bgGrad.addColorStop(0, '#1c0803'); // Rich sunset ember core
       bgGrad.addColorStop(0.35, '#120401');
-      bgGrad.addColorStop(0.7, '#070201');
+      bgGrad.addColorStop(0.7, '#08090C');
       bgGrad.addColorStop(1, '#000000'); // Pure void black
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
@@ -146,8 +146,8 @@ export const CareerConstellationCanvas: React.FC = () => {
         height * 0.5,
         Math.max(width, height) * 0.65
       );
-      solarBloom.addColorStop(0, 'rgba(254, 193, 99, 0.28)'); // #FEC163 Solar Gold
-      solarBloom.addColorStop(0.4, 'rgba(222, 67, 19, 0.18)'); // #DE4313 Ember Flame
+      solarBloom.addColorStop(0, 'rgba(204, 255, 0, 0.28)'); // #CCFF00 Solar Gold
+      solarBloom.addColorStop(0.4, 'rgba(204, 255, 0, 0.18)'); // #00F0FF Ember Flame
       solarBloom.addColorStop(0.8, 'rgba(120, 25, 4, 0.06)');
       solarBloom.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = solarBloom;
@@ -155,7 +155,7 @@ export const CareerConstellationCanvas: React.FC = () => {
 
       // Top-right secondary solar flare
       const trGlow = ctx.createRadialGradient(width * 0.8, height * 0.2, 5, width * 0.8, height * 0.2, width * 0.5);
-      trGlow.addColorStop(0, 'rgba(254, 193, 99, 0.16)');
+      trGlow.addColorStop(0, 'rgba(204, 255, 0, 0.16)');
       trGlow.addColorStop(1, 'transparent');
       ctx.fillStyle = trGlow;
       ctx.fillRect(0, 0, width, height);
@@ -234,7 +234,7 @@ export const CareerConstellationCanvas: React.FC = () => {
             ctx.beginPath();
             ctx.moveTo(n1.x, n1.y);
             ctx.lineTo(n2.x, n2.y);
-            ctx.strokeStyle = `rgba(254, 193, 99, ${alpha})`;
+            ctx.strokeStyle = `rgba(204, 255, 0, ${alpha})`;
             ctx.lineWidth = 1.1;
             ctx.stroke();
           }

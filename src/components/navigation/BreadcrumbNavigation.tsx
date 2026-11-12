@@ -129,7 +129,7 @@ export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({
       result.push({
         label: 'Placement Dashboard',
         current: true,
-        icon: <Home className="w-3.5 h-3.5 text-[#FEC163]" />,
+        icon: <Home className="w-3.5 h-3.5 text-[#CCFF00]" />,
         badge: user?.education?.branch ? `${user.education.branch.split(' ')[0]}` : 'Active',
       });
       return result;
@@ -224,11 +224,11 @@ export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({
             <button
               type="button"
               onClick={onBack}
-              className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#FEC163]/30 bg-[#120603]/90 hover:bg-[#200A04] text-xs font-semibold text-[#FEC163] hover:text-white shadow-sm hover:border-[#FEC163]/60 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FEC163]"
+              className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#CCFF00]/30 bg-[#120603]/90 hover:bg-[#200A04] text-xs font-semibold text-[#CCFF00] hover:text-white shadow-sm hover:border-[#CCFF00]/60 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#CCFF00]"
               title="Go to previous page"
               aria-label="Go back one step"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-[#FEC163] group-hover:-translate-x-0.5 transition-transform" />
+              <ArrowLeft className="w-3.5 h-3.5 text-[#CCFF00] group-hover:-translate-x-0.5 transition-transform" />
               <span>Back</span>
             </button>
           )}
@@ -257,7 +257,7 @@ export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({
                       {segment.icon}
                       <span>{segment.label}</span>
                       {segment.badge && (
-                        <span className="ml-1.5 hidden sm:inline-flex items-center text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FEC163]/15 text-[#FEC163] border border-[#FEC163]/30">
+                        <span className="ml-1.5 hidden sm:inline-flex items-center text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/30">
                           {segment.badge}
                         </span>
                       )}
@@ -274,7 +274,7 @@ export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({
         {user?.education?.branch && activeTab !== 'dashboard' && (
           <div className="hidden lg:flex items-center gap-1.5 text-[11px] text-zinc-400 font-mono">
             <span className="text-zinc-500">Degree & Branch:</span>
-            <span className="text-[#FEC163] font-medium bg-[#140603] px-2.5 py-0.5 rounded-md border border-[#FEC163]/25">
+            <span className="text-[#CCFF00] font-medium bg-[#14171E] px-2.5 py-0.5 rounded-md border border-[#CCFF00]/25">
               {user.education.degree ? `${user.education.degree} ` : ''}{user.education.branch}
             </span>
           </div>
@@ -282,7 +282,7 @@ export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({
       </div>
 
       {/* 6-Step Workflow Stepper Ribbon (Visible across all tabs to guide student workflow) */}
-      <div className="rounded-2xl border border-white/[0.08] bg-[#140603]/90 p-2.5 sm:p-3 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="rounded-2xl border border-white/[0.08] bg-[#14171E]/90 p-2.5 sm:p-3 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
           <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-bold px-1 hidden sm:block shrink-0">
             Placement Flow:
@@ -300,7 +300,7 @@ export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({
                   onClick={() => onNavigate(item.tab)}
                   className={`group flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                     isActive
-                      ? 'border-[#FEC163] bg-[#FEC163] text-zinc-950 font-bold shadow-md shadow-amber-950/40'
+                      ? 'border-[#CCFF00] bg-[#CCFF00] text-zinc-950 font-bold shadow-md shadow-[#CCFF00]/10'
                       : isPassed
                       ? 'border-emerald-500/40 bg-emerald-950/30 text-emerald-300 hover:border-emerald-500/60'
                       : 'border-white/10 bg-white/[0.03] text-zinc-400 hover:text-white hover:border-white/20'
@@ -310,7 +310,7 @@ export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({
                   <span
                     className={`size-4 rounded-full text-[9px] font-mono font-bold flex items-center justify-center shrink-0 ${
                       isActive
-                        ? 'bg-zinc-950 text-[#FEC163]'
+                        ? 'bg-zinc-950 text-[#CCFF00]'
                         : isPassed
                         ? 'bg-emerald-500/20 text-emerald-300'
                         : 'bg-white/10 text-zinc-400'
@@ -333,8 +333,8 @@ export const BreadcrumbNavigation: React.FC<BreadcrumbNavigationProps> = ({
             className="self-end md:self-auto inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs font-semibold text-white transition-all cursor-pointer whitespace-nowrap"
           >
             <span className="text-[10px] text-zinc-400 font-mono">Next:</span>
-            <span className="text-[#FEC163]">{nextWorkflowStep.label}</span>
-            <ArrowRight className="size-3 text-[#FEC163]" />
+            <span className="text-[#CCFF00]">{nextWorkflowStep.label}</span>
+            <ArrowRight className="size-3 text-[#CCFF00]" />
           </button>
         )}
       </div>

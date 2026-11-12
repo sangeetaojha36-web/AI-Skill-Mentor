@@ -305,7 +305,7 @@ function PrimaryPlacementActionCards({
       {/* CARD 1: Target Career Track & Adaptive Roadmap */}
       <div
         onClick={() => onNavigate('roadmap')}
-        className="group relative flex flex-col justify-between rounded-2xl border border-amber-500/25 bg-gradient-to-b from-amber-950/50 via-[#1c0d04]/80 to-[#0e0401]/95 p-4.5 transition-all duration-200 hover:-translate-y-1 hover:border-amber-400/60 hover:shadow-lg hover:shadow-amber-950/40 cursor-pointer shadow-sm select-none"
+        className="group relative flex flex-col justify-between rounded-2xl border border-amber-500/25 bg-gradient-to-b from-amber-950/50 via-[#1c0d04]/80 to-[#0e0401]/95 p-4.5 transition-all duration-200 hover:-translate-y-1 hover:border-amber-400/60 hover:shadow-lg hover:shadow-[#CCFF00]/10 cursor-pointer shadow-sm select-none"
       >
         {/* Ambient Glow */}
         <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl pointer-events-none" />
@@ -316,19 +316,19 @@ function PrimaryPlacementActionCards({
             <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold">
               Placement Target
             </span>
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-black/60 border border-white/10 text-[11px] font-mono font-bold text-[#FEC163]">
-              <span className="size-1.5 rounded-full bg-[#FEC163] animate-pulse" />
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-black/60 border border-white/10 text-[11px] font-mono font-bold text-[#CCFF00]">
+              <span className="size-1.5 rounded-full bg-[#CCFF00] animate-pulse" />
               <span>{matchPercentage}% Match</span>
             </div>
           </div>
 
           {/* Icon + Title Block */}
           <div className="flex items-center gap-3 pt-1">
-            <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 border border-amber-500/30 text-[#FEC163] shadow-md group-hover:scale-105 transition-transform">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-amber-500/15 border border-amber-500/30 text-[#CCFF00] shadow-md group-hover:scale-105 transition-transform">
               <Target className="size-5.5" />
             </div>
             <div className="min-w-0">
-              <h3 className="font-bold text-white text-base leading-snug group-hover:text-[#FEC163] transition-colors truncate">
+              <h3 className="font-bold text-white text-base leading-snug group-hover:text-[#CCFF00] transition-colors truncate">
                 {targetTitle}
               </h3>
               <p className="text-zinc-400 text-xs truncate">{degreeBranch}</p>
@@ -339,7 +339,7 @@ function PrimaryPlacementActionCards({
           <div className="space-y-1.5 pt-1">
             <div className="w-full h-1.5 rounded-full bg-black/60 overflow-hidden border border-white/5">
               <div
-                className="h-full bg-gradient-to-r from-amber-600 via-amber-500 to-[#FEC163] rounded-full transition-all duration-500"
+                className="h-full bg-gradient-to-r from-amber-600 via-amber-500 to-[#CCFF00] rounded-full transition-all duration-500"
                 style={{ width: `${Math.min(100, Math.max(12, matchPercentage))}%` }}
               />
             </div>
@@ -352,7 +352,7 @@ function PrimaryPlacementActionCards({
 
         {/* Action Row */}
         <div className="mt-4 pt-2.5 border-t border-white/[0.08] flex items-center justify-between text-xs relative z-10">
-          <span className="font-semibold text-[#FEC163] group-hover:text-white transition-colors flex items-center gap-1">
+          <span className="font-semibold text-[#CCFF00] group-hover:text-white transition-colors flex items-center gap-1">
             <span>Explore Roadmap</span>
             <ArrowUpRight className="size-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </span>
@@ -533,7 +533,7 @@ function DashboardTips({
     <section className="flex flex-col gap-5 p-5 sm:p-6 rounded-3xl border border-white/[0.08] bg-[#0E0503]/80 shadow-md">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#FEC163]">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#CCFF00]">
             <Sparkles className="size-3.5" />
             <span className="uppercase tracking-wider font-mono">Placement Preparation Playbook</span>
           </div>
@@ -562,7 +562,7 @@ function DashboardTips({
           <article
             key={tip.title}
             onClick={tip.onClick}
-            className="group flex flex-col justify-between rounded-2xl border border-white/[0.08] bg-[#140603] hover:bg-[#1C0904] p-3.5 transition-all duration-200 hover:border-[#FEC163]/50 hover:-translate-y-1 cursor-pointer shadow-sm"
+            className="group flex flex-col justify-between rounded-2xl border border-white/[0.08] bg-[#14171E] hover:bg-[#1C0904] p-3.5 transition-all duration-200 hover:border-[#CCFF00]/50 hover:-translate-y-1 cursor-pointer shadow-sm"
           >
             <div>
               <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-white/[0.08] bg-black/40">
@@ -573,7 +573,7 @@ function DashboardTips({
                   height={160}
                   className="size-full object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:group-hover:scale-105"
                 />
-                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/85 backdrop-blur-sm border border-white/20 text-[10px] font-mono font-bold text-[#FEC163] shadow-md">
+                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/85 backdrop-blur-sm border border-white/20 text-[10px] font-mono font-bold text-[#CCFF00] shadow-md">
                   {tip.step}
                 </div>
               </div>
@@ -582,7 +582,7 @@ function DashboardTips({
                 <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
                   {tip.category}
                 </span>
-                <h3 className="font-semibold text-white text-sm group-hover:text-[#FEC163] transition-colors leading-snug">
+                <h3 className="font-semibold text-white text-sm group-hover:text-[#CCFF00] transition-colors leading-snug">
                   {tip.title}
                 </h3>
                 <p className="text-zinc-400 text-xs leading-relaxed line-clamp-2">
@@ -591,7 +591,7 @@ function DashboardTips({
               </div>
             </div>
 
-            <div className="mt-4 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-[#FEC163] group-hover:text-white transition-colors">
+            <div className="mt-4 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-[#CCFF00] group-hover:text-white transition-colors">
               <span>{tip.actionText}</span>
               <ArrowUpRight className="size-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
@@ -883,7 +883,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
       accentColor: '#fbbf24',
       bgGradient: 'from-amber-950/60 via-[#221105] to-[#120602]',
       borderColor: 'border-amber-500/25 hover:border-amber-400/60',
-      shadowColor: 'hover:shadow-amber-950/40',
+      shadowColor: 'hover:shadow-[#CCFF00]/10',
       badgeBg: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
       icon: FigLightbulbIcon,
       highlight: `CTC: ${topCareer?.averageSalaryIndia?.split('(')[0] || '₹8.5 - 24 LPA'}`,
@@ -941,7 +941,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold text-white tracking-tight">Resources</h2>
-            <span className="flex size-2 rounded-full bg-[#FEC163] animate-pulse" />
+            <span className="flex size-2 rounded-full bg-[#CCFF00] animate-pulse" />
           </div>
           <p className="text-zinc-400 text-xs mt-0.5">
             Interactive placement modules, CTC benchmarks & verified code blueprints.
@@ -955,7 +955,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
             onClick={() => setActiveFilter('all')}
             className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors cursor-pointer ${
               activeFilter === 'all'
-                ? 'bg-[#FEC163] text-zinc-950 font-semibold shadow-sm'
+                ? 'bg-[#CCFF00] text-zinc-950 font-semibold shadow-sm'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -966,7 +966,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
             onClick={() => setActiveFilter('prep')}
             className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors cursor-pointer ${
               activeFilter === 'prep'
-                ? 'bg-[#FEC163] text-zinc-950 font-semibold shadow-sm'
+                ? 'bg-[#CCFF00] text-zinc-950 font-semibold shadow-sm'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -977,7 +977,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
             onClick={() => setActiveFilter('action')}
             className={`px-2.5 py-1 text-xs font-medium rounded-lg transition-colors cursor-pointer ${
               activeFilter === 'action'
-                ? 'bg-[#FEC163] text-zinc-950 font-semibold shadow-sm'
+                ? 'bg-[#CCFF00] text-zinc-950 font-semibold shadow-sm'
                 : 'text-zinc-400 hover:text-white'
             }`}
           >
@@ -988,7 +988,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
             onClick={() => setActiveFilter('starred')}
             className={`px-2 py-1 text-xs font-medium rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
               activeFilter === 'starred'
-                ? 'bg-[#FEC163] text-zinc-950 font-semibold shadow-sm'
+                ? 'bg-[#CCFF00] text-zinc-950 font-semibold shadow-sm'
                 : 'text-zinc-400 hover:text-white'
             }`}
             title="View Bookmarked Resources"
@@ -1022,10 +1022,10 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                 <button
                   type="button"
                   onClick={(e) => toggleStar(card.id, e)}
-                  className="p-1 rounded-md text-zinc-500 hover:text-[#FEC163] transition-colors cursor-pointer"
+                  className="p-1 rounded-md text-zinc-500 hover:text-[#CCFF00] transition-colors cursor-pointer"
                   title={isStarred ? 'Remove bookmark' : 'Bookmark this resource'}
                 >
-                  <Star className={`size-3.5 ${isStarred ? 'fill-[#FEC163] text-[#FEC163]' : ''}`} />
+                  <Star className={`size-3.5 ${isStarred ? 'fill-[#CCFF00] text-[#CCFF00]' : ''}`} />
                 </button>
               </div>
 
@@ -1058,9 +1058,9 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
 
               {/* Title & Metadata */}
               <div className="mt-3.5 space-y-1">
-                <h3 className="font-semibold text-white group-hover:text-[#FEC163] transition-colors text-sm flex items-center justify-between">
+                <h3 className="font-semibold text-white group-hover:text-[#CCFF00] transition-colors text-sm flex items-center justify-between">
                   <span>{card.label}</span>
-                  <ArrowUpRight className="size-3.5 text-zinc-500 group-hover:text-[#FEC163] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  <ArrowUpRight className="size-3.5 text-zinc-500 group-hover:text-[#CCFF00] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </h3>
                 <p className="text-zinc-400 text-xs font-medium">{card.sublabel}</p>
 
@@ -1087,7 +1087,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                   }}
                   className="flex items-center gap-1 text-[11px] font-medium text-zinc-300 hover:text-white px-2 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] transition-colors cursor-pointer"
                 >
-                  <Eye className="size-3 text-[#FEC163]" />
+                  <Eye className="size-3 text-[#CCFF00]" />
                   <span>Quick Peek</span>
                 </button>
 
@@ -1097,7 +1097,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                     e.stopPropagation();
                     onNavigate(card.destinationTab);
                   }}
-                  className="flex items-center gap-1 text-[11px] font-semibold text-[#FEC163] hover:text-white transition-colors cursor-pointer"
+                  className="flex items-center gap-1 text-[11px] font-semibold text-[#CCFF00] hover:text-white transition-colors cursor-pointer"
                 >
                   <span>Launch</span>
                   <ArrowRight className="size-3" />
@@ -1114,7 +1114,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
           <button
             type="button"
             onClick={() => setActiveFilter('all')}
-            className="mt-2 text-xs font-semibold text-[#FEC163] hover:underline cursor-pointer"
+            className="mt-2 text-xs font-semibold text-[#CCFF00] hover:underline cursor-pointer"
           >
             Show All Resources
           </button>
@@ -1138,7 +1138,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4.5 border-b border-white/[0.08] bg-black/40 shrink-0">
               <div className="flex items-center gap-3">
-                <div className="flex size-9 items-center justify-center rounded-xl bg-[#FEC163]/10 border border-[#FEC163]/30 text-[#FEC163]">
+                <div className="flex size-9 items-center justify-center rounded-xl bg-[#CCFF00]/10 border border-[#CCFF00]/30 text-[#CCFF00]">
                   {inspectingResource === 'courses' && <GraduationCap className="size-5" />}
                   {inspectingResource === 'careers' && <Lightbulb className="size-5" />}
                   {inspectingResource === 'projects' && <Code2 className="size-5" />}
@@ -1168,7 +1168,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                     setInspectingResource(null);
                     onNavigate(target);
                   }}
-                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-xs font-semibold text-[#FEC163] transition-colors cursor-pointer"
+                  className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] text-xs font-semibold text-[#CCFF00] transition-colors cursor-pointer"
                 >
                   <span>Open Full Tab</span>
                   <ExternalLink className="size-3" />
@@ -1246,7 +1246,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                           >
                             <div className="space-y-1 min-w-0">
                               <div className="flex items-center gap-2 text-[10px] text-zinc-400">
-                                <span className="font-semibold text-[#FEC163]">{course.provider}</span>
+                                <span className="font-semibold text-[#CCFF00]">{course.provider}</span>
                                 <span>·</span>
                                 <span>{course.duration}</span>
                                 <span>·</span>
@@ -1282,7 +1282,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                                   if (course.url) window.open(course.url, '_blank');
                                   else onNavigate('courses');
                                 }}
-                                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#FEC163] hover:bg-[#ffcd7d] text-zinc-950 transition-colors cursor-pointer flex items-center gap-1"
+                                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#CCFF00] hover:bg-[#ffcd7d] text-zinc-950 transition-colors cursor-pointer flex items-center gap-1"
                               >
                                 <span>Start Course</span>
                                 <ExternalLink className="size-3" />
@@ -1300,7 +1300,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                 <div className="space-y-5">
                   <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-950/20 space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-mono font-bold text-[#FEC163] uppercase">Target Track</span>
+                      <span className="text-xs font-mono font-bold text-[#CCFF00] uppercase">Target Track</span>
                       <span className="text-xs font-semibold text-white">
                         Avg CTC: {topCareer?.averageSalaryIndia || '₹8.5 - 24 LPA'}
                       </span>
@@ -1325,7 +1325,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                           key={recruiter}
                           className="p-3 rounded-lg border border-white/[0.08] bg-black/40 flex items-center gap-2"
                         >
-                          <BuildingIcon className="size-4 text-[#FEC163] shrink-0" />
+                          <BuildingIcon className="size-4 text-[#CCFF00] shrink-0" />
                           <span className="text-xs font-semibold text-white truncate">{recruiter}</span>
                         </div>
                       ))}
@@ -1339,19 +1339,19 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                     </h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       <div className="p-3 rounded-lg border border-white/[0.06] bg-black/30">
-                        <span className="font-mono text-[#FEC163] font-bold">Round 1 · Online Assessment (OA)</span>
+                        <span className="font-mono text-[#CCFF00] font-bold">Round 1 · Online Assessment (OA)</span>
                         <p className="text-zinc-400 text-[11px] mt-1">2 Data structures problems + 20 aptitude & CS fundamentals</p>
                       </div>
                       <div className="p-3 rounded-lg border border-white/[0.06] bg-black/30">
-                        <span className="font-mono text-[#FEC163] font-bold">Round 2 · Technical Machine Coding</span>
+                        <span className="font-mono text-[#CCFF00] font-bold">Round 2 · Technical Machine Coding</span>
                         <p className="text-zinc-400 text-[11px] mt-1">Hands-on live problem solving & SQL aggregations</p>
                       </div>
                       <div className="p-3 rounded-lg border border-white/[0.06] bg-black/30">
-                        <span className="font-mono text-[#FEC163] font-bold">Round 3 · Architecture & Projects</span>
+                        <span className="font-mono text-[#CCFF00] font-bold">Round 3 · Architecture & Projects</span>
                         <p className="text-zinc-400 text-[11px] mt-1">In-depth scrutiny of your GitHub repos and system trade-offs</p>
                       </div>
                       <div className="p-3 rounded-lg border border-white/[0.06] bg-black/30">
-                        <span className="font-mono text-[#FEC163] font-bold">Round 4 · HR & Culture Fit</span>
+                        <span className="font-mono text-[#CCFF00] font-bold">Round 4 · HR & Culture Fit</span>
                         <p className="text-zinc-400 text-[11px] mt-1">STAR method behavioral queries and salary negotiation</p>
                       </div>
                     </div>
@@ -1371,7 +1371,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                         </>
                       ) : (
                         <>
-                          <Copy className="size-3.5 text-[#FEC163]" />
+                          <Copy className="size-3.5 text-[#CCFF00]" />
                           <span>Copy Placement Cheatsheet</span>
                         </>
                       )}
@@ -1383,7 +1383,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                         setInspectingResource(null);
                         onNavigate('careers');
                       }}
-                      className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#FEC163] hover:bg-[#ffcd7d] text-zinc-950 text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                      className="w-full sm:w-auto px-4 py-2 rounded-xl bg-[#CCFF00] hover:bg-[#ffcd7d] text-zinc-950 text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                     >
                       <span>Explore All 24+ Career Paths</span>
                       <ArrowRight className="size-3.5" />
@@ -1508,7 +1508,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
 
                   {/* High Yield Missing Skills with Instant Verify */}
                   <div>
-                    <h4 className="text-xs font-mono uppercase tracking-wider text-[#FEC163] font-semibold mb-2">
+                    <h4 className="text-xs font-mono uppercase tracking-wider text-[#CCFF00] font-semibold mb-2">
                       High-Yield Skills to Unlock ({missingSkills.length})
                     </h4>
                     <div className="space-y-2.5">
@@ -1544,7 +1544,7 @@ ${missingSkills.map((s: any) => `- [ ] ${s.name}: ${s.reason}`).join('\n')}
                               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer shrink-0 flex items-center gap-1 ${
                                 isAlreadyVerified
                                   ? 'bg-emerald-950/60 border border-emerald-500/40 text-emerald-300 cursor-default'
-                                  : 'bg-white/[0.08] hover:bg-white/[0.15] text-[#FEC163] border border-[#FEC163]/30'
+                                  : 'bg-white/[0.08] hover:bg-white/[0.15] text-[#CCFF00] border border-[#CCFF00]/30'
                               }`}
                             >
                               {isVerifying ? (
@@ -1620,7 +1620,7 @@ function InspirationList({
     <section className="flex flex-1 flex-col items-start gap-8">
       <div className="flex items-center justify-between w-full">
         <h2 className="text-lg font-semibold text-white">Get Inspired</h2>
-        <span className="text-xs text-[#FEC163] font-medium">Target Tracks</span>
+        <span className="text-xs text-[#CCFF00] font-medium">Target Tracks</span>
       </div>
 
       <div className="flex w-full flex-col gap-2">
@@ -1631,20 +1631,20 @@ function InspirationList({
             <div
               key={item.title}
               onClick={item.onClick}
-              className="bg-[#160703] hover:bg-[#200A04] border border-white/[0.06] hover:border-[#FEC163]/40 group flex h-18 w-full items-center justify-between rounded-2xl py-4 pr-8 pl-6 cursor-pointer transition-colors shadow-sm"
+              className="bg-[#160703] hover:bg-[#200A04] border border-white/[0.06] hover:border-[#CCFF00]/40 group flex h-18 w-full items-center justify-between rounded-2xl py-4 pr-8 pl-6 cursor-pointer transition-colors shadow-sm"
             >
               <div className="flex items-center gap-4 min-w-0">
                 <div className="flex size-8 shrink-0 items-center justify-center">
                   <Icon className="max-h-7 max-w-7 transition-transform duration-200 ease-out group-hover:scale-105" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-medium text-white text-sm group-hover:text-[#FEC163] transition-colors truncate">
+                  <h3 className="font-medium text-white text-sm group-hover:text-[#CCFF00] transition-colors truncate">
                     {item.title}
                   </h3>
                   <p className="text-xs text-zinc-500 truncate">{item.subtitle}</p>
                 </div>
               </div>
-              <ArrowUpRight className="text-zinc-400 group-hover:text-[#FEC163] size-6 transition-transform duration-200 ease-out group-hover:translate-x-1 group-hover:-translate-y-1 shrink-0" />
+              <ArrowUpRight className="text-zinc-400 group-hover:text-[#CCFF00] size-6 transition-transform duration-200 ease-out group-hover:translate-x-1 group-hover:-translate-y-1 shrink-0" />
             </div>
           );
         })}
@@ -1668,7 +1668,7 @@ function ApplicationInterfaceFrame({
   return (
     <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden border border-white/[0.1] bg-[#0A0503] flex flex-col group/preview select-none">
       {/* Browser Bar */}
-      <div className="h-7 bg-[#140603] border-b border-white/[0.08] px-3 flex items-center justify-between shrink-0">
+      <div className="h-7 bg-[#14171E] border-b border-white/[0.08] px-3 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-1.5">
           <div className="size-2 rounded-full bg-rose-500/80" />
           <div className="size-2 rounded-full bg-amber-500/80" />
@@ -1694,7 +1694,7 @@ function ApplicationInterfaceFrame({
       </div>
 
       {/* Screen Interface Mock */}
-      <div className="flex-1 p-3 bg-gradient-to-br from-[#120502] via-[#0D0402] to-[#080201] overflow-hidden flex flex-col justify-between relative">
+      <div className="flex-1 p-3 bg-gradient-to-br from-[#0E1015] via-[#0D0402] to-[#080201] overflow-hidden flex flex-col justify-between relative">
         {type === 'analytics' && (
           <div className="space-y-2">
             <div className="flex items-center justify-between text-[10px]">
@@ -1709,7 +1709,7 @@ function ApplicationInterfaceFrame({
               </div>
               <div className="p-1.5 rounded bg-white/[0.04] border border-white/[0.06]">
                 <p className="text-[9px] text-zinc-500">Capacity</p>
-                <p className="text-[11px] font-bold text-[#FEC163] font-mono">94.8%</p>
+                <p className="text-[11px] font-bold text-[#CCFF00] font-mono">94.8%</p>
               </div>
               <div className="p-1.5 rounded bg-white/[0.04] border border-white/[0.06]">
                 <p className="text-[9px] text-zinc-500">Events/s</p>
@@ -1721,8 +1721,8 @@ function ApplicationInterfaceFrame({
               <svg viewBox="0 0 240 60" className="w-full h-full overflow-visible">
                 <defs>
                   <linearGradient id={`grad-${project.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#FEC163" stopOpacity="0.35" />
-                    <stop offset="100%" stopColor="#DE4313" stopOpacity="0.0" />
+                    <stop offset="0%" stopColor="#CCFF00" stopOpacity="0.35" />
+                    <stop offset="100%" stopColor="#00F0FF" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
                 <path
@@ -1732,7 +1732,7 @@ function ApplicationInterfaceFrame({
                 <path
                   d="M0,45 Q30,10 60,35 T120,20 T180,38 T240,15"
                   fill="none"
-                  stroke="#FEC163"
+                  stroke="#CCFF00"
                   strokeWidth="2"
                 />
               </svg>
@@ -1744,7 +1744,7 @@ function ApplicationInterfaceFrame({
           <div className="space-y-2">
             <div className="flex items-center justify-between text-[10px]">
               <div className="flex items-center gap-1.5">
-                <div className="size-2 rounded-full bg-[#FEC163]" />
+                <div className="size-2 rounded-full bg-[#CCFF00]" />
                 <span className="text-white font-semibold">AI Workspace</span>
               </div>
               <span className="text-[9px] px-1.5 py-0.5 rounded bg-orange-600/30 text-orange-300 font-mono">Production</span>
@@ -1765,11 +1765,11 @@ function ApplicationInterfaceFrame({
         {type === 'code' && (
           <div className="font-mono text-[9px] space-y-1 text-zinc-400">
             <div className="flex items-center gap-2 border-b border-white/[0.06] pb-1 text-zinc-500">
-              <Terminal className="size-3 text-[#FEC163]" />
+              <Terminal className="size-3 text-[#CCFF00]" />
               <span>server.ts [FastAPI / REST]</span>
             </div>
             <p className="text-purple-400">@app.post(<span className="text-emerald-300">&quot;/api/stream&quot;</span>)</p>
-            <p className="text-zinc-300"><span className="text-blue-400">async def</span> <span className="text-[#FEC163]">handle_request</span>(req: StreamReq):</p>
+            <p className="text-zinc-300"><span className="text-blue-400">async def</span> <span className="text-[#CCFF00]">handle_request</span>(req: StreamReq):</p>
             <p className="text-zinc-400 pl-3">data = <span className="text-blue-400">await</span> engine.evaluate(req.data)</p>
             <p className="text-emerald-400 pl-3">return <span className="text-zinc-300">&#123;</span><span className="text-orange-300">&quot;status&quot;</span>: 200, <span className="text-orange-300">&quot;score&quot;</span>: 94&#125;</p>
           </div>
@@ -1788,11 +1788,11 @@ function ApplicationInterfaceFrame({
               </div>
               <div className="p-2 rounded bg-white/[0.04] border border-white/[0.06]">
                 <p className="text-[9px] text-zinc-400">Shortlisted</p>
-                <p className="text-xs font-bold text-[#FEC163] font-mono">318</p>
+                <p className="text-xs font-bold text-[#CCFF00] font-mono">318</p>
               </div>
             </div>
             <div className="h-2 w-full bg-white/[0.06] rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-[#FEC163] to-[#DE4313] w-3/4 rounded-full" />
+              <div className="h-full bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] w-3/4 rounded-full" />
             </div>
           </div>
         )}
@@ -1809,12 +1809,12 @@ function ApplicationInterfaceFrame({
                 <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono">60 FPS</span>
               </div>
               <div className="flex items-center gap-1.5 text-[9px] text-zinc-400">
-                <div className="size-1.5 rounded-full bg-[#FEC163]" />
+                <div className="size-1.5 rounded-full bg-[#CCFF00]" />
                 <span>Responsive Viewport · Production Ready</span>
               </div>
             </div>
             <div className="flex items-center justify-around py-1 bg-black/40 rounded border border-white/[0.04] text-[9px] text-zinc-400">
-              <span className="text-[#FEC163]">Home</span>
+              <span className="text-[#CCFF00]">Home</span>
               <span>Feed</span>
               <span>Profile</span>
             </div>
@@ -2102,7 +2102,7 @@ function DemostacksWorkspaceSection({
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             onClick={() => setShowAddModal(true)}
-            className="h-10 px-4 text-xs sm:text-sm font-semibold rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:from-[#ffd28e] hover:to-[#ef5323] text-black flex items-center gap-1.5 transition-all cursor-pointer shadow-md shadow-orange-950/60"
+            className="h-10 px-4 text-xs sm:text-sm font-semibold rounded-xl bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] hover:from-[#ffd28e] hover:to-[#ef5323] text-black flex items-center gap-1.5 transition-all cursor-pointer shadow-md shadow-orange-950/60"
           >
             <Plus className="size-4 text-black" />
             <span>Add Project</span>
@@ -2118,7 +2118,7 @@ function DemostacksWorkspaceSection({
             onClick={() => setWorkspaceTab('shared')}
             className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-all cursor-pointer ${
               workspaceTab === 'shared'
-                ? 'border-[#FEC163] text-[#FEC163]'
+                ? 'border-[#CCFF00] text-[#CCFF00]'
                 : 'border-transparent text-zinc-400 hover:text-white'
             }`}
           >
@@ -2131,7 +2131,7 @@ function DemostacksWorkspaceSection({
             onClick={() => setWorkspaceTab('personal')}
             className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-all cursor-pointer ${
               workspaceTab === 'personal'
-                ? 'border-[#FEC163] text-[#FEC163]'
+                ? 'border-[#CCFF00] text-[#CCFF00]'
                 : 'border-transparent text-zinc-400 hover:text-white'
             }`}
           >
@@ -2144,7 +2144,7 @@ function DemostacksWorkspaceSection({
             onClick={() => setWorkspaceTab('archive')}
             className={`flex items-center gap-2 px-3 py-2 text-sm font-medium border-b-2 transition-all cursor-pointer ${
               workspaceTab === 'archive'
-                ? 'border-[#FEC163] text-[#FEC163]'
+                ? 'border-[#CCFF00] text-[#CCFF00]'
                 : 'border-transparent text-zinc-400 hover:text-white'
             }`}
           >
@@ -2160,7 +2160,7 @@ function DemostacksWorkspaceSection({
             onClick={() => {
               setSort(sort === 'recent' ? 'ascending' : sort === 'ascending' ? 'descending' : 'recent');
             }}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/[0.08] bg-[#140603] text-zinc-300 hover:text-white text-xs font-medium cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/[0.08] bg-[#14171E] text-zinc-300 hover:text-white text-xs font-medium cursor-pointer"
             title="Toggle sort"
           >
             <ArrowDownWideNarrow className="size-4 text-zinc-400" />
@@ -2171,7 +2171,7 @@ function DemostacksWorkspaceSection({
           <button
             type="button"
             onClick={() => setView(view === 'grid' ? 'list' : 'grid')}
-            className="flex size-9 items-center justify-center rounded-xl border border-white/[0.08] bg-[#140603] text-zinc-300 hover:text-white cursor-pointer"
+            className="flex size-9 items-center justify-center rounded-xl border border-white/[0.08] bg-[#14171E] text-zinc-300 hover:text-white cursor-pointer"
             aria-label={view === 'grid' ? 'Switch to list view' : 'Switch to grid view'}
           >
             {view === 'grid' ? <List className="size-4" /> : <Grid2X2 className="size-4" />}
@@ -2192,7 +2192,7 @@ function DemostacksWorkspaceSection({
             <article
               key={proj.id}
               onClick={() => handleOpenProject(proj)}
-              className={`group cursor-pointer rounded-2xl border border-white/[0.08] bg-[#120502]/90 hover:bg-[#1a0803] hover:border-[#FEC163]/50 transition-all p-3.5 flex flex-col justify-between shadow-sm hover:-translate-y-1 ${
+              className={`group cursor-pointer rounded-2xl border border-white/[0.08] bg-[#0E1015]/90 hover:bg-[#1a0803] hover:border-[#CCFF00]/50 transition-all p-3.5 flex flex-col justify-between shadow-sm hover:-translate-y-1 ${
                 view === 'list' ? 'sm:flex-row sm:items-center sm:gap-6' : ''
               }`}
             >
@@ -2204,11 +2204,11 @@ function DemostacksWorkspaceSection({
 
                 <div className="mt-3.5 space-y-2">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="group-hover:text-[#FEC163] font-semibold text-white text-base leading-snug transition-colors line-clamp-1">
+                    <h3 className="group-hover:text-[#CCFF00] font-semibold text-white text-base leading-snug transition-colors line-clamp-1">
                       {proj.title}
                     </h3>
                     {proj.aiAnalysis?.recruiterScore && (
-                      <span className="shrink-0 text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#FEC163]/15 text-[#FEC163] border border-[#FEC163]/30 font-bold">
+                      <span className="shrink-0 text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/30 font-bold">
                         AI Score {proj.aiAnalysis.recruiterScore}%
                       </span>
                     )}
@@ -2255,7 +2255,7 @@ function DemostacksWorkspaceSection({
                     className="px-2.5 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-zinc-200 text-xs flex items-center gap-1 transition-colors cursor-pointer"
                     title="View AI Recruiter Analysis & Resume Bullets"
                   >
-                    <Sparkles className="size-3 text-[#FEC163]" />
+                    <Sparkles className="size-3 text-[#CCFF00]" />
                     <span>AI Breakdown</span>
                   </button>
 
@@ -2286,9 +2286,9 @@ function DemostacksWorkspaceSection({
 
       {/* Empty State when no student projects added yet */}
       {workspaceTab !== 'archive' && displayProjects.length === 0 && (
-        <div className="mt-8 rounded-3xl border border-dashed border-white/[0.12] bg-[#140603]/60 p-8 sm:p-12 text-center max-w-2xl mx-auto space-y-4">
-          <div className="size-14 mx-auto rounded-2xl bg-gradient-to-br from-[#FEC163]/20 to-[#DE4313]/20 border border-[#FEC163]/30 flex items-center justify-center text-[#FEC163] shadow-lg">
-            <Code2 className="size-7 text-[#FEC163]" />
+        <div className="mt-8 rounded-3xl border border-dashed border-white/[0.12] bg-[#14171E]/60 p-8 sm:p-12 text-center max-w-2xl mx-auto space-y-4">
+          <div className="size-14 mx-auto rounded-2xl bg-gradient-to-br from-[#CCFF00]/20 to-[#00F0FF]/20 border border-[#CCFF00]/30 flex items-center justify-center text-[#CCFF00] shadow-lg">
+            <Code2 className="size-7 text-[#CCFF00]" />
           </div>
           <div className="space-y-1.5">
             <h3 className="text-base sm:text-lg font-bold text-white">
@@ -2302,7 +2302,7 @@ function DemostacksWorkspaceSection({
             <button
               type="button"
               onClick={() => setShowAddModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:from-[#ffd28e] hover:to-[#ef5323] text-black font-bold text-xs flex items-center gap-2 shadow-md cursor-pointer transition-transform hover:scale-105"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] hover:from-[#ffd28e] hover:to-[#ef5323] text-black font-bold text-xs flex items-center gap-2 shadow-md cursor-pointer transition-transform hover:scale-105"
             >
               <Plus className="size-4 text-black" />
               <span>Add Project with GitHub / Live Link</span>
@@ -2318,7 +2318,7 @@ function DemostacksWorkspaceSection({
             <button
               type="button"
               onClick={handleLoadSampleProject}
-              className="px-3 py-2 rounded-xl text-zinc-400 hover:text-[#FEC163] text-xs underline cursor-pointer transition-colors"
+              className="px-3 py-2 rounded-xl text-zinc-400 hover:text-[#CCFF00] text-xs underline cursor-pointer transition-colors"
             >
               Preview with Sample Project
             </button>
@@ -2343,7 +2343,7 @@ function DemostacksWorkspaceSection({
           }}
           className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
         >
-          <div className="bg-[#140603] border border-white/[0.14] rounded-2xl sm:rounded-3xl max-w-xl w-full max-h-[88vh] flex flex-col shadow-2xl animate-fade-in overflow-hidden relative text-xs text-white">
+          <div className="bg-[#14171E] border border-white/[0.14] rounded-2xl sm:rounded-3xl max-w-xl w-full max-h-[88vh] flex flex-col shadow-2xl animate-fade-in overflow-hidden relative text-xs text-white">
             {/* Sticky Header with Back Button */}
             <div className="sticky top-0 z-20 bg-[#160703] border-b border-white/[0.1] px-5 py-3.5 flex items-center justify-between gap-3 shrink-0">
               <button
@@ -2351,12 +2351,12 @@ function DemostacksWorkspaceSection({
                 onClick={() => setShowAddModal(false)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.12] text-zinc-200 hover:text-white font-medium text-xs transition-colors cursor-pointer"
               >
-                <ArrowLeft className="size-4 text-[#FEC163]" />
+                <ArrowLeft className="size-4 text-[#CCFF00]" />
                 <span>Back</span>
               </button>
 
               <div className="flex items-center gap-2">
-                <div className="size-6 rounded-lg bg-gradient-to-br from-[#FEC163] to-[#DE4313] flex items-center justify-center text-black font-bold">
+                <div className="size-6 rounded-lg bg-gradient-to-br from-[#CCFF00] to-[#00F0FF] flex items-center justify-center text-black font-bold">
                   <Sparkles className="size-3.5" />
                 </div>
                 <h3 className="text-sm font-bold text-white">Add Project to Portfolio</h3>
@@ -2384,7 +2384,7 @@ function DemostacksWorkspaceSection({
                   value={projTitle}
                   onChange={(e) => setProjTitle(e.target.value)}
                   placeholder="e.g. Real-Time Telemetry & Patient Flow Dashboard"
-                  className="w-full bg-black/50 border border-white/[0.1] rounded-xl p-2.5 text-white text-xs focus:border-[#FEC163] focus:outline-none"
+                  className="w-full bg-black/50 border border-white/[0.1] rounded-xl p-2.5 text-white text-xs focus:border-[#CCFF00] focus:outline-none"
                 />
               </div>
 
@@ -2399,7 +2399,7 @@ function DemostacksWorkspaceSection({
                     value={projLive}
                     onChange={(e) => setProjLive(e.target.value)}
                     placeholder="https://my-project.vercel.app"
-                    className="w-full bg-black/50 border border-white/[0.1] rounded-xl p-2.5 text-white text-xs focus:border-[#FEC163] focus:outline-none"
+                    className="w-full bg-black/50 border border-white/[0.1] rounded-xl p-2.5 text-white text-xs focus:border-[#CCFF00] focus:outline-none"
                   />
                   <p className="text-[10px] text-zinc-500 mt-1">Users will be directed here when clicked</p>
                 </div>
@@ -2414,7 +2414,7 @@ function DemostacksWorkspaceSection({
                     value={projGithub}
                     onChange={(e) => setProjGithub(e.target.value)}
                     placeholder="https://github.com/user/project-repo"
-                    className="w-full bg-black/50 border border-white/[0.1] rounded-xl p-2.5 text-white text-xs focus:border-[#FEC163] focus:outline-none"
+                    className="w-full bg-black/50 border border-white/[0.1] rounded-xl p-2.5 text-white text-xs focus:border-[#CCFF00] focus:outline-none"
                   />
                   <p className="text-[10px] text-zinc-500 mt-1">For recruiters reviewing code</p>
                 </div>
@@ -2429,7 +2429,7 @@ function DemostacksWorkspaceSection({
                   value={projTech}
                   onChange={(e) => setProjTech(e.target.value)}
                   placeholder="e.g. React, TypeScript, FastAPI, PostgreSQL, Tailwind"
-                  className="w-full bg-black/50 border border-white/[0.1] rounded-xl p-2.5 text-white text-xs focus:border-[#FEC163] focus:outline-none"
+                  className="w-full bg-black/50 border border-white/[0.1] rounded-xl p-2.5 text-white text-xs focus:border-[#CCFF00] focus:outline-none"
                 />
               </div>
 
@@ -2450,7 +2450,7 @@ function DemostacksWorkspaceSection({
                       onClick={() => setProjType(item.id as any)}
                       className={`p-2 rounded-xl border text-center font-medium transition-all ${
                         projType === item.id
-                          ? 'bg-[#FEC163]/20 border-[#FEC163] text-[#FEC163]'
+                          ? 'bg-[#CCFF00]/20 border-[#CCFF00] text-[#CCFF00]'
                           : 'bg-white/[0.03] border-white/[0.08] text-zinc-400 hover:text-white'
                       }`}
                     >
@@ -2469,7 +2469,7 @@ function DemostacksWorkspaceSection({
                   value={projDesc}
                   onChange={(e) => setProjDesc(e.target.value)}
                   placeholder="What problem did you solve? What were the key engineering features and metrics?"
-                  className="w-full bg-black/50 border border-white/[0.1] rounded-xl p-2.5 text-white text-xs focus:border-[#FEC163] focus:outline-none resize-none"
+                  className="w-full bg-black/50 border border-white/[0.1] rounded-xl p-2.5 text-white text-xs focus:border-[#CCFF00] focus:outline-none resize-none"
                 />
               </div>
 
@@ -2487,7 +2487,7 @@ function DemostacksWorkspaceSection({
                 <button
                   type="submit"
                   disabled={isAnalyzing}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#FEC163] via-[#FA8C28] to-[#DE4313] hover:from-[#ffe19c] hover:to-[#ef5323] text-black font-bold text-xs flex items-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#CCFF00] via-[#CCFF00] to-[#00F0FF] hover:from-[#ffe19c] hover:to-[#ef5323] text-black font-bold text-xs flex items-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer"
                 >
                   {isAnalyzing ? (
                     <>
@@ -2517,7 +2517,7 @@ function DemostacksWorkspaceSection({
           }}
           className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
         >
-          <div className="bg-[#140603] border border-white/[0.14] rounded-2xl sm:rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col shadow-2xl animate-fade-in overflow-hidden relative text-xs text-white">
+          <div className="bg-[#14171E] border border-white/[0.14] rounded-2xl sm:rounded-3xl max-w-2xl w-full max-h-[88vh] flex flex-col shadow-2xl animate-fade-in overflow-hidden relative text-xs text-white">
             {/* Sticky Header with Prominent Back Button */}
             <div className="sticky top-0 z-20 bg-[#160703] border-b border-white/[0.1] px-5 py-3.5 flex items-center justify-between gap-3 shrink-0">
               <button
@@ -2525,12 +2525,12 @@ function DemostacksWorkspaceSection({
                 onClick={() => setSelectedProjectForDetail(null)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.15] border border-white/[0.12] text-zinc-200 hover:text-white font-medium text-xs transition-all cursor-pointer hover:-translate-x-0.5"
               >
-                <ArrowLeft className="size-4 text-[#FEC163]" />
+                <ArrowLeft className="size-4 text-[#CCFF00]" />
                 <span>Back to Dashboard</span>
               </button>
 
               <div className="flex items-center gap-2">
-                <span className="px-2.5 py-0.5 rounded-md bg-[#FEC163]/20 border border-[#FEC163]/40 text-[#FEC163] font-mono font-bold text-[11px]">
+                <span className="px-2.5 py-0.5 rounded-md bg-[#CCFF00]/20 border border-[#CCFF00]/40 text-[#CCFF00] font-mono font-bold text-[11px]">
                   Score: {selectedProjectForDetail.aiAnalysis?.recruiterScore || 92}%
                 </span>
                 <button
@@ -2593,7 +2593,7 @@ function DemostacksWorkspaceSection({
               {/* AI Summary */}
               <div className="space-y-1.5">
                 <h4 className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
-                  <Sparkles className="size-3.5 text-[#FEC163]" />
+                  <Sparkles className="size-3.5 text-[#CCFF00]" />
                   <span>AI Engineering Assessment</span>
                 </h4>
                 <p className="text-zinc-400 leading-relaxed text-xs p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
@@ -2610,7 +2610,7 @@ function DemostacksWorkspaceSection({
                   {(selectedProjectForDetail.aiAnalysis?.verifiedSkills || selectedProjectForDetail.techStack).map((skill) => (
                     <span
                       key={skill}
-                      className="px-2.5 py-1 rounded-lg bg-[#FEC163]/10 border border-[#FEC163]/25 text-[#FEC163] font-mono text-[11px]"
+                      className="px-2.5 py-1 rounded-lg bg-[#CCFF00]/10 border border-[#CCFF00]/25 text-[#CCFF00] font-mono text-[11px]"
                     >
                       {skill}
                     </span>
@@ -2636,10 +2636,10 @@ function DemostacksWorkspaceSection({
                     <div
                       key={idx}
                       onClick={() => handleCopyBullet(bullet, idx)}
-                      className="p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-[#FEC163]/40 text-zinc-300 text-xs flex items-start justify-between gap-3 cursor-pointer transition-all group"
+                      className="p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] hover:border-[#CCFF00]/40 text-zinc-300 text-xs flex items-start justify-between gap-3 cursor-pointer transition-all group"
                     >
                       <p className="leading-relaxed flex-1">{bullet}</p>
-                      <span className="shrink-0 text-zinc-400 group-hover:text-[#FEC163] p-1">
+                      <span className="shrink-0 text-zinc-400 group-hover:text-[#CCFF00] p-1">
                         {copiedBulletIdx === idx ? (
                           <Check className="size-4 text-emerald-400" />
                         ) : (
@@ -2660,7 +2660,7 @@ function DemostacksWorkspaceSection({
                   <div className="space-y-1.5">
                     {selectedProjectForDetail.aiAnalysis.interviewQuestions.map((q, idx) => (
                       <div key={idx} className="p-2.5 rounded-xl bg-[#1A0803] border border-white/[0.06] text-zinc-300 text-xs">
-                        <span className="text-[#FEC163] font-bold mr-1.5 font-mono">Q{idx + 1}:</span>
+                        <span className="text-[#CCFF00] font-bold mr-1.5 font-mono">Q{idx + 1}:</span>
                         <span>{q}</span>
                       </div>
                     ))}

@@ -75,7 +75,13 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
       try {
         const res = await api.getCareers();
         if (res.careers && res.careers.length > 0) {
-          setCareers(res.careers);
+          const map = new Map(COMPREHENSIVE_CAREERS.map((c) => [c.id, c]));
+          const matchedList = res.careers
+            .map((bc) => map.get(bc.id))
+            .filter((c): c is CareerPath => Boolean(c));
+          if (matchedList.length > 0) {
+            setCareers(matchedList);
+          }
         }
       } catch (_) {}
     };
@@ -288,9 +294,9 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
   return (
     <div className="space-y-8 pb-16 animate-fade-in max-w-6xl mx-auto w-full px-2 sm:px-4 font-sans">
       {/* Top Header & Role Selector Bar */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-amber-500/20">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-amber-400 mb-1 flex-wrap font-mono">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#CCFF00] mb-1 flex-wrap font-mono">
             <span className="uppercase">Step 3: Competency Matrix</span>
             <span aria-hidden="true" className="text-slate-600">·</span>
             <span>Priority Weighted Benchmark</span>
@@ -299,7 +305,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
           </div>
 
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <Target className="h-7 w-7 text-amber-400 shrink-0" />
+            <Target className="h-7 w-7 text-[#CCFF00] shrink-0" />
             <span>Skill Gap & Placement Cutoff Matrix</span>
           </h1>
 
@@ -309,15 +315,15 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
         </div>
 
         {/* Target Career Picker Dropdown */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 shrink-0 bg-slate-950 border border-amber-500/30 p-2.5 rounded-2xl shadow-lg">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 shrink-0 bg-slate-950 border border-white/15 p-2.5 rounded-2xl shadow-lg">
           <label className="text-xs font-mono text-slate-400 whitespace-nowrap pl-1 flex items-center gap-1.5">
-            <Briefcase className="h-3.5 w-3.5 text-amber-400" />
+            <Briefcase className="h-3.5 w-3.5 text-[#CCFF00]" />
             <span>Target Role:</span>
           </label>
           <select
             value={selectedCareerId}
             onChange={(e) => handleCareerChange(e.target.value)}
-            className="px-3 py-1.5 text-xs font-bold rounded-xl bg-black border border-white/10 text-amber-300 focus:border-amber-400 focus:outline-none cursor-pointer max-w-[280px] truncate"
+            className="px-3 py-1.5 text-xs font-bold rounded-xl bg-black border border-white/10 text-[#CCFF00] focus:border-[#CCFF00] focus:outline-none cursor-pointer max-w-[280px] truncate"
           >
             {careers.map((c) => (
               <option key={c.id} value={c.id}>
@@ -346,8 +352,8 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
           <span>Upload Resume</span>
         </button>
         <span className="text-slate-600">→</span>
-        <div className="flex items-center gap-2 text-amber-400">
-          <span className="h-5 w-5 rounded-full bg-amber-500 text-black font-bold flex items-center justify-center text-[11px]">3</span>
+        <div className="flex items-center gap-2 text-[#CCFF00]">
+          <span className="h-5 w-5 rounded-full bg-[#CCFF00] text-[#08090C] text-black font-bold flex items-center justify-center text-[11px]">3</span>
           <span className="font-bold">Skill Gap Matrix (Current)</span>
         </div>
         <span className="text-slate-600">→</span>
@@ -365,9 +371,9 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
 
       {/* SECTION 1: CONNECTED AI RESUME STATUS BANNER */}
       {latestResume ? (
-        <div className="p-4 sm:p-5 rounded-2xl bg-[#0F0804] border border-amber-500/35 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#0E1015] border border-white/15 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl">
           <div className="flex items-start sm:items-center gap-3.5">
-            <div className="h-11 w-11 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+            <div className="h-11 w-11 rounded-xl bg-[#CCFF00]/15 border border-white/15 text-[#CCFF00] flex items-center justify-center shrink-0">
               <FileText className="h-6 w-6" />
             </div>
             <div>
@@ -382,7 +388,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                 </span>
               </div>
               <div className="text-xs text-slate-400 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono">
-                <span>ATS Score: <strong className="text-amber-300 tabular-nums">{latestResume.score}/100</strong></span>
+                <span>ATS Score: <strong className="text-[#CCFF00] tabular-nums">{latestResume.score}/100</strong></span>
                 <span aria-hidden="true" className="text-slate-600">·</span>
                 <span>Verified Skills Extracted: <strong className="text-white tabular-nums">{resumeExtractedSkills.length} competencies</strong></span>
                 <span aria-hidden="true" className="text-slate-600">·</span>
@@ -393,16 +399,16 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
 
           <button
             onClick={() => onNavigate('resume')}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-amber-500/25 hover:border-amber-400 text-xs font-semibold text-amber-200 transition-all cursor-pointer shrink-0 whitespace-nowrap self-start md:self-auto"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 hover:border-[#CCFF00] text-xs font-semibold text-neutral-200 transition-all cursor-pointer shrink-0 whitespace-nowrap self-start md:self-auto"
           >
-            <Upload className="h-3.5 w-3.5 text-amber-400" />
+            <Upload className="h-3.5 w-3.5 text-[#CCFF00]" />
             <span>Re-Scan / Switch Resume</span>
           </button>
         </div>
       ) : (
-        <div className="p-4 sm:p-5 rounded-2xl bg-amber-950/20 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-[#14171E] border border-white/15 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase font-mono">
+            <div className="text-xs font-bold text-[#CCFF00] flex items-center gap-1.5 uppercase font-mono">
               <Sparkles className="h-4 w-4" />
               <span>Connect AI Resume Analyzer for Precision Cutoffs</span>
             </div>
@@ -412,7 +418,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
           </div>
           <button
             onClick={() => onNavigate('resume')}
-            className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-md cursor-pointer shrink-0 whitespace-nowrap flex items-center gap-1.5"
+            className="px-4 py-2.5 rounded-xl bg-[#CCFF00] text-[#08090C] hover:bg-[#b8e600] text-black text-xs font-bold transition-all shadow-md cursor-pointer shrink-0 whitespace-nowrap flex items-center gap-1.5"
           >
             <Upload className="h-3.5 w-3.5 text-black" />
             <span>Upload Resume Now</span>
@@ -424,12 +430,12 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
       {gapAnalysis && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Match Score */}
-          <div className="p-4 rounded-2xl bg-slate-950/80 border border-amber-500/25 space-y-1 shadow-md">
+          <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/10 space-y-1 shadow-md">
             <div className="text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider">
               Role Match Score
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl sm:text-4xl font-bold font-mono text-amber-400 tabular-nums">
+              <span className="text-3xl sm:text-4xl font-bold font-mono text-[#CCFF00] tabular-nums">
                 {gapAnalysis.simulatedMatchPercent}%
               </span>
               {simulatedSkills.size > 0 && (
@@ -473,12 +479,12 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
           </div>
 
           {/* Salary & Competition */}
-          <div className="p-4 rounded-2xl bg-slate-950/80 border border-amber-500/25 space-y-1 shadow-md">
+          <div className="p-4 rounded-2xl bg-slate-950/80 border border-white/10 space-y-1 shadow-md">
             <div className="text-[11px] font-mono font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-              <TrendingUp className="h-3.5 w-3.5 text-amber-400" />
+              <TrendingUp className="h-3.5 w-3.5 text-[#CCFF00]" />
               <span>Compensation Range</span>
             </div>
-            <div className="text-xl sm:text-2xl font-bold font-mono text-amber-300 truncate pt-1">
+            <div className="text-xl sm:text-2xl font-bold font-mono text-[#CCFF00] truncate pt-1">
               {selectedCareer.salaryRange}
             </div>
             <div className="text-[11px] text-slate-400 truncate font-mono">
@@ -490,18 +496,18 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
 
       {/* SECTION 3: ROLE COMPETENCY PILLARS (DYNAMIC BASED ON ROLE) */}
       {gapAnalysis && (
-        <div className="p-6 rounded-2xl bg-[#0C0603] border border-amber-500/30 space-y-4 shadow-xl">
+        <div className="p-6 rounded-2xl bg-[#0E1015] border border-white/15 space-y-4 shadow-xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-500/15 pb-3">
             <div>
               <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <Layers className="h-4 w-4 text-amber-400" />
+                <Layers className="h-4 w-4 text-[#CCFF00]" />
                 <span>Competency Pillar Breakdown for {selectedCareer.title}</span>
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
                 Target recruiter evaluation dimensions derived from {selectedCareer.domain} industry standards.
               </p>
             </div>
-            <span className="text-[11px] font-mono text-amber-300">
+            <span className="text-[11px] font-mono text-[#CCFF00]">
               {Object.keys(gapAnalysis.categoryGroups).length} Evaluated Pillars
             </span>
           </div>
@@ -516,7 +522,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white">{category}</span>
-                    <span className="text-xs font-mono font-bold text-amber-300 tabular-nums">
+                    <span className="text-xs font-mono font-bold text-[#CCFF00] tabular-nums">
                       {group.matched} / {group.total} ({pct}%)
                     </span>
                   </div>
@@ -528,7 +534,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                         pct === 100
                           ? 'bg-emerald-400'
                           : pct >= 50
-                          ? 'bg-amber-400'
+                          ? 'bg-[#CCFF00] text-[#08090C]'
                           : 'bg-rose-500'
                       }`}
                       style={{ width: `${pct}%` }}
@@ -564,7 +570,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h2 className="text-base font-bold text-white flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-amber-400" />
+                <AlertTriangle className="h-4 w-4 text-[#CCFF00]" />
                 <span>Actionable Skill Gaps & Screening Cutoffs ({gapAnalysis.missingList.length})</span>
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -579,7 +585,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                 onClick={() => setSkillFilter('all')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                   skillFilter === 'all'
-                    ? 'bg-amber-500 text-black shadow-sm'
+                    ? 'bg-[#CCFF00] text-[#08090C] text-black shadow-sm'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -601,8 +607,8 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                 onClick={() => setSkillFilter('medium')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                   skillFilter === 'medium'
-                    ? 'bg-amber-500 text-black shadow-sm'
-                    : 'text-amber-400 hover:text-amber-300'
+                    ? 'bg-[#CCFF00] text-[#08090C] text-black shadow-sm'
+                    : 'text-[#CCFF00] hover:text-[#CCFF00]'
                 }`}
               >
                 Differentiators ({gapAnalysis.mediumPriorityGaps.length})
@@ -618,7 +624,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
               placeholder="Search missing competencies or keywords (e.g. SQL, React, Automation)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#CCFF00]"
             />
             {searchQuery && (
               <button
@@ -645,7 +651,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                       isHigh
                         ? 'bg-[#120404] border-rose-800/40 hover:border-rose-600/60 shadow-lg'
                         : isMed
-                        ? 'bg-[#120703] border-amber-800/40 hover:border-amber-600/60 shadow-lg'
+                        ? 'bg-[#14171E] border-white/10/40 hover:border-amber-600/60 shadow-lg'
                         : 'bg-slate-950/80 border-slate-800 hover:border-slate-700'
                     }`}
                   >
@@ -658,7 +664,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                               isHigh
                                 ? 'bg-rose-950 text-rose-300 border border-rose-800'
                                 : isMed
-                                ? 'bg-amber-950 text-amber-300 border border-amber-800'
+                                ? 'bg-[#14171E] text-[#CCFF00] border border-white/10'
                                 : 'bg-slate-900 text-slate-300 border border-slate-800'
                             }`}
                           >
@@ -689,7 +695,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                         </div>
                         <div className="flex items-center justify-between">
                           <span>Estimated Remediation:</span>
-                          <span className="text-amber-300 font-semibold flex items-center gap-1">
+                          <span className="text-[#CCFF00] font-semibold flex items-center gap-1">
                             <Clock className="h-3 w-3" />
                             <span>1-2 Weeks Hands-on Practice</span>
                           </span>
@@ -704,7 +710,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                         onClick={() => toggleLearningPlan(gap.name)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                           inPlan
-                            ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                            ? 'bg-[#CCFF00]/20 text-[#CCFF00] border border-[#CCFF00]/40'
                             : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800'
                         }`}
                       >
@@ -715,7 +721,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                         <button
                           type="button"
                           onClick={() => onNavigate('courses')}
-                          className="px-2.5 py-1.5 text-xs text-amber-400 hover:underline cursor-pointer font-medium"
+                          className="px-2.5 py-1.5 text-xs text-[#CCFF00] hover:underline cursor-pointer font-medium"
                         >
                           Find Course →
                         </button>
@@ -723,7 +729,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
                         <button
                           type="button"
                           onClick={() => toggleSimulatedSkill(gap.name)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 transition-all cursor-pointer flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#CCFF00]/15 hover:bg-[#CCFF00]/25 border border-[#CCFF00]/40 text-[#CCFF00] transition-all cursor-pointer flex items-center gap-1"
                           title="Simulate acquiring this skill to watch your role match score update"
                         >
                           <Plus className="h-3 w-3" />
@@ -790,9 +796,9 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
 
       {/* SECTION 6: INTERACTIVE GAP SIMULATOR (IF SIMULATING SKILLS) */}
       {simulatedSkills.size > 0 && gapAnalysis && (
-        <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        <div className="p-5 rounded-2xl bg-[#CCFF00]/10 border border-[#CCFF00]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
           <div className="space-y-1">
-            <div className="text-xs font-bold text-amber-300 uppercase font-mono flex items-center gap-1.5">
+            <div className="text-xs font-bold text-[#CCFF00] uppercase font-mono flex items-center gap-1.5">
               <Sparkles className="h-4 w-4" />
               <span>Live Placement Simulation Active</span>
             </div>
@@ -804,7 +810,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={handleSaveSimulatedSkills}
-              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shadow-md transition-all cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[#CCFF00] text-[#08090C] hover:bg-[#b8e600] text-black font-bold text-xs shadow-md transition-all cursor-pointer"
             >
               Save to My Profile Skills
             </button>
@@ -819,10 +825,10 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
       )}
 
       {/* SECTION 7: PROCEED TO STEP 4 (CAREER ROADMAP) CTA */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-[#1A0A04] to-slate-950 border border-amber-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-2xl">
+      <div className="p-6 rounded-2xl bg-gradient-to-r from-amber-500/15 via-[#1A0A04] to-slate-950 border border-[#CCFF00]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-2xl">
         <div className="space-y-1">
-          <div className="text-xs font-bold text-amber-400 uppercase font-mono flex items-center gap-1.5">
-            <span className="h-5 w-5 rounded-full bg-amber-500 text-black font-bold flex items-center justify-center text-[11px]">4</span>
+          <div className="text-xs font-bold text-[#CCFF00] uppercase font-mono flex items-center gap-1.5">
+            <span className="h-5 w-5 rounded-full bg-[#CCFF00] text-[#08090C] text-black font-bold flex items-center justify-center text-[11px]">4</span>
             <span>Next in Placement Workflow: Step 4 — Personalized Career Roadmap</span>
           </div>
           <h3 className="text-lg font-bold text-white">
@@ -839,7 +845,7 @@ export const SkillGapView: React.FC<SkillGapViewProps> = ({
             onGenerateRoadmap(selectedCareerId);
             onNavigate('roadmap');
           }}
-          className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs sm:text-sm shadow-xl hover:shadow-amber-500/25 transition-all cursor-pointer flex items-center gap-2 shrink-0 self-start sm:self-auto whitespace-nowrap"
+          className="px-6 py-3 rounded-xl bg-[#CCFF00] text-[#08090C] hover:bg-[#b8e600] text-black font-bold text-xs sm:text-sm shadow-xl hover:shadow-[#CCFF00]/15 transition-all cursor-pointer flex items-center gap-2 shrink-0 self-start sm:self-auto whitespace-nowrap"
         >
           <span>Proceed to Career Roadmap</span>
           <ArrowRight className="h-4 w-4" />

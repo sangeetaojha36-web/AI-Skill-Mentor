@@ -1,51 +1,183 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-  --font-display: "Space Grotesk", system-ui, sans-serif;
-  --color-solar-gold: #FEC163;
-  --color-solar-flame: #DE4313;
-  --color-solar-amber: #FA8C28;
-  --color-background: #0e0502;
-  --color-border: rgba(254, 193, 99, 0.28);
-}
-body {
-  background-color: #050302;
-  color: #F8FAFC;
-  font-family: var(--font-sans);
-  selection-background-color: #DE4313;
-  selection-color: #ffffff;
+@layer base {
+  :root {
+    --font-display: "Syne", "Space Grotesk", -apple-system, sans-serif;
+    --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    --font-tech: "Space Grotesk", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", monospace;
+
+    /* Awwwards editorial obsidian surface scale */
+    --color-bg-base: #08090C;
+    --color-bg-surface: #0E1015;
+    --color-bg-raised: #14171E;
+    --color-bg-overlay: #1B1E28;
+
+    /* Architectural hairline borders */
+    --color-border-hairline: rgba(255, 255, 255, 0.08);
+    --color-border-hover: rgba(255, 255, 255, 0.18);
+
+    /* Electric Acid Lime Accent */
+    --color-accent-primary: #CCFF00;
+    --color-accent-secondary: #00F0FF;
+  }
+
+  body {
+    background-color: #08090C;
+    color: #F3F4F6;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
 }
 
+/* Custom Typography Helpers */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-tech {
+  font-family: var(--font-tech);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Lenis Recommended Styles */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #08090C;
+}
+::-webkit-scrollbar-thumb {
+  background: #1F232D;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #333846;
+}
+
+/* Selection Color */
 ::selection {
-  background: #DE4313;
-  color: #ffffff;
+  background: #CCFF00;
+  color: #08090C;
 }
 
-/* Solar Sunset Gradients */
-.bg-gradient-solar {
-  background: linear-gradient(135deg, #FEC163 0%, #DE4313 100%);
+/* Subtle Architectural Grain Overlay */
+.bg-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
 }
 
-.text-gradient-solar {
-  background: linear-gradient(135deg, #FEC163 0%, #FB923C 45%, #DE4313 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Architectural Hairline Grid Pattern */
+.bg-grid-hairline {
+  background-size: 60px 60px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
-.shadow-solar {
-  box-shadow: 0 0 25px rgba(222, 67, 19, 0.45);
+/* Marquee Animations */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
 }
 
-.shadow-solar-lg {
-  box-shadow: 0 10px 35px -8px rgba(222, 67, 19, 0.7);
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
 }
 
-/* Hide scrollbar utility */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+.animate-marquee:hover {
+  animation-play-state: paused;
 }
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+/* Masked Slide Text Reveal */
+.char-mask {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* Card Mouse Spotlight */
+.spotlight-card {
+  position: relative;
+  background-color: #0E1015;
+  transition: border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    400px circle at var(--mouse-x, -200px) var(--mouse-y, -200px),
+    rgba(204, 255, 0, 0.22),
+    rgba(0, 240, 255, 0.08),
+    transparent 65%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* ATS Laser Scanline */
+@keyframes laserSweep {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.animate-laser {
+  animation: laserSweep 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Pulse Glow */
+@keyframes softGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.04); }
+}
+
+.animate-glow-pulse {
+  animation: softGlow 6s ease-in-out infinite;
 }

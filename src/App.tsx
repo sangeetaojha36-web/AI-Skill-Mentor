@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type ReactNode } from "react";
+import React, { useState, useEffect, useRef, type ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Compass,
@@ -39,6 +39,13 @@ import { MockInterviewView } from "./components/MockInterviewView.tsx";
 import { ProgressView } from "./components/ProgressView.tsx";
 import { AdminView } from "./components/AdminView.tsx";
 import { LandingPageView } from "./components/LandingPageView.tsx";
+import { AwardWinningAuthModal } from "./components/auth/AwardWinningAuthModal.tsx";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
+
+
 
 export default function App() {
   // Current user state
@@ -72,6 +79,99 @@ export default function App() {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [showChatModal, setShowChatModal] = useState<boolean>(false);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
+
+  // GSAP & ScrollTrigger DOM Refs for Layout Entrance
+  const mainContainerRef = useRef<HTMLDivElement>(null);
+  const navEntranceRef = useRef<HTMLDivElement>(null);
+  const contentEntranceRef = useRef<HTMLDivElement>(null);
+
+  // GSAP & ScrollTrigger Entrance Animations for Main Navigation and Dashboard Content Blocks
+  useEffect(() => {
+    if (!currentUser) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const ctx = gsap.context(() => {
+      // 1. Entrance animation for the Main Navigation bar (Breadcrumbs / Dock)
+      if (navEntranceRef.current) {
+        gsap.fromTo(
+          navEntranceRef.current,
+          { y: -24, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.7,
+            ease: "power3.out",
+            delay: 0.05,
+          }
+        );
+      }
+
+      // 2. Entrance animation for Dashboard Content Blocks with smooth staggered reveal
+      if (contentEntranceRef.current) {
+        const blocks = contentEntranceRef.current.querySelectorAll(
+          ".dashboard-entrance-block, section, [data-dashboard-block], .grid > div, .spotlight-card, > div > div"
+        );
+
+        if (blocks.length > 0) {
+          gsap.fromTo(
+            Array.from(blocks).slice(0, 14),
+            { y: 32, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.8,
+              stagger: 0.07,
+              ease: "power3.out",
+              clearProps: "transform,opacity",
+            }
+          );
+        } else {
+          gsap.fromTo(
+            contentEntranceRef.current,
+            { y: 24, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.75,
+              ease: "power3.out",
+              clearProps: "transform,opacity",
+            }
+          );
+        }
+
+        // 3. ScrollTrigger for subsequent content blocks on scroll
+        const scrollCards = contentEntranceRef.current.querySelectorAll(
+          ".spotlight-card, [data-scroll-card], .gsap-scroll-item"
+        );
+
+        scrollCards.forEach((card) => {
+          ScrollTrigger.create({
+            trigger: card,
+            start: "top 88%",
+            once: true,
+            onEnter: () => {
+              gsap.fromTo(
+                card,
+                { y: 28, opacity: 0 },
+                {
+                  y: 0,
+                  opacity: 1,
+                  duration: 0.65,
+                  ease: "power3.out",
+                }
+              );
+            },
+          });
+        });
+      }
+    }, mainContainerRef);
+
+    return () => {
+      ctx.revert();
+    };
+  }, [currentUser, activeTab]);
+
 
   const navigateTab = (newTab: string) => {
     if (newTab === activeTab) return;
@@ -394,406 +494,34 @@ export default function App() {
 
   // Reusable Auth Modal Dialog for unauthenticated visitors and demo students
   const renderAuthModal = () => (
-    <AnimatePresence>
-      {showAuthModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setShowAuthModal(false)}
-                className="fixed inset-0 bg-black/85 backdrop-blur-md"
-              />
-
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative z-10 w-full max-w-5xl rounded-3xl border border-[#FEC163]/30 bg-[#0A0402]/95 shadow-[0_24px_70px_rgba(0,0,0,0.98),0_0_40px_rgba(222,67,19,0.22)] overflow-hidden grid grid-cols-1 lg:grid-cols-12 backdrop-blur-2xl my-auto"
-              >
-                {/* Close Button */}
-                <button
-                  type="button"
-                  onClick={() => setShowAuthModal(false)}
-                  className="absolute top-4 right-4 z-20 size-8 rounded-full bg-black/60 border border-white/15 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
-                  title="Close and return to landing page"
-                >
-                  <X className="size-4" />
-                </button>
-
-                {/* =====================================================================
-                   LEFT HERO: SYSTEM CAREER CONSTELLATION ANIMATION (Solar Theme)
-                   ===================================================================== */}
-                <div className="lg:col-span-7 relative min-h-[480px] sm:min-h-[560px] lg:min-h-[640px] flex flex-col justify-between p-6 sm:p-10 overflow-hidden rounded-2xl m-2 bg-[#060201] border border-[#FEC163]/25">
-                  {/* Live Interactive Constellation Canvas */}
-                  <CareerConstellationCanvas />
-
-                  {/* Subtle Gradient Vignette ensuring text legibility */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#060201] via-[#060201]/45 to-transparent pointer-events-none" />
-
-            {/* Top Brand Bar */}
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-[#FEC163] to-[#DE4313] flex items-center justify-center text-black font-bold shadow-lg shadow-[#DE4313]/40 border border-[#FEC163]/50">
-                  <Compass className="h-5 w-5 text-black" />
-                </div>
-                <div>
-                  <span className="text-base font-bold tracking-tight text-white block">
-                    AI Skill Mentor
-                  </span>
-                  <span className="text-[10px] text-[#FEC163] font-mono tracking-wider uppercase block">
-                    Solar Career Engine
-                  </span>
-                </div>
-              </div>
-
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1A0904]/90 border border-[#FEC163]/40 text-[11px] text-[#FFD799] shadow-[0_0_15px_rgba(222,67,19,0.35)]">
-                <span className="h-2 w-2 rounded-full bg-[#FEC163] animate-pulse shadow-[0_0_10px_#FEC163]" />
-                <span>Placement AI Active</span>
-              </div>
-            </div>
-
-            {/* Floating Live Bento Metric Badges (Solar Amber & Flame) */}
-            <div className="relative z-10 my-auto py-8 space-y-3 pointer-events-none max-w-sm">
-              <div className="p-3 rounded-2xl bg-[#140603]/90 border border-[#FEC163]/35 shadow-2xl backdrop-blur-md flex items-center gap-3 transform hover:translate-x-1 transition-transform">
-                <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-[#FEC163] to-[#DE4313] text-black font-bold flex items-center justify-center shrink-0 shadow-md">
-                  <Target className="h-4 w-4 text-black" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-white">94% Role Readiness Match</div>
-                  <div className="text-[10px] text-[#FFD799]">Data Analytics & Software Engineering</div>
-                </div>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-[#140603]/90 border border-[#FEC163]/35 shadow-2xl backdrop-blur-md flex items-center gap-3 transform translate-x-3">
-                <div className="h-8 w-8 rounded-xl bg-[#DE4313]/25 text-[#FEC163] flex items-center justify-center shrink-0 border border-[#FEC163]/40">
-                  <FileCheck2 className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-white">ATS Resume Health: 88/100</div>
-                  <div className="text-[10px] text-[#FFD799]">Calibrated for Indian Recruiters (TCS, Swiggy)</div>
-                </div>
-              </div>
-
-              <div className="p-3 rounded-2xl bg-[#140603]/90 border border-[#FEC163]/35 shadow-2xl backdrop-blur-md flex items-center gap-3">
-                <div className="h-8 w-8 rounded-xl bg-[#FEC163]/20 text-[#FEC163] flex items-center justify-center shrink-0 border border-[#FEC163]/40">
-                  <Video className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-white">Greenroom AI Mock Studio</div>
-                  <div className="text-[10px] text-[#FFD799]">Speech-to-text technical & HR practice</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom System Onboarding Steps */}
-            <div className="relative z-10 space-y-4 pt-4 border-t border-[#FEC163]/20">
-              <div>
-                <h3 className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-white via-[#FEC163] to-[#DE4313] bg-clip-text text-transparent">
-                  Discover Your Future in Your Field
-                </h3>
-                <p className="text-xs text-slate-400 mt-1 max-w-md leading-relaxed">
-                  Bridge your skill gaps, analyze curriculum benchmarks, and practice campus interviews with AI.
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold text-xs shadow-[0_0_20px_rgba(222,67,19,0.5)]">
-                  <span className="h-5 w-5 rounded-full bg-black text-[#FEC163] text-[11px] font-bold flex items-center justify-center shrink-0">
-                    1
-                  </span>
-                  <span>Register Student Profile</span>
-                </div>
-
-                <div className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-[#120502]/80 border border-[#FEC163]/25 text-slate-300 text-xs">
-                  <span className="h-5 w-5 rounded-full bg-[#260C05] text-[#FEC163] text-[11px] font-bold flex items-center justify-center shrink-0 border border-[#FEC163]/30">
-                    2
-                  </span>
-                  <span>Map Academic Marks (10th, 12th & College)</span>
-                </div>
-
-                <div className="flex items-center gap-3 px-3.5 py-2 rounded-xl bg-[#120502]/80 border border-[#FEC163]/25 text-slate-300 text-xs">
-                  <span className="h-5 w-5 rounded-full bg-[#260C05] text-[#FEC163] text-[11px] font-bold flex items-center justify-center shrink-0 border border-[#FEC163]/30">
-                    3
-                  </span>
-                  <span>Unlock Placement Roadmap & Greenroom</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* =====================================================================
-             RIGHT FORM COLUMN (Solar Sunset Form)
-             ===================================================================== */}
-          <div className="lg:col-span-5 flex flex-col justify-center p-6 sm:p-8 lg:p-10">
-            {/* Mode Switcher Tabs */}
-            <div className="flex rounded-xl bg-[#0D0502] p-1 border border-[#FEC163]/30 mb-6 gap-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLoginMode(false);
-                  setIsAdminAuthMode(false);
-                  setAuthError("");
-                }}
-                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  !isLoginMode && !isAdminAuthMode
-                    ? "bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black shadow-[0_0_18px_rgba(222,67,19,0.6)]"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                Sign Up
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLoginMode(true);
-                  setIsAdminAuthMode(false);
-                  setAuthError("");
-                }}
-                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                  isLoginMode && !isAdminAuthMode
-                    ? "bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black shadow-[0_0_18px_rgba(222,67,19,0.6)]"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsLoginMode(true);
-                  setIsAdminAuthMode(true);
-                  setAuthError("");
-                }}
-                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                  isAdminAuthMode
-                    ? "bg-gradient-to-r from-amber-400 to-amber-600 text-black shadow-[0_0_18px_rgba(245,158,11,0.6)]"
-                    : "text-amber-400/80 hover:text-amber-200"
-                }`}
-              >
-                <Shield className="size-3" />
-                <span>Admin</span>
-              </button>
-            </div>
-
-            {/* Form Header */}
-            <div className="space-y-1 mb-6">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-white via-[#FEC163] to-[#DE4313] bg-clip-text text-transparent">
-                {isAdminAuthMode
-                  ? "T&P Directorate Admin Login"
-                  : isLoginMode
-                  ? "Welcome Back"
-                  : "Create Student Account"}
-              </h2>
-              <p className="text-xs text-slate-400">
-                {isAdminAuthMode
-                  ? "Restricted authority access for college placement officers, deans & institutional administrators."
-                  : isLoginMode
-                  ? "Enter your registered credentials to resume career mentoring."
-                  : "Input your basic details to start personalized skill tracking."}
-              </p>
-            </div>
-
-            {authError && (
-              <div className="mb-4 p-3 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
-                <span className="shrink-0 font-bold">⚠️</span>
-                <span>{authError}</span>
-              </div>
-            )}
-
-            {/* Registration Form */}
-            <form onSubmit={handleAuthSubmit} className="space-y-4">
-              {!isLoginMode && !isAdminAuthMode && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-medium text-slate-300 block mb-1.5">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Rohan"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      required={!isLoginMode}
-                      className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:ring-1 focus:ring-[#FEC163]/60 focus:outline-none transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium text-slate-300 block mb-1.5">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Sharma"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      required={!isLoginMode}
-                      className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:ring-1 focus:ring-[#FEC163]/60 focus:outline-none transition-all"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className="text-xs font-medium text-slate-300 block mb-1.5">
-                  {isAdminAuthMode ? "Institutional Admin Email" : "College / Personal Email"}
-                </label>
-                <div className="relative flex items-center">
-                  <input
-                    type="email"
-                    placeholder={isAdminAuthMode ? "e.g. admin@institution.edu.in" : "student@college.ac.in"}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:ring-1 focus:ring-[#FEC163]/60 focus:outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-1.5">
-                  <label className="text-xs font-medium text-slate-300">
-                    {isAdminAuthMode ? "Directorate Security Passcode / Master Key" : "Password"}
-                  </label>
-                  {!isLoginMode && !isAdminAuthMode && (
-                    <span className="text-[10px] text-slate-400 font-mono">Min. 6 characters</span>
-                  )}
-                  {isAdminAuthMode && (
-                    <span className="text-[10px] text-amber-400/80 font-mono">Authorized Admin Key</span>
-                  )}
-                </div>
-                <div className="relative flex items-center">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    placeholder={isAdminAuthMode ? "Enter T&P Authority Passcode" : "••••••••••••"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 px-3.5 pr-10 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:ring-1 focus:ring-[#FEC163]/60 focus:outline-none transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Submit CTA (Solar Sunset Gradient Button) */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full h-12 bg-gradient-to-r from-[#FEC163] via-[#FA8C28] to-[#DE4313] hover:from-[#FFE19C] hover:to-[#DE4313] text-black font-bold text-xs rounded-xl shadow-[0_0_28px_rgba(222,67,19,0.7)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 mt-2 disabled:opacity-50"
-              >
-                {loading ? (
-                  <span>Authenticating Credentials...</span>
-                ) : isAdminAuthMode ? (
-                  <>
-                    <span>Verify Authority & Enter Console</span>
-                    <Shield className="h-4 w-4" />
-                  </>
-                ) : isLoginMode ? (
-                  <>
-                    <span>Sign In & Continue</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                ) : (
-                  <>
-                    <span>Create Account & Setup Profile</span>
-                    <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            {/* Registration Benefits / Admin Note */}
-            <div className="mt-6 pt-5 border-t border-[#FEC163]/20 text-center">
-              {isAdminAuthMode ? (
-                <>
-                  <div className="flex items-center justify-center gap-1.5 text-xs text-amber-400 font-semibold mb-1">
-                    <Shield className="size-3.5 text-amber-400" />
-                    <span>College Placement Directorate Governance</span>
-                  </div>
-                  <p className="text-[11px] text-zinc-400 max-w-xs mx-auto">
-                    Authorized institutional portal to oversee student placement metrics, verify batch readiness, and configure company cutoffs.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center justify-center gap-1.5 text-xs text-[#FEC163] font-semibold mb-1">
-                    <CheckCircle2 className="size-3.5 text-emerald-400" />
-                    <span>Verified Campus Placement Preparation</span>
-                  </div>
-                  <p className="text-[11px] text-zinc-400 max-w-xs mx-auto">
-                    Create your student account to save your resume scans, unlock your personalized week-by-week roadmap, and rehearse technical rounds.
-                  </p>
-                </>
-              )}
-            </div>
-
-            {/* Footer switcher */}
-            <div className="mt-5 text-center text-xs text-slate-400">
-              {isAdminAuthMode ? (
-                <div>
-                  Are you a student?{" "}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsAdminAuthMode(false);
-                      setIsLoginMode(false);
-                      setAuthError("");
-                    }}
-                    className="text-[#FEC163] font-semibold hover:underline cursor-pointer ml-1"
-                  >
-                    Go to Student Registration
-                  </button>
-                </div>
-              ) : isLoginMode ? (
-                <>
-                  Need to setup a student profile?{" "}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsLoginMode(false);
-                      setIsAdminAuthMode(false);
-                      setAuthError("");
-                    }}
-                    className="text-[#FEC163] font-semibold hover:underline cursor-pointer ml-1"
-                  >
-                    Sign Up Free
-                  </button>
-                </>
-              ) : (
-                <>
-                  Already registered?{" "}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsLoginMode(true);
-                      setIsAdminAuthMode(false);
-                      setAuthError("");
-                    }}
-                    className="text-[#FEC163] font-semibold hover:underline cursor-pointer ml-1"
-                  >
-                    Sign In
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
+    <AwardWinningAuthModal
+      isOpen={showAuthModal}
+      onClose={() => setShowAuthModal(false)}
+      isLoginMode={isLoginMode}
+      setIsLoginMode={setIsLoginMode}
+      isAdminAuthMode={isAdminAuthMode}
+      setIsAdminAuthMode={setIsAdminAuthMode}
+      firstName={firstName}
+      setFirstName={setFirstName}
+      lastName={lastName}
+      setLastName={setLastName}
+      email={email}
+      setEmail={setEmail}
+      password={password}
+      setPassword={setPassword}
+      showPassword={showPassword}
+      setShowPassword={setShowPassword}
+      authError={authError}
+      setAuthError={setAuthError}
+      loading={loading}
+      onSubmit={handleAuthSubmit}
+    />
   );
 
   // If user is not authenticated, render the Landing Page and the Auth Modal on demand
   if (!currentUser) {
     return (
-      <div className="relative min-h-screen bg-[#070201]">
+      <div className="relative min-h-screen bg-[#090A0D]">
         {/* Full Interactive Animated Landing Page */}
         <LandingPageView
           onOpenAuth={(isLogin, isAdmin) => {
@@ -825,17 +553,21 @@ export default function App() {
         setShowAuthModal(true);
       }}
     >
-      <div key={activeTab} className="max-w-7xl mx-auto w-full pb-16">
-        {/* Step-by-Step Breadcrumb Navigation Bar */}
-        <BreadcrumbNavigation
-          activeTab={activeTab}
-          historyStack={navigationHistory}
-          user={currentUser}
-          onNavigate={navigateTab}
-          onBack={handleBack}
-        />
+      <div ref={mainContainerRef} key={activeTab} className="max-w-7xl mx-auto w-full pb-16">
+        {/* Step-by-Step Breadcrumb Navigation Bar with GSAP Entrance Ref */}
+        <div ref={navEntranceRef} className="main-nav-entrance">
+          <BreadcrumbNavigation
+            activeTab={activeTab}
+            historyStack={navigationHistory}
+            user={currentUser}
+            onNavigate={navigateTab}
+            onBack={handleBack}
+          />
+        </div>
 
-        <>
+        {/* Dashboard and Inner Content Blocks with GSAP Staggered Reveal */}
+        <div ref={contentEntranceRef} className="dashboard-content-entrance">
+          <>
             {/* Step 2: Comprehensive Student Profile Setup */}
             {activeTab === "setup" && (
               <ProfileSetupView
@@ -978,7 +710,8 @@ export default function App() {
             onNavigate={navigateTab}
           />
         )}
-        </>
+          </>
+        </div>
       </div>
 
       {/* Floating AI Chat Mentor Button (Solar Sunset FEC163 to DE4313) */}
@@ -986,7 +719,7 @@ export default function App() {
         onClick={() => {
           setShowChatModal(true);
         }}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:from-[#FFE19C] hover:to-[#DE4313] text-black font-bold shadow-[0_0_28px_rgba(222,67,19,0.7)] border border-[#FEC163]/50 transition-all hover:scale-105 cursor-pointer"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 rounded-full bg-[#CCFF00] hover:bg-[#b8e600] text-[#08090C] font-bold shadow-lg shadow-[#CCFF00]/15 border border-[#CCFF00]/30 transition-all hover:scale-105 cursor-pointer"
       >
         <Bot className="h-5 w-5 text-black" />
         <span className="text-xs font-bold hidden sm:inline">Ask AI Mentor</span>
@@ -995,22 +728,22 @@ export default function App() {
       {/* AI Chatbot Modal (Solar Glass) */}
       {showChatModal && (
         <div className="fixed inset-0 z-50 bg-black/85 flex items-end sm:items-center justify-center p-2 sm:p-4 backdrop-blur-md">
-          <div className="bg-[#0A0402] border border-[#FEC163]/35 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-[0_24px_70px_rgba(0,0,0,0.98),0_0_40px_rgba(222,67,19,0.25)]">
-            <div className="p-4 border-b border-[#FEC163]/25 flex items-center justify-between bg-[#190804]/90">
+          <div className="bg-[#0E1015] border border-white/10 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-[0_24px_70px_rgba(0,0,0,0.95)]">
+            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-[#14171E]">
               <div className="flex items-center gap-2">
-                <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-[#FEC163] to-[#DE4313] text-black font-bold flex items-center justify-center shadow-[0_0_15px_rgba(222,67,19,0.6)] border border-[#FEC163]/40">
+                <div className="h-7 w-7 rounded-lg bg-[#CCFF00] text-[#08090C] font-bold flex items-center justify-center border border-[#CCFF00]/40">
                   <Bot className="h-4 w-4 text-black" />
                 </div>
                 <div>
                   <h3 className="text-xs font-bold text-white">AI Career Mentor</h3>
-                  <div className="text-[10px] text-[#FEC163] font-mono">
+                  <div className="text-[10px] text-[#CCFF00] font-mono">
                     Online for {currentUser.name}
                   </div>
                 </div>
               </div>
               <button
                 onClick={() => setShowChatModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-[#260C05] transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>

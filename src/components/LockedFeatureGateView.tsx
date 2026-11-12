@@ -163,22 +163,22 @@ export const LockedFeatureGateView: React.FC<LockedFeatureGateViewProps> = ({
         initial={{ opacity: 0, scale: 0.96, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="rounded-3xl border border-[#FEC163]/30 bg-gradient-to-b from-[#180703]/95 via-[#0F0402]/98 to-[#070201] p-6 sm:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(222,67,19,0.2)] text-left relative overflow-hidden"
+        className="rounded-3xl border border-[#CCFF00]/30 bg-gradient-to-b from-[#14171E]/95 via-[#0E1015]/98 to-[#08090C] p-6 sm:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(204,255,0,0.2)] text-left relative overflow-hidden"
       >
         {/* Ambient Top Glow */}
-        <div className="absolute top-0 right-1/4 size-72 bg-[#DE4313]/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-1/4 size-72 bg-[#00F0FF]/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Lock Icon & Kicker */}
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6 pb-6 border-b border-white/[0.08]">
           <div className="flex items-center gap-3">
-            <div className="size-12 rounded-2xl bg-gradient-to-br from-[#FEC163] to-[#DE4313] p-0.5 shadow-lg shadow-amber-950/40">
-              <div className="size-full bg-[#120502] rounded-[14px] flex items-center justify-center text-[#FEC163]">
+            <div className="size-12 rounded-2xl bg-gradient-to-br from-[#CCFF00] to-[#00F0FF] p-0.5 shadow-lg shadow-[#CCFF00]/10">
+              <div className="size-full bg-[#0E1015] rounded-[14px] flex items-center justify-center text-[#CCFF00]">
                 <Lock className="size-6" />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold text-[#FEC163] uppercase tracking-wider">
+                <span className="text-xs font-mono font-bold text-[#CCFF00] uppercase tracking-wider">
                   Free Preview Restriction
                 </span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.06] text-zinc-400 border border-white/10">
@@ -191,7 +191,7 @@ export const LockedFeatureGateView: React.FC<LockedFeatureGateViewProps> = ({
             </div>
           </div>
 
-          <div className="px-3.5 py-1.5 rounded-xl bg-amber-950/40 border border-[#FEC163]/30 text-xs font-mono text-[#FEC163]">
+          <div className="px-3.5 py-1.5 rounded-xl bg-amber-950/40 border border-[#CCFF00]/30 text-xs font-mono text-[#CCFF00]">
             {meta.previewMetric}
           </div>
         </div>
@@ -203,8 +203,8 @@ export const LockedFeatureGateView: React.FC<LockedFeatureGateViewProps> = ({
           </p>
           <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-2xl">
             {meta.description} In free preview mode, you have access to the{' '}
-            <span className="text-[#FEC163] font-semibold">AI Resume Analyzer</span> and{' '}
-            <span className="text-[#FEC163] font-semibold">Skill Gap Matrix</span>. To unlock this
+            <span className="text-[#CCFF00] font-semibold">AI Resume Analyzer</span> and{' '}
+            <span className="text-[#CCFF00] font-semibold">Skill Gap Matrix</span>. To unlock this
             feature and the rest of the application, please create your free student account.
           </p>
         </div>
@@ -246,7 +246,7 @@ export const LockedFeatureGateView: React.FC<LockedFeatureGateViewProps> = ({
             <button
               type="button"
               onClick={() => onOpenAuth(false)}
-              className="w-1/2 sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#FEC163] via-[#FA8C28] to-[#DE4313] hover:brightness-110 text-zinc-950 font-bold text-xs shadow-lg shadow-amber-950/40 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-1/2 sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#CCFF00] via-[#CCFF00] to-[#00F0FF] hover:brightness-110 text-zinc-950 font-bold text-xs shadow-lg shadow-[#CCFF00]/10 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
             >
               <span>Sign Up to Unlock</span>
               <ArrowRight className="size-3.5" />

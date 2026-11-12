@@ -410,7 +410,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
         ctx.fillRect(0, 0, 640, 480);
 
         // Grid lines
-        ctx.strokeStyle = 'rgba(254, 193, 99, 0.08)';
+        ctx.strokeStyle = 'rgba(204, 255, 0, 0.08)';
         ctx.lineWidth = 1;
         for (let i = 0; i < 640; i += 40) {
           ctx.beginPath();
@@ -436,7 +436,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
         // Animated facial eyes
         const eyeOffset = Math.sin(frame * 0.05) * 2;
-        ctx.fillStyle = '#FEC163';
+        ctx.fillStyle = '#CCFF00';
         ctx.beginPath();
         ctx.arc(285 + eyeOffset, 195, 6, 0, Math.PI * 2);
         ctx.arc(355 + eyeOffset, 195, 6, 0, Math.PI * 2);
@@ -969,11 +969,11 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
   return (
     <div className="space-y-8 pb-12 font-sans">
       {/* Studio Header Bar */}
-      <div className="border-b border-[#FEC163]/20 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="border-b border-[#CCFF00]/20 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs text-[#FEC163] mb-1">
+          <div className="flex items-center gap-2 text-xs text-[#CCFF00] mb-1">
             <span className="flex items-center gap-1 font-mono uppercase tracking-wider font-semibold">
-              <span className="h-2 w-2 rounded-full bg-[#DE4313] animate-pulse"></span>
+              <span className="h-2 w-2 rounded-full bg-[#00F0FF] animate-pulse"></span>
               Live Greenroom Studio
             </span>
             <span aria-hidden="true" className="text-slate-600">·</span>
@@ -981,8 +981,8 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
             <span aria-hidden="true" className="text-slate-600">·</span>
             <span>20+ Company Rehearsals</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-white via-[#FEC163] to-[#DE4313] bg-clip-text text-transparent flex items-center gap-2.5">
-            <Award className="h-6 w-6 text-[#FEC163]" />
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-white via-[#CCFF00] to-[#00F0FF] bg-clip-text text-transparent flex items-center gap-2.5">
+            <Award className="h-6 w-6 text-[#CCFF00]" />
             <span>Greenroom Mock Interview Studio</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl">
@@ -991,12 +991,12 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
         </div>
 
         {/* Audio Voice Toggle */}
-        <div className="flex items-center gap-2 bg-[#120603] border border-[#FEC163]/30 px-3 py-1.5 rounded-xl text-xs shadow-sm">
+        <div className="flex items-center gap-2 bg-[#120603] border border-[#CCFF00]/30 px-3 py-1.5 rounded-xl text-xs shadow-sm">
           <span className="text-slate-400">Interviewer Voice:</span>
           <button
             onClick={() => setVoiceTTSActive(!voiceTTSActive)}
             className={`flex items-center gap-1 font-semibold transition-colors cursor-pointer ${
-              voiceTTSActive ? 'text-[#FEC163]' : 'text-slate-500'
+              voiceTTSActive ? 'text-[#CCFF00]' : 'text-slate-500'
             }`}
           >
             {voiceTTSActive ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
@@ -1011,10 +1011,10 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
       {stage === 'directory' && (
         <div className="space-y-8">
           {/* SECTION A: UPLOAD RESUME (PDF OR PNG) OR LINKEDIN PROFILE */}
-          <div className="rounded-2xl border border-[#FEC163]/30 bg-[#0A0402]/95 p-6 sm:p-8 shadow-[0_15px_40px_rgba(0,0,0,0.8)] backdrop-blur-xl space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#FEC163]/15 pb-4">
+          <div className="rounded-2xl border border-[#CCFF00]/30 bg-[#08090C]/95 p-6 sm:p-8 shadow-[0_15px_40px_rgba(0,0,0,0.8)] backdrop-blur-xl space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#CCFF00]/15 pb-4">
               <div>
-                <div className="text-xs font-bold text-[#FEC163] uppercase tracking-wider font-mono">
+                <div className="text-xs font-bold text-[#CCFF00] uppercase tracking-wider font-mono">
                   Resume & Skill Profiler
                 </div>
                 <h2 className="text-lg font-bold text-white mt-0.5">
@@ -1026,13 +1026,13 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
               </div>
 
               {/* Input Mode Tabs */}
-              <div className="flex rounded-xl bg-[#140603] p-1 border border-[#FEC163]/25 text-xs font-semibold self-start sm:self-auto">
+              <div className="flex rounded-xl bg-[#14171E] p-1 border border-[#CCFF00]/25 text-xs font-semibold self-start sm:self-auto">
                 <button
                   type="button"
                   onClick={() => setProfileInputMode('upload')}
                   className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
                     profileInputMode === 'upload'
-                      ? 'bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold shadow-md'
+                      ? 'bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold shadow-md'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -1044,7 +1044,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   onClick={() => setProfileInputMode('linkedin')}
                   className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
                     profileInputMode === 'linkedin'
-                      ? 'bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold shadow-md'
+                      ? 'bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold shadow-md'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -1056,7 +1056,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   onClick={() => setProfileInputMode('profile')}
                   className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
                     profileInputMode === 'profile'
-                      ? 'bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold shadow-md'
+                      ? 'bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold shadow-md'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -1084,16 +1084,16 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   onClick={() => fileInputRef.current?.click()}
                   className={`rounded-2xl border-2 border-dashed p-8 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${
                     isDragOver
-                      ? 'border-[#FEC163] bg-[#2A1005]'
-                      : 'border-[#FEC163]/30 hover:border-[#FEC163]/60 bg-[#120603]/80'
+                      ? 'border-[#CCFF00] bg-[#2A1005]'
+                      : 'border-[#CCFF00]/30 hover:border-[#CCFF00]/60 bg-[#120603]/80'
                   }`}
                 >
-                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#FEC163] to-[#DE4313] text-black flex items-center justify-center shadow-lg">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-[#CCFF00] to-[#00F0FF] text-black flex items-center justify-center shadow-lg">
                     <Upload className="h-7 w-7" />
                   </div>
                   <div>
                     <div className="text-sm font-bold text-white">
-                      Drop your resume here or <span className="text-[#FEC163] underline">browse files</span>
+                      Drop your resume here or <span className="text-[#CCFF00] underline">browse files</span>
                     </div>
                     <div className="text-xs text-slate-400 mt-1">
                       Strictly supports <strong>PDF (.pdf)</strong> or image formats <strong>PNG (.png), JPG (.jpg)</strong>
@@ -1101,8 +1101,8 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   </div>
 
                   {uploadedFileName && (
-                    <div className="mt-2 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1F0C05] border border-[#FEC163]/40 text-xs text-amber-200">
-                      <FileText className="h-4 w-4 text-[#FEC163]" />
+                    <div className="mt-2 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#1F0C05] border border-[#CCFF00]/40 text-xs text-amber-200">
+                      <FileText className="h-4 w-4 text-[#CCFF00]" />
                       <span className="font-semibold">{uploadedFileName}</span>
                       <span className="text-slate-400 text-[10px]">({uploadedFileSize})</span>
                     </div>
@@ -1111,7 +1111,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
                 {/* Staged File Status & Action Card */}
                 {uploadedFileName && (
-                  <div className="p-4 rounded-xl bg-[#140603] border border-[#FEC163]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-md animate-fade-in">
+                  <div className="p-4 rounded-xl bg-[#14171E] border border-[#CCFF00]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs shadow-md animate-fade-in">
                     <div className="flex items-center gap-3">
                       {uploadedFileName.toLowerCase().endsWith('.pdf') ? (
                         <div className="h-10 w-10 rounded-lg bg-rose-950/70 border border-rose-800/60 text-rose-400 flex items-center justify-center font-bold text-xs font-mono shrink-0">
@@ -1158,7 +1158,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 )}
 
                 {uploadedFilePreview && (
-                  <div className="p-3 rounded-xl bg-[#140603] border border-[#FEC163]/25 flex items-center gap-3 text-xs">
+                  <div className="p-3 rounded-xl bg-[#14171E] border border-[#CCFF00]/25 flex items-center gap-3 text-xs">
                     <img src={uploadedFilePreview} alt="Resume Preview" className="h-14 w-12 object-cover rounded border border-white/10" />
                     <div>
                       <div className="text-white font-semibold">Image Resume Preview</div>
@@ -1175,8 +1175,8 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                     disabled={analyzingProfile || (!uploadedFile && !uploadedFileName)}
                     className={`w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-xs sm:text-sm shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2.5 ${
                       (uploadedFile || uploadedFileName)
-                        ? 'bg-gradient-to-r from-[#FEC163] via-[#FA8C28] to-[#DE4313] hover:from-[#FFE19C] hover:to-[#DE4313] text-black shadow-[0_0_28px_rgba(222,67,19,0.7)] hover:brightness-110 active:scale-[0.98]'
-                        : 'bg-[#1A0C06] text-slate-500 border border-[#FEC163]/20 cursor-not-allowed opacity-60'
+                        ? 'bg-gradient-to-r from-[#CCFF00] via-[#CCFF00] to-[#00F0FF] hover:from-[#FFE19C] hover:to-[#00F0FF] text-black shadow-[0_0_28px_rgba(204,255,0,0.7)] hover:brightness-110 active:scale-[0.98]'
+                        : 'bg-[#1A0C06] text-slate-500 border border-[#CCFF00]/20 cursor-not-allowed opacity-60'
                     }`}
                   >
                     {analyzingProfile ? (
@@ -1201,12 +1201,12 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 </div>
 
                 {/* 1-Click Document Tests */}
-                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#FEC163]/15 text-xs">
+                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#CCFF00]/15 text-xs">
                   <span className="text-slate-400 font-mono text-[11px]">1-Click Document Tests:</span>
                   <button
                     type="button"
                     onClick={() => loadQuickSampleResume('mechanical')}
-                    className="px-2.5 py-1 rounded-lg bg-[#140603] hover:bg-[#200B04] border border-[#FEC163]/25 hover:border-[#FEC163] text-amber-200 text-[11px] transition-colors cursor-pointer flex items-center gap-1.5"
+                    className="px-2.5 py-1 rounded-lg bg-[#14171E] hover:bg-[#200B04] border border-[#CCFF00]/25 hover:border-[#CCFF00] text-amber-200 text-[11px] transition-colors cursor-pointer flex items-center gap-1.5"
                   >
                     <span className="px-1 py-0.2 rounded bg-rose-950 text-rose-300 text-[9px] font-mono">PDF</span>
                     <span>Rohan_Mech.pdf</span>
@@ -1214,7 +1214,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   <button
                     type="button"
                     onClick={() => loadQuickSampleResume('biotech')}
-                    className="px-2.5 py-1 rounded-lg bg-[#140603] hover:bg-[#200B04] border border-[#FEC163]/25 hover:border-[#FEC163] text-amber-200 text-[11px] transition-colors cursor-pointer flex items-center gap-1.5"
+                    className="px-2.5 py-1 rounded-lg bg-[#14171E] hover:bg-[#200B04] border border-[#CCFF00]/25 hover:border-[#CCFF00] text-amber-200 text-[11px] transition-colors cursor-pointer flex items-center gap-1.5"
                   >
                     <span className="px-1 py-0.2 rounded bg-sky-950 text-sky-300 text-[9px] font-mono">PNG</span>
                     <span>Ananya_Biotech.png</span>
@@ -1222,7 +1222,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   <button
                     type="button"
                     onClick={() => loadQuickSampleResume('commerce')}
-                    className="px-2.5 py-1 rounded-lg bg-[#140603] hover:bg-[#200B04] border border-[#FEC163]/25 hover:border-[#FEC163] text-amber-200 text-[11px] transition-colors cursor-pointer flex items-center gap-1.5"
+                    className="px-2.5 py-1 rounded-lg bg-[#14171E] hover:bg-[#200B04] border border-[#CCFF00]/25 hover:border-[#CCFF00] text-amber-200 text-[11px] transition-colors cursor-pointer flex items-center gap-1.5"
                   >
                     <span className="px-1 py-0.2 rounded bg-rose-950 text-rose-300 text-[9px] font-mono">PDF</span>
                     <span>Aryan_FinTech.pdf</span>
@@ -1239,20 +1239,20 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 </label>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="relative flex-1">
-                    <Linkedin className="h-4 w-4 text-[#FEC163] absolute left-3 top-3.5" />
+                    <Linkedin className="h-4 w-4 text-[#CCFF00] absolute left-3 top-3.5" />
                     <input
                       type="url"
                       value={linkedinUrl}
                       onChange={(e) => setLinkedinUrl(e.target.value)}
                       placeholder="https://linkedin.com/in/username"
-                      className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 pl-10 pr-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:outline-none"
+                      className="w-full bg-[#120603] border border-[#CCFF00]/30 rounded-xl h-11 pl-10 pr-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#CCFF00] focus:outline-none"
                     />
                   </div>
                   <button
                     type="button"
                     onClick={handleScanLinkedIn}
                     disabled={analyzingProfile || !linkedinUrl.trim()}
-                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold text-xs shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold text-xs shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     {analyzingProfile ? <RefreshCw className="h-4 w-4 animate-spin text-black" /> : <Sparkles className="h-4 w-4 text-black" />}
                     <span>Analyze LinkedIn Profile</span>
@@ -1263,16 +1263,16 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
             {/* TAB 3: USE STUDENT REGISTERED PROFILE */}
             {profileInputMode === 'profile' && (
-              <div className="p-4 rounded-xl bg-[#140603] border border-[#FEC163]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+              <div className="p-4 rounded-xl bg-[#14171E] border border-[#CCFF00]/20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
                 <div className="space-y-1">
                   <div className="text-white font-semibold flex items-center gap-2">
-                    <UserCheck className="h-4 w-4 text-[#FEC163]" />
+                    <UserCheck className="h-4 w-4 text-[#CCFF00]" />
                     <span>Candidate Profile: {user.name} ({user.education?.degree} in {user.education?.branch})</span>
                   </div>
                   <div className="text-slate-400 flex flex-wrap gap-1.5 items-center pt-1">
-                    <span className="text-[#FEC163] font-mono">Recognized Skills:</span>
+                    <span className="text-[#CCFF00] font-mono">Recognized Skills:</span>
                     {user.skills.map((sk) => (
-                      <span key={sk} className="px-2 py-0.5 rounded-md bg-[#220B04] border border-[#FEC163]/30 text-amber-200 text-[11px]">
+                      <span key={sk} className="px-2 py-0.5 rounded-md bg-[#220B04] border border-[#CCFF00]/30 text-amber-200 text-[11px]">
                         {sk}
                       </span>
                     ))}
@@ -1282,7 +1282,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 <button
                   type="button"
                   onClick={runInitialCompanyMatching}
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold text-xs shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer shrink-0"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold text-xs shadow-lg hover:brightness-110 active:scale-95 transition-all cursor-pointer shrink-0"
                 >
                   Match with Registered Skills
                 </button>
@@ -1290,7 +1290,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
             )}
 
             {analysisResultMsg && (
-              <div className="p-3 rounded-xl bg-[#1A0A04] border border-[#FEC163]/30 text-xs text-[#FEC163] flex items-center gap-2 animate-fade-in">
+              <div className="p-3 rounded-xl bg-[#1A0A04] border border-[#CCFF00]/30 text-xs text-[#CCFF00] flex items-center gap-2 animate-fade-in">
                 <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
                 <span>{analysisResultMsg}</span>
               </div>
@@ -1300,7 +1300,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
             {recommendedMatches.length > 0 && (
               <div className="space-y-3 pt-2">
                 <div className="text-xs font-bold text-white flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-[#FEC163]" />
+                  <Sparkles className="h-4 w-4 text-[#CCFF00]" />
                   <span>AI Recommended Companies for You (Click any to configure rehearsal):</span>
                 </div>
 
@@ -1309,7 +1309,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                     <div
                       key={`${company.id}-${role.id}`}
                       onClick={() => openCompanyModal(company)}
-                      className="p-4 rounded-xl border border-[#FEC163]/30 bg-[#120603] hover:bg-[#200B04] hover:border-[#FEC163] transition-all cursor-pointer text-xs space-y-2 flex flex-col justify-between group shadow-md"
+                      className="p-4 rounded-xl border border-[#CCFF00]/30 bg-[#120603] hover:bg-[#200B04] hover:border-[#CCFF00] transition-all cursor-pointer text-xs space-y-2 flex flex-col justify-between group shadow-md"
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
@@ -1319,17 +1319,17 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                           >
                             {company.badgeLetter}
                           </span>
-                          <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold text-[10px]">
+                          <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold text-[10px]">
                             {matchScore}% Match
                           </span>
                         </div>
-                        <div className="font-bold text-white text-sm group-hover:text-[#FEC163] transition-colors">{company.name}</div>
+                        <div className="font-bold text-white text-sm group-hover:text-[#CCFF00] transition-colors">{company.name}</div>
                         <div className="text-amber-200 font-medium text-xs mt-0.5">{role.title}</div>
                         <div className="text-[10px] text-slate-400 mt-1 line-clamp-2">{whyMatch}</div>
                       </div>
 
-                      <div className="pt-2 border-t border-[#FEC163]/15 flex items-center justify-between text-[11px]">
-                        <span className="text-[#FEC163] font-mono font-semibold">{role.ctcLpa}</span>
+                      <div className="pt-2 border-t border-[#CCFF00]/15 flex items-center justify-between text-[11px]">
+                        <span className="text-[#CCFF00] font-mono font-semibold">{role.ctcLpa}</span>
                         <span className="text-slate-400 group-hover:text-white flex items-center gap-0.5">
                           Configure →
                         </span>
@@ -1342,11 +1342,11 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           </div>
 
           {/* SECTION B: BROWSE 20+ COMPANIES DIRECTORY */}
-          <div className="rounded-2xl border border-[#FEC163]/30 bg-[#0A0402]/95 p-6 sm:p-8 shadow-2xl space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#FEC163]/15 pb-4">
+          <div className="rounded-2xl border border-[#CCFF00]/30 bg-[#08090C]/95 p-6 sm:p-8 shadow-2xl space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#CCFF00]/15 pb-4">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-[#FEC163]" />
+                  <Building2 className="h-5 w-5 text-[#CCFF00]" />
                   <span>20+ Hiring Companies Directory</span>
                 </h3>
                 <p className="text-xs text-slate-400">
@@ -1362,7 +1362,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search company or skill..."
-                  className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-9 pl-9 pr-3 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:outline-none"
+                  className="w-full bg-[#120603] border border-[#CCFF00]/30 rounded-xl h-9 pl-9 pr-3 text-xs text-white placeholder:text-slate-500 focus:border-[#CCFF00] focus:outline-none"
                 />
               </div>
             </div>
@@ -1375,8 +1375,8 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   onClick={() => setCompanyCategoryFilter(cat)}
                   className={`px-3 py-1.5 rounded-lg whitespace-nowrap transition-colors cursor-pointer ${
                     companyCategoryFilter === cat
-                      ? 'bg-[#DE4313] text-white font-bold'
-                      : 'bg-[#140603] text-slate-400 hover:text-white border border-[#FEC163]/20'
+                      ? 'bg-[#00F0FF] text-white font-bold'
+                      : 'bg-[#14171E] text-slate-400 hover:text-white border border-[#CCFF00]/20'
                   }`}
                 >
                   {cat}
@@ -1390,7 +1390,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 <div
                   key={company.id}
                   onClick={() => openCompanyModal(company)}
-                  className="rounded-[22px] border border-[#24222a] bg-[#0D0B10] hover:border-[#FEC163]/60 hover:bg-[#151219] p-4.5 text-xs transition-all duration-300 cursor-pointer shadow-lg hover:shadow-[0_10px_30px_rgba(222,67,19,0.25)] flex flex-col justify-between space-y-3.5 group relative overflow-hidden"
+                  className="rounded-[22px] border border-[#24222a] bg-[#0D0B10] hover:border-[#CCFF00]/60 hover:bg-[#151219] p-4.5 text-xs transition-all duration-300 cursor-pointer shadow-lg hover:shadow-[0_10px_30px_rgba(204,255,0,0.25)] flex flex-col justify-between space-y-3.5 group relative overflow-hidden"
                 >
                   {/* Top Bar inside Card */}
                   <div className="flex items-center justify-between">
@@ -1415,14 +1415,14 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   {/* Title & CTC */}
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-bold text-white text-base group-hover:text-[#FEC163] transition-colors flex items-center gap-1.5">
+                      <h3 className="font-bold text-white text-base group-hover:text-[#CCFF00] transition-colors flex items-center gap-1.5">
                         <span>{company.name}</span>
                       </h3>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#1C0904] text-amber-200 border border-[#FEC163]/30 font-bold">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#1C0904] text-amber-200 border border-[#CCFF00]/30 font-bold">
                         {company.ctcRange}
                       </span>
                     </div>
-                    <div className="text-[11px] text-[#FEC163] font-mono line-clamp-1">
+                    <div className="text-[11px] text-[#CCFF00] font-mono line-clamp-1">
                       {company.competencySubtitle}
                     </div>
                   </div>
@@ -1434,7 +1434,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   {/* Mini Selection Sequence Indicator */}
                   <div className="p-2 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between text-[10px] font-mono text-slate-400">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[#FEC163] font-bold">{company.roundFormats.length} Rounds:</span>
+                      <span className="text-[#CCFF00] font-bold">{company.roundFormats.length} Rounds:</span>
                       <span className="truncate max-w-[150px]">{company.roundFormats[0]}</span>
                     </div>
                     <span className="text-slate-300 font-semibold">{company.roles.length} Roles</span>
@@ -1445,7 +1445,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                     <span className="text-neutral-500 font-mono text-[10px]">
                       {company.callSheet.length} Real Questions
                     </span>
-                    <span className="text-[#FEC163] font-bold group-hover:underline flex items-center gap-1">
+                    <span className="text-[#CCFF00] font-bold group-hover:underline flex items-center gap-1">
                       <span>Specification Card</span>
                       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                     </span>
@@ -1508,19 +1508,19 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   setStage('directory');
                 }
               }}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#140603] hover:bg-[#250C05] border border-[#FEC163]/35 text-amber-200 hover:text-white text-xs font-bold transition-all shadow-md group cursor-pointer"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#14171E] hover:bg-[#250C05] border border-[#CCFF00]/35 text-amber-200 hover:text-white text-xs font-bold transition-all shadow-md group cursor-pointer"
             >
-              <ArrowLeft className="h-4 w-4 text-[#FEC163] group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="h-4 w-4 text-[#CCFF00] group-hover:-translate-x-1 transition-transform" />
               <span>Back to Company Directory</span>
             </button>
             <div className="flex items-center gap-2">
               <span className={`text-[11px] font-mono px-2.5 py-1 rounded-full flex items-center gap-1.5 border shadow-sm ${
                 isSimulatedCamera
-                  ? 'text-[#FEC163] bg-amber-950/40 border-amber-800/40'
+                  ? 'text-[#CCFF00] bg-amber-950/40 border-amber-800/40'
                   : 'text-emerald-400 bg-emerald-950/40 border-emerald-800/40'
               }`}>
                 <span className={`h-1.5 w-1.5 rounded-full ${
-                  isSimulatedCamera ? 'bg-[#FEC163]' : 'bg-emerald-400 animate-pulse'
+                  isSimulatedCamera ? 'bg-[#CCFF00]' : 'bg-emerald-400 animate-pulse'
                 }`} />
                 <span>{isSimulatedCamera ? 'Studio Simulation Stream' : 'Live Hardware Webcam'}</span>
               </span>
@@ -1528,7 +1528,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           </div>
 
           {/* Top Session Progress Bar */}
-          <div className="p-4 rounded-xl bg-[#0D0502] border border-[#FEC163]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="p-4 rounded-xl bg-[#0E1015] border border-[#CCFF00]/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-3">
               <span className="text-2xl">{session?.career?.split(' · ')[0] || '🏢'}</span>
               <div>
@@ -1540,8 +1540,8 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1F0C05] border border-[#FEC163]/30 text-amber-200 font-mono">
-                <Clock className="h-4 w-4 text-[#FEC163]" />
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#1F0C05] border border-[#CCFF00]/30 text-amber-200 font-mono">
+                <Clock className="h-4 w-4 text-[#CCFF00]" />
                 <span>{Math.floor(timerSeconds / 60)}:{(timerSeconds % 60).toString().padStart(2, '0')}</span>
               </div>
               <div className="text-[11px] text-slate-400">
@@ -1553,7 +1553,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left Column: Live Webcam View with Real-time AI Vision HUD */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="relative aspect-video sm:aspect-square bg-black rounded-2xl overflow-hidden border-2 border-[#FEC163]/40 shadow-2xl flex items-center justify-center group">
+              <div className="relative aspect-video sm:aspect-square bg-black rounded-2xl overflow-hidden border-2 border-[#CCFF00]/40 shadow-2xl flex items-center justify-center group">
                 <video
                   ref={videoRef}
                   autoPlay
@@ -1576,7 +1576,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                       <button
                         type="button"
                         onClick={requestCameraAccess}
-                        className="px-3 py-1.5 rounded-lg bg-[#FEC163] text-black font-bold text-xs shadow hover:brightness-110 cursor-pointer"
+                        className="px-3 py-1.5 rounded-lg bg-[#CCFF00] text-black font-bold text-xs shadow hover:brightness-110 cursor-pointer"
                       >
                         Reconnect Webcam
                       </button>
@@ -1595,7 +1595,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 <div className="absolute inset-0 pointer-events-none p-3 flex flex-col justify-between bg-gradient-to-t from-black/85 via-transparent to-black/65">
                   {/* Top Bar on Video Stream */}
                   <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 border border-[#FEC163]/50 text-[10px] text-[#FEC163] font-mono shadow-sm">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/80 border border-[#CCFF00]/50 text-[10px] text-[#CCFF00] font-mono shadow-sm">
                       <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
                       <span>EYE FOCUS: {liveMetrics.eyeContactPercent}%</span>
                     </div>
@@ -1607,7 +1607,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                       <button
                         type="button"
                         onClick={isSimulatedCamera ? requestCameraAccess : setupSimulatedCamera}
-                        className="pointer-events-auto px-2 py-0.5 rounded-full bg-black/80 hover:bg-black border border-white/20 text-[9px] font-mono text-[#FEC163] hover:text-white transition-colors cursor-pointer"
+                        className="pointer-events-auto px-2 py-0.5 rounded-full bg-black/80 hover:bg-black border border-white/20 text-[9px] font-mono text-[#CCFF00] hover:text-white transition-colors cursor-pointer"
                       >
                         {isSimulatedCamera ? 'Use Real Cam' : 'Use Simulation'}
                       </button>
@@ -1625,12 +1625,12 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                       border: liveMetrics.eyeContactPercent >= 88
                         ? '2px solid rgba(34, 197, 94, 0.85)'
                         : liveMetrics.eyeContactPercent >= 75
-                        ? '2px solid rgba(254, 193, 99, 0.85)'
+                        ? '2px solid rgba(204, 255, 0, 0.85)'
                         : '2px solid rgba(244, 63, 94, 0.85)',
                       boxShadow: liveMetrics.eyeContactPercent >= 88
                         ? '0 0 18px rgba(34, 197, 94, 0.35)'
                         : liveMetrics.eyeContactPercent >= 75
-                        ? '0 0 18px rgba(254, 193, 99, 0.35)'
+                        ? '0 0 18px rgba(204, 255, 0, 0.35)'
                         : '0 0 18px rgba(244, 63, 94, 0.35)',
                     }}
                   >
@@ -1667,9 +1667,9 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
                   {/* Real-time Demeanor & Coaching HUD Pill */}
                   <div className="space-y-1.5 text-xs">
-                    <div className="flex items-center justify-between text-[11px] text-white bg-black/85 p-2 rounded-xl border border-[#FEC163]/30">
+                    <div className="flex items-center justify-between text-[11px] text-white bg-black/85 p-2 rounded-xl border border-[#CCFF00]/30">
                       <div className="flex items-center gap-1.5">
-                        <Smile className="h-3.5 w-3.5 text-[#FEC163]" />
+                        <Smile className="h-3.5 w-3.5 text-[#CCFF00]" />
                         <span>Behavior: <strong>{liveMetrics.expression}</strong></span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -1680,8 +1680,8 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                       </div>
                     </div>
 
-                    <div className="text-[10px] text-[#FFD799] bg-[#1A0A04]/90 px-2.5 py-1.5 rounded-lg border border-[#FEC163]/30 flex items-center gap-1.5 shadow-sm">
-                      <Target className="h-3.5 w-3.5 text-[#FEC163] shrink-0" />
+                    <div className="text-[10px] text-[#E5E7EB] bg-[#1A0A04]/90 px-2.5 py-1.5 rounded-lg border border-[#CCFF00]/30 flex items-center gap-1.5 shadow-sm">
+                      <Target className="h-3.5 w-3.5 text-[#CCFF00] shrink-0" />
                       <span className="truncate">{liveMetrics.coachingNudge}</span>
                     </div>
                   </div>
@@ -1690,17 +1690,17 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
               {/* Real-Time Metrics Telemetry Trio */}
               <div className="grid grid-cols-3 gap-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-[#120603] border border-[#FEC163]/20">
+                <div className="p-2.5 rounded-xl bg-[#120603] border border-[#CCFF00]/20">
                   <div className="text-slate-400 text-[10px]">Eye Contact</div>
-                  <div className="text-base font-bold text-[#FEC163] font-mono">{liveMetrics.eyeContactPercent}%</div>
+                  <div className="text-base font-bold text-[#CCFF00] font-mono">{liveMetrics.eyeContactPercent}%</div>
                   <div className="text-[9px] text-emerald-400 truncate">{liveMetrics.focusStatus}</div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#120603] border border-[#FEC163]/20">
+                <div className="p-2.5 rounded-xl bg-[#120603] border border-[#CCFF00]/20">
                   <div className="text-slate-400 text-[10px]">AI Confidence</div>
                   <div className="text-base font-bold text-amber-300 font-mono">{liveMetrics.confidenceScore}/100</div>
                   <div className="text-[9px] text-white truncate">{liveMetrics.expression}</div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-[#120603] border border-[#FEC163]/20">
+                <div className="p-2.5 rounded-xl bg-[#120603] border border-[#CCFF00]/20">
                   <div className="text-slate-400 text-[10px]">Head Stability</div>
                   <div className="text-base font-bold text-emerald-400 font-mono">{liveMetrics.headStability || 92}%</div>
                   <div className="text-[9px] text-slate-400 truncate">{liveMetrics.posture}</div>
@@ -1711,16 +1711,16 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
             {/* Right Column: Question & Answering Interface */}
             <div className="lg:col-span-7 flex flex-col justify-between space-y-4">
               {/* Question Card */}
-              <div className="p-5 rounded-2xl bg-[#0D0502] border border-[#FEC163]/30 shadow-xl space-y-3">
+              <div className="p-5 rounded-2xl bg-[#0E1015] border border-[#CCFF00]/30 shadow-xl space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#DE4313]/25 text-[#FEC163] font-mono font-semibold text-[10px] border border-[#FEC163]/30">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#00F0FF]/25 text-[#CCFF00] font-mono font-semibold text-[10px] border border-[#CCFF00]/30">
                     {currentQ.type} Question
                   </span>
 
                   <button
                     type="button"
                     onClick={() => speakInterviewerQuestion(currentQ.question)}
-                    className="flex items-center gap-1 text-[11px] text-[#FEC163] hover:underline cursor-pointer"
+                    className="flex items-center gap-1 text-[11px] text-[#CCFF00] hover:underline cursor-pointer"
                   >
                     <Volume2 className="h-3.5 w-3.5" />
                     <span>Replay Question Audio</span>
@@ -1731,7 +1731,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                   "{currentQ.question}"
                 </h3>
 
-                <div className="pt-2 border-t border-[#FEC163]/15 text-[11px] text-slate-400">
+                <div className="pt-2 border-t border-[#CCFF00]/15 text-[11px] text-slate-400">
                   <strong className="text-amber-200">Interviewer Rubric Expectations: </strong>
                   {currentQ.expectedKeyPoints.join(' · ')}
                 </div>
@@ -1783,7 +1783,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                         className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold cursor-pointer transition-all ${
                           isRecordingSpeech
                             ? 'bg-rose-600 text-white animate-pulse shadow-[0_0_12px_#e11d48]'
-                            : 'bg-[#1C0904] text-[#FEC163] border border-[#FEC163]/30 hover:bg-[#2A0E06]'
+                            : 'bg-[#1C0904] text-[#CCFF00] border border-[#CCFF00]/30 hover:bg-[#2A0E06]'
                         }`}
                       >
                         {isRecordingSpeech ? <Square className="h-3 w-3" /> : <Mic className="h-3 w-3" />}
@@ -1814,7 +1814,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                     value={currentAnswer}
                     onChange={(e) => setCurrentAnswer(e.target.value)}
                     placeholder="Articulate your structured response here. Speak into your microphone or click 'Dictate by Voice' / 'STAR Blueprint' to format your response with Situation, Task, Action, and Result..."
-                    className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl p-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:outline-none"
+                    className="w-full bg-[#120603] border border-[#CCFF00]/30 rounded-xl p-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#CCFF00] focus:outline-none"
                   />
                 </div>
 
@@ -1828,7 +1828,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                     type="button"
                     onClick={handleSubmitAnswer}
                     disabled={!currentAnswer.trim() || submitting}
-                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#FEC163] via-[#FA8C28] to-[#DE4313] text-black font-bold text-xs shadow-[0_0_25px_rgba(222,67,19,0.7)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-[#CCFF00] via-[#CCFF00] to-[#00F0FF] text-black font-bold text-xs shadow-[0_0_25px_rgba(204,255,0,0.7)] hover:brightness-110 active:scale-95 transition-all cursor-pointer flex items-center gap-2 disabled:opacity-50"
                   >
                     {submitting ? (
                       <>
@@ -1862,9 +1862,9 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 setStage('directory');
                 setSession(null);
               }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#140603] hover:bg-[#250C05] text-[#FEC163] hover:text-white border border-[#FEC163]/40 text-xs font-bold transition-all shadow-md group cursor-pointer"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#14171E] hover:bg-[#250C05] text-[#CCFF00] hover:text-white border border-[#CCFF00]/40 text-xs font-bold transition-all shadow-md group cursor-pointer"
             >
-              <ArrowLeft className="h-4 w-4 text-[#FEC163] group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="h-4 w-4 text-[#CCFF00] group-hover:-translate-x-1 transition-transform" />
               <span>Back to All 24 Companies</span>
             </button>
             <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-3 py-1 rounded-full">
@@ -1873,10 +1873,10 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           </div>
 
           {/* Header Score Hero Card */}
-          <div className="rounded-2xl border-2 border-[#FEC163]/40 bg-gradient-to-br from-[#1A0A04] via-[#0D0502] to-black p-6 sm:p-8 shadow-[0_20px_50px_rgba(222,67,19,0.25)] space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#FEC163]/20 pb-6">
+          <div className="rounded-2xl border-2 border-[#CCFF00]/40 bg-gradient-to-br from-[#1A0A04] via-[#0E1015] to-black p-6 sm:p-8 shadow-[0_20px_50px_rgba(204,255,0,0.25)] space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#CCFF00]/20 pb-6">
               <div>
-                <div className="text-xs text-[#FEC163] font-mono uppercase tracking-wider font-semibold">
+                <div className="text-xs text-[#CCFF00] font-mono uppercase tracking-wider font-semibold">
                   Campus Mock Interview Performance Report
                 </div>
                 <h2 className="text-2xl font-bold text-white">
@@ -1888,8 +1888,8 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
               </div>
 
               {/* Score Circular Badge */}
-              <div className="text-center p-3 rounded-xl bg-black/60 border border-[#FEC163]/40 shadow-inner">
-                <div className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#FEC163] to-[#DE4313] font-mono">
+              <div className="text-center p-3 rounded-xl bg-black/60 border border-[#CCFF00]/40 shadow-inner">
+                <div className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] font-mono">
                   {session.overallScore || 86}
                 </div>
                 <div className="text-[10px] text-slate-400 uppercase font-mono">Total Score / 100</div>
@@ -1898,21 +1898,21 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
             {/* Sub-Metric Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-black/50 border border-[#FEC163]/25 space-y-1">
+              <div className="p-3.5 rounded-xl bg-black/50 border border-[#CCFF00]/25 space-y-1">
                 <div className="text-slate-400 text-[11px]">Technical Fluency</div>
                 <div className="text-xl font-bold text-white font-mono">{session.breakdown?.technicalKnowledge || 88}%</div>
                 <div className="text-[10px] text-emerald-400">Core Concepts Clear</div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-black/50 border border-[#FEC163]/25 space-y-1">
+              <div className="p-3.5 rounded-xl bg-black/50 border border-[#CCFF00]/25 space-y-1">
                 <div className="text-slate-400 text-[11px]">Eye Contact & Focus</div>
-                <div className="text-xl font-bold text-[#FEC163] font-mono">
+                <div className="text-xl font-bold text-[#CCFF00] font-mono">
                   {sessionBehavioralSummary?.averageEyeContact || avgEyeContact}%
                 </div>
                 <div className="text-[10px] text-amber-200">Lens Tracking Verified</div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-black/50 border border-[#FEC163]/25 space-y-1">
+              <div className="p-3.5 rounded-xl bg-black/50 border border-[#CCFF00]/25 space-y-1">
                 <div className="text-slate-400 text-[11px]">Facial Confidence</div>
                 <div className="text-xl font-bold text-white font-mono">
                   {sessionBehavioralSummary?.averageConfidence || avgConfidence}%
@@ -1922,7 +1922,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-black/50 border border-[#FEC163]/25 space-y-1">
+              <div className="p-3.5 rounded-xl bg-black/50 border border-[#CCFF00]/25 space-y-1">
                 <div className="text-slate-400 text-[11px]">Head & Posture Stability</div>
                 <div className="text-xl font-bold text-emerald-400 font-mono">
                   {sessionBehavioralSummary?.stabilityScore || 92}%
@@ -1934,9 +1934,9 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
             </div>
 
             {/* AI Summary Feedback */}
-            <div className="p-4 rounded-xl bg-[#140603] border border-[#FEC163]/30 text-xs space-y-2">
+            <div className="p-4 rounded-xl bg-[#14171E] border border-[#CCFF00]/30 text-xs space-y-2">
               <div className="font-bold text-white flex items-center gap-1.5">
-                <Sparkles className="h-4 w-4 text-[#FEC163]" />
+                <Sparkles className="h-4 w-4 text-[#CCFF00]" />
                 <span>Interviewer Executive Summary:</span>
               </div>
               <p className="text-slate-300 leading-relaxed">
@@ -1946,11 +1946,11 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           </div>
 
           {/* DEDICATED PROCTORED BEHAVIORAL & EYE CONTACT TELEMETRY AUDIT */}
-          <div className="rounded-2xl border border-[#FEC163]/30 bg-[#0A0402]/95 p-6 sm:p-8 shadow-xl space-y-5">
-            <div className="border-b border-[#FEC163]/15 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="rounded-2xl border border-[#CCFF00]/30 bg-[#08090C]/95 p-6 sm:p-8 shadow-xl space-y-5">
+            <div className="border-b border-[#CCFF00]/15 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <div className="text-xs font-bold text-[#FEC163] uppercase tracking-wider font-mono flex items-center gap-1.5">
-                  <Eye className="h-4 w-4 text-[#FEC163]" />
+                <div className="text-xs font-bold text-[#CCFF00] uppercase tracking-wider font-mono flex items-center gap-1.5">
+                  <Eye className="h-4 w-4 text-[#CCFF00]" />
                   <span>Webcam Vision Behavioral Audit</span>
                 </div>
                 <h3 className="text-lg font-bold text-white mt-0.5">
@@ -1967,16 +1967,16 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-[#140603] border border-[#FEC163]/20 space-y-1.5">
+              <div className="p-3.5 rounded-xl bg-[#14171E] border border-[#CCFF00]/20 space-y-1.5">
                 <div className="text-slate-400 text-[11px] flex items-center justify-between">
                   <span>Lens Gaze Alignment</span>
-                  <span className="font-mono text-[#FEC163] font-bold">
+                  <span className="font-mono text-[#CCFF00] font-bold">
                     {sessionBehavioralSummary?.averageEyeContact || avgEyeContact}%
                   </span>
                 </div>
                 <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-[#FEC163] to-[#DE4313] h-full rounded-full transition-all"
+                    className="bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] h-full rounded-full transition-all"
                     style={{ width: `${sessionBehavioralSummary?.averageEyeContact || avgEyeContact}%` }}
                   />
                 </div>
@@ -1991,7 +1991,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#140603] border border-[#FEC163]/20 space-y-1.5">
+              <div className="p-3.5 rounded-xl bg-[#14171E] border border-[#CCFF00]/20 space-y-1.5">
                 <div className="text-slate-400 text-[11px] flex items-center justify-between">
                   <span>Postural Stillness & Poise</span>
                   <span className="font-mono text-emerald-400 font-bold">
@@ -2000,7 +2000,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 </div>
                 <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-emerald-500 to-[#FEC163] h-full rounded-full transition-all"
+                    className="bg-gradient-to-r from-emerald-500 to-[#CCFF00] h-full rounded-full transition-all"
                     style={{ width: `${sessionBehavioralSummary?.stabilityScore || 92}%` }}
                   />
                 </div>
@@ -2009,7 +2009,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-[#140603] border border-[#FEC163]/20 space-y-1.5">
+              <div className="p-3.5 rounded-xl bg-[#14171E] border border-[#CCFF00]/20 space-y-1.5">
                 <div className="text-slate-400 text-[11px] flex items-center justify-between">
                   <span>Dominant Candidate Demeanor</span>
                   <span className="font-mono text-amber-300 font-bold">
@@ -2018,7 +2018,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 </div>
                 <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-amber-400 to-[#DE4313] h-full rounded-full transition-all"
+                    className="bg-gradient-to-r from-amber-400 to-[#00F0FF] h-full rounded-full transition-all"
                     style={{ width: `${sessionBehavioralSummary?.averageConfidence || avgConfidence}%` }}
                   />
                 </div>
@@ -2031,13 +2031,13 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
             {sessionBehavioralSummary?.actionableTips && sessionBehavioralSummary.actionableTips.length > 0 && (
               <div className="p-3.5 rounded-xl bg-black/60 border border-white/10 text-xs space-y-2">
                 <div className="font-bold text-amber-200 flex items-center gap-1.5">
-                  <Target className="h-3.5 w-3.5 text-[#FEC163]" />
+                  <Target className="h-3.5 w-3.5 text-[#CCFF00]" />
                   <span>Proctored Behavioral Feedback:</span>
                 </div>
                 <ul className="space-y-1.5 text-slate-300 text-[11px]">
                   {sessionBehavioralSummary.actionableTips.map((tip, idx) => (
                     <li key={idx} className="flex items-start gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#FEC163] mt-1 shrink-0" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#CCFF00] mt-1 shrink-0" />
                       <span>{tip}</span>
                     </li>
                   ))}
@@ -2047,13 +2047,13 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           </div>
 
           {/* "WHAT YOU HAVE TO ENHANCE & LEARN" SECTION */}
-          <div className="rounded-2xl border border-[#FEC163]/30 bg-[#0A0402]/95 p-6 sm:p-8 shadow-xl space-y-6">
-            <div className="border-b border-[#FEC163]/15 pb-4">
-              <div className="text-xs font-bold text-[#DE4313] uppercase tracking-wider font-mono">
+          <div className="rounded-2xl border border-[#CCFF00]/30 bg-[#08090C]/95 p-6 sm:p-8 shadow-xl space-y-6">
+            <div className="border-b border-[#CCFF00]/15 pb-4">
+              <div className="text-xs font-bold text-[#00F0FF] uppercase tracking-wider font-mono">
                 Actionable Growth Matrix
               </div>
               <h3 className="text-lg font-bold text-white mt-0.5 flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-[#FEC163]" />
+                <TrendingUp className="h-5 w-5 text-[#CCFF00]" />
                 <span>What You Must Enhance & Learn</span>
               </h3>
               <p className="text-xs text-slate-400">
@@ -2063,18 +2063,18 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               {/* Technical Enhancements */}
-              <div className="p-4 rounded-xl bg-[#120603] border border-[#FEC163]/20 space-y-3">
-                <div className="font-bold text-[#FEC163] flex items-center gap-2">
+              <div className="p-4 rounded-xl bg-[#120603] border border-[#CCFF00]/20 space-y-3">
+                <div className="font-bold text-[#CCFF00] flex items-center gap-2">
                   <Cpu className="h-4 w-4" />
                   <span>Technical & Project Enhancements:</span>
                 </div>
                 <ul className="space-y-2 text-slate-300">
                   <li className="flex items-start gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#DE4313] mt-1.5 shrink-0" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#00F0FF] mt-1.5 shrink-0" />
                     <span><strong>Quantify Project Results:</strong> When talking about your projects, state measurable metrics (e.g. <em>"Reduced latency by 40%"</em> or <em>"Handled 5,000 requests/sec"</em>).</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#DE4313] mt-1.5 shrink-0" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#00F0FF] mt-1.5 shrink-0" />
                     <span><strong>STAR Framework Delivery:</strong> Ensure you clearly delineate the Situation, Task, Action you personally took, and final Result.</span>
                   </li>
                 </ul>
@@ -2082,7 +2082,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 <button
                   type="button"
                   onClick={() => onNavigate('roadmap')}
-                  className="w-full mt-2 py-2 rounded-lg bg-[#220B04] hover:bg-[#331106] border border-[#FEC163]/30 text-amber-200 font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full mt-2 py-2 rounded-lg bg-[#220B04] hover:bg-[#331106] border border-[#CCFF00]/30 text-amber-200 font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <BookOpen className="h-3.5 w-3.5" />
                   <span>Open Personalized Placement Roadmap</span>
@@ -2090,7 +2090,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
               </div>
 
               {/* Behavioral & Camera Demeanor Enhancements */}
-              <div className="p-4 rounded-xl bg-[#120603] border border-[#FEC163]/20 space-y-3">
+              <div className="p-4 rounded-xl bg-[#120603] border border-[#CCFF00]/20 space-y-3">
                 <div className="font-bold text-amber-300 flex items-center gap-2">
                   <Eye className="h-4 w-4" />
                   <span>Webcam & Behavioral Demeanor Enhancements:</span>
@@ -2109,7 +2109,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                 <button
                   type="button"
                   onClick={() => setStage('directory')}
-                  className="w-full mt-2 py-2 rounded-lg bg-[#220B04] hover:bg-[#331106] border border-[#FEC163]/30 text-amber-200 font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full mt-2 py-2 rounded-lg bg-[#220B04] hover:bg-[#331106] border border-[#CCFF00]/30 text-amber-200 font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
                   <span>Practice Another Company Round</span>
@@ -2119,15 +2119,15 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
           </div>
 
           {/* Question-By-Question Detailed Breakdown */}
-          <div className="rounded-2xl border border-[#FEC163]/30 bg-[#0A0402]/95 p-6 sm:p-8 shadow-xl space-y-4">
+          <div className="rounded-2xl border border-[#CCFF00]/30 bg-[#08090C]/95 p-6 sm:p-8 shadow-xl space-y-4">
             <h3 className="text-base font-bold text-white">Question-by-Question Technical Audit</h3>
 
             <div className="space-y-4">
               {session.questions.map((q, idx) => (
-                <div key={q.id} className="p-4 rounded-xl bg-[#120603] border border-[#FEC163]/20 text-xs space-y-2">
+                <div key={q.id} className="p-4 rounded-xl bg-[#120603] border border-[#CCFF00]/20 text-xs space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-white">Q{idx + 1}: {q.question}</span>
-                    <span className="px-2 py-0.5 rounded bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold font-mono text-[11px]">
+                    <span className="px-2 py-0.5 rounded bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold font-mono text-[11px]">
                       {q.score || 85}/100
                     </span>
                   </div>
@@ -2137,8 +2137,8 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
                     <span>{q.userAnswer || 'No answer recorded.'}</span>
                   </div>
 
-                  <div className="text-[11px] text-[#FFD799]">
-                    <strong className="text-[#FEC163]">AI Evaluator Feedback: </strong>
+                  <div className="text-[11px] text-[#E5E7EB]">
+                    <strong className="text-[#CCFF00]">AI Evaluator Feedback: </strong>
                     <span>{q.feedback || 'Good attempt meeting key requirements.'}</span>
                   </div>
                 </div>
@@ -2169,7 +2169,7 @@ export const MockInterviewView: React.FC<MockInterviewViewProps> = ({ user, onNa
               <button
                 type="button"
                 onClick={() => onNavigate('progress')}
-                className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-[#FEC163] hover:bg-[#ffcd7d] rounded-xl shadow-lg shadow-amber-950/40 transition-colors whitespace-nowrap cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-[#CCFF00] hover:bg-[#ffcd7d] rounded-xl shadow-lg shadow-[#CCFF00]/10 transition-colors whitespace-nowrap cursor-pointer"
               >
                 <span>Academic Progress Tracker</span>
                 <ArrowRight className="size-3.5" />

@@ -107,20 +107,20 @@ export const AdminView: React.FC<AdminViewProps> = ({ user, onUpdateUser, onNavi
   if (user.role !== 'admin') {
     return (
       <div className="max-w-2xl mx-auto py-10 px-4 sm:px-6">
-        <div className="rounded-3xl border border-[#FEC163]/30 bg-gradient-to-b from-[#180703]/95 via-[#0F0402]/98 to-[#070201] p-6 sm:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(222,67,19,0.2)] text-left relative overflow-hidden">
+        <div className="rounded-3xl border border-[#CCFF00]/30 bg-gradient-to-b from-[#14171E]/95 via-[#0E1015]/98 to-[#08090C] p-6 sm:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_30px_rgba(204,255,0,0.2)] text-left relative overflow-hidden">
           {/* Ambient Lighting */}
-          <div className="absolute top-0 right-0 size-60 bg-[#DE4313]/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-0 right-0 size-60 bg-[#00F0FF]/10 rounded-full blur-3xl pointer-events-none" />
 
           {/* Top Emblem */}
           <div className="flex items-center gap-3.5 pb-6 border-b border-white/[0.08] mb-6">
-            <div className="size-12 rounded-2xl bg-gradient-to-br from-[#FEC163] to-[#DE4313] p-0.5 shadow-lg shadow-amber-950/50">
-              <div className="size-full bg-[#120502] rounded-[14px] flex items-center justify-center text-[#FEC163]">
-                <Shield className="size-6 text-[#FEC163]" />
+            <div className="size-12 rounded-2xl bg-gradient-to-br from-[#CCFF00] to-[#00F0FF] p-0.5 shadow-lg shadow-[#CCFF00]/10">
+              <div className="size-full bg-[#0E1015] rounded-[14px] flex items-center justify-center text-[#CCFF00]">
+                <Shield className="size-6 text-[#CCFF00]" />
               </div>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-mono font-bold text-[#FEC163] uppercase tracking-wider">
+                <span className="text-xs font-mono font-bold text-[#CCFF00] uppercase tracking-wider">
                   Restricted Authority Zone
                 </span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30">
@@ -161,7 +161,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ user, onUpdateUser, onNavi
                 placeholder="e.g. tpo.officer@college.ac.in"
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
-                className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:ring-1 focus:ring-[#FEC163]/60 focus:outline-none transition-all"
+                className="w-full bg-[#120603] border border-[#CCFF00]/30 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#CCFF00] focus:ring-1 focus:ring-[#CCFF00]/60 focus:outline-none transition-all"
               />
             </div>
 
@@ -175,10 +175,10 @@ export const AdminView: React.FC<AdminViewProps> = ({ user, onUpdateUser, onNavi
                 value={adminPasscode}
                 onChange={(e) => setAdminPasscode(e.target.value)}
                 required
-                className="w-full bg-[#120603] border border-[#FEC163]/30 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#FEC163] focus:ring-1 focus:ring-[#FEC163]/60 focus:outline-none transition-all"
+                className="w-full bg-[#120603] border border-[#CCFF00]/30 rounded-xl h-11 px-3.5 text-xs text-white placeholder:text-slate-500 focus:border-[#CCFF00] focus:ring-1 focus:ring-[#CCFF00]/60 focus:outline-none transition-all"
               />
               <p className="text-[10px] text-zinc-500 font-mono mt-1">
-                Authorized T&P Passcode: <span className="text-[#FEC163]">admin2026</span>
+                Authorized T&P Passcode: <span className="text-[#CCFF00]">admin2026</span>
               </p>
             </div>
 
@@ -195,7 +195,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ user, onUpdateUser, onNavi
               <button
                 type="submit"
                 disabled={isVerifying}
-                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#FEC163] via-[#FA8C28] to-[#DE4313] hover:brightness-110 text-zinc-950 font-bold text-xs shadow-lg shadow-amber-950/40 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#CCFF00] via-[#CCFF00] to-[#00F0FF] hover:brightness-110 text-zinc-950 font-bold text-xs shadow-lg shadow-[#CCFF00]/10 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
               >
                 <KeyRound className="size-3.5" />
                 <span>{isVerifying ? 'Verifying Authorities...' : 'Verify Admin Authorities'}</span>
@@ -269,7 +269,7 @@ export const AdminView: React.FC<AdminViewProps> = ({ user, onUpdateUser, onNavi
           <button
             type="button"
             onClick={() => setShowAddCareerModal(true)}
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-zinc-950 bg-[#FEC163] hover:bg-[#ffcd7d] rounded-xl shadow-md transition-colors whitespace-nowrap cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-zinc-950 bg-[#CCFF00] hover:bg-[#ffcd7d] rounded-xl shadow-md transition-colors whitespace-nowrap cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>Add Placement Benchmark</span>

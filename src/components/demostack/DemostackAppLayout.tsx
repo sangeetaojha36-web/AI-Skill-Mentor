@@ -232,7 +232,7 @@ export function DemostackAppLayout({
     .slice(0, 2) || 'ST';
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#0A0706] text-white font-sans antialiased selection:bg-[#DE4313]/40 selection:text-white">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#08090C] text-[#EDEDF0] font-sans antialiased selection:bg-[#CCFF00] selection:text-[#090A0D]">
       {/* =========================================================================
          SIDEBAR: Matching the Demostack design & arrangement
          ========================================================================= */}
@@ -245,13 +245,13 @@ export function DemostackAppLayout({
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col justify-between border-r border-white/[0.08] bg-[#0E0604] transition-all duration-300 lg:static ${
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col justify-between border-r border-white/[0.06] bg-[#08090C] transition-all duration-300 lg:static ${
           isSidebarOpen ? 'w-64 p-3' : 'w-20 p-2 items-center'
         } ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
       >
         {/* Top Header Card */}
         <div className="w-full">
-          <div className={`rounded-2xl border border-white/[0.08] bg-[#140603] shadow-sm transition-all ${
+          <div className={`rounded-xl border border-white/[0.06] bg-[#0E1015] shadow-xs transition-all ${
             isSidebarOpen ? 'p-3' : 'p-2 flex flex-col items-center gap-2'
           }`}>
             {/* Logo and collapse toggle */}
@@ -264,11 +264,11 @@ export function DemostackAppLayout({
                   }}
                   className="flex items-center gap-2 cursor-pointer select-none"
                 >
-                  <div className="size-7 rounded-xl bg-gradient-to-br from-[#FEC163] to-[#DE4313] flex items-center justify-center text-black shadow-md font-bold shrink-0">
-                    <Sparkles className="size-4 text-black fill-black" />
+                  <div className="size-7 rounded-lg bg-[#CCFF00] flex items-center justify-center text-[#090A0D] shadow-xs font-bold shrink-0">
+                    <Sparkles className="size-4 text-[#090A0D] fill-[#090A0D]" />
                   </div>
-                  <span className="font-bold text-base tracking-tight text-white">
-                    Skill<span className="text-[#FEC163]">Mentor</span>
+                  <span className="font-semibold text-sm tracking-tight text-[#EDEDF0]">
+                    Skill<span className="text-[#CCFF00]">Bridge AI</span>
                   </span>
                 </div>
               )}
@@ -309,8 +309,8 @@ export function DemostackAppLayout({
                 }`}
                 title={currentUser.education?.college || 'My Campus Workspace'}
               >
-                <div className="size-8 rounded-full bg-black text-[#FEC163] flex items-center justify-center shrink-0 border border-[#FEC163]/30">
-                  <BuildingIcon className="size-4 fill-[#FEC163]" />
+                <div className="size-8 rounded-full bg-black text-[#CCFF00] flex items-center justify-center shrink-0 border border-[#CCFF00]/30">
+                  <BuildingIcon className="size-4 fill-[#CCFF00]" />
                 </div>
                 {isSidebarOpen && (
                   <div className="min-w-0 flex-1">
@@ -366,7 +366,7 @@ export function DemostackAppLayout({
                     {currentUser.avatarUrl ? (
                       <img src={currentUser.avatarUrl} alt={currentUser.name} className="size-full object-cover" />
                     ) : (
-                      <span className="text-xs font-bold text-[#FEC163]">{initials}</span>
+                      <span className="text-xs font-bold text-[#CCFF00]">{initials}</span>
                     )}
                   </div>
                   <span className="text-xs text-zinc-300 font-medium truncate">
@@ -419,8 +419,8 @@ export function DemostackAppLayout({
                           item.badge === 'Locked'
                             ? 'bg-rose-950/40 text-rose-300 border border-rose-800/40'
                             : item.badge.startsWith('Demo')
-                            ? 'bg-[#FEC163]/20 text-[#FEC163] border border-[#FEC163]/40 font-bold'
-                            : 'bg-[#FEC163]/15 text-[#FEC163] border border-[#FEC163]/30'
+                            ? 'bg-[#CCFF00]/20 text-[#CCFF00] border border-[#CCFF00]/40 font-bold'
+                            : 'bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/30'
                         }`}
                       >
                         {item.badge === 'Locked' && <Lock className="size-2.5" />}
@@ -476,8 +476,8 @@ export function DemostackAppLayout({
                           item.badge === 'Locked'
                             ? 'bg-rose-950/40 text-rose-300 border border-rose-800/40'
                             : item.badge === 'Public'
-                            ? 'bg-[#FEC163]/15 text-[#FEC163] border border-[#FEC163]/30'
-                            : 'bg-orange-600 text-white font-bold'
+                            ? 'bg-[#CCFF00]/15 text-[#CCFF00] border border-[#CCFF00]/30'
+                            : 'bg-[#CCFF00] text-[#08090C] text-white font-bold'
                         }`}
                       >
                         {item.badge === 'Locked' && <Lock className="size-2.5" />}
@@ -507,7 +507,7 @@ export function DemostackAppLayout({
               {currentUser.avatarUrl ? (
                 <img src={currentUser.avatarUrl} alt={currentUser.name} className="size-full object-cover" />
               ) : (
-                <span className="text-xs font-bold text-[#FEC163]">{initials}</span>
+                <span className="text-xs font-bold text-[#CCFF00]">{initials}</span>
               )}
             </div>
 
@@ -525,7 +525,7 @@ export function DemostackAppLayout({
 
           {/* Profile Popover Menu */}
           {isProfileMenuOpen && (
-            <div className="absolute bottom-full left-2 mb-2 w-60 rounded-2xl border border-white/[0.12] bg-[#180703] p-2 shadow-2xl z-50 text-xs">
+            <div className="absolute bottom-full left-2 mb-2 w-60 rounded-2xl border border-white/[0.12] bg-[#14171E] p-2 shadow-2xl z-50 text-xs">
               <div className="p-2 border-b border-white/[0.08]">
                 <p className="font-semibold text-white text-sm truncate">{currentUser.name}</p>
                 <p className="text-zinc-400 text-xs truncate">{currentUser.email}</p>
@@ -552,7 +552,7 @@ export function DemostackAppLayout({
                   }}
                   className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg hover:bg-white/[0.08] text-zinc-200 text-left transition-colors"
                 >
-                  <Bot className="size-4 text-orange-400" />
+                  <Bot className="size-4 text-[#CCFF00]" />
                   <span>Placement Mentor AI</span>
                 </button>
                 {currentUser.role === 'admin' && (
@@ -606,7 +606,7 @@ export function DemostackAppLayout({
 
             {/* Current Page Title */}
             <div className="hidden sm:flex items-center gap-2">
-              <CurrentPageIcon className="size-4.5 text-[#FEC163]" />
+              <CurrentPageIcon className="size-4.5 text-[#CCFF00]" />
               <h1 className="text-base font-semibold text-white tracking-tight truncate">
                 {currentPage.name}
               </h1>
@@ -621,7 +621,7 @@ export function DemostackAppLayout({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Quick search for skills, courses or careers..."
-                className="w-full h-9 pl-9 pr-14 rounded-xl border border-white/[0.08] bg-white/[0.04] focus:bg-white/[0.08] focus:border-[#FEC163]/50 text-xs text-white placeholder-zinc-500 outline-none transition-all"
+                className="w-full h-9 pl-9 pr-14 rounded-xl border border-white/[0.08] bg-white/[0.04] focus:bg-white/[0.08] focus:border-[#CCFF00]/50 text-xs text-white placeholder-zinc-500 outline-none transition-all"
               />
               <div className="absolute right-2 flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-white/[0.08] text-[10px] text-zinc-400 font-mono">
                 <NavCmdIcon className="size-2.5" />
@@ -634,7 +634,7 @@ export function DemostackAppLayout({
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <button
               onClick={onOpenChat}
-              className="h-9 px-3.5 rounded-full bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:from-[#ffd28e] hover:to-[#ef5323] text-black font-semibold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-md"
+              className="h-9 px-3.5 rounded-full bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] hover:bg-[#b8e600] text-black font-semibold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-md"
             >
               <Bot className="size-4 text-black" />
               <span className="hidden sm:inline">Ask Mentor</span>
@@ -652,7 +652,7 @@ export function DemostackAppLayout({
               </button>
 
               {isNotifOpen && (
-                <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-white/[0.12] bg-[#180703] p-3 shadow-2xl z-50 text-xs animate-fade-in">
+                <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl border border-white/[0.12] bg-[#14171E] p-3 shadow-2xl z-50 text-xs animate-fade-in">
                   <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
                     <span className="font-semibold text-white">Placement Alerts</span>
                     <span className="text-[10px] text-zinc-400">2 Unread</span>

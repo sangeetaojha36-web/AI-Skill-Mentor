@@ -701,7 +701,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
         );
       case 'premium':
         return (
-          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#350F05] border border-[#DE4313]/60 text-[#FEC163] shadow-sm">
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-[#350F05] border border-[#00F0FF]/60 text-[#CCFF00] shadow-sm">
             <span>👑</span>
             <span>High Earner (₹14+ - 50+ LPA)</span>
           </span>
@@ -716,11 +716,11 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
       {/* =========================================================================
          1. HERO HEADER: CLEAN, INSPIRING, REALISTIC SPECTRUM
          ========================================================================= */}
-      <div className="border-b border-[#FEC163]/20 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="border-b border-[#CCFF00]/20 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 text-xs text-[#FEC163] font-mono mb-1.5 flex-wrap">
+          <div className="flex items-center gap-2 text-xs text-[#CCFF00] font-mono mb-1.5 flex-wrap">
             <span className="flex items-center gap-1 font-semibold uppercase tracking-wider">
-              <span className="h-2 w-2 rounded-full bg-[#DE4313] animate-pulse"></span>
+              <span className="h-2 w-2 rounded-full bg-[#00F0FF] animate-pulse"></span>
               Comprehensive Placement Spectrum
             </span>
             <span aria-hidden="true" className="text-slate-600">·</span>
@@ -729,14 +729,14 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
             <span>INR (₹ LPA) Benchmarks</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-white via-[#FEC163] to-[#DE4313] bg-clip-text text-transparent flex items-center gap-3">
-            <Compass className="h-7 w-7 text-[#FEC163]" />
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight bg-gradient-to-r from-white via-[#CCFF00] to-[#00F0FF] bg-clip-text text-transparent flex items-center gap-3">
+            <Compass className="h-7 w-7 text-[#CCFF00]" />
             <span>Career Explorer & Placement Pathways</span>
           </h1>
 
           <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-3xl leading-relaxed">
             Explore diverse career opportunities spanning entry-level graduate trainees (₹3.5 - 7 LPA), mid-growth roles (₹7 - 15 LPA), and high-paying premium tech roles (₹15+ to ₹45+ LPA) tailored to your background in{' '}
-            <span className="text-[#FEC163] font-semibold">
+            <span className="text-[#CCFF00] font-semibold">
               {user.education?.degree} {user.education?.branch}
             </span>.
           </p>
@@ -744,9 +744,9 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
 
         {/* Quick Stats Bento & Action */}
         <div className="flex items-center gap-3 self-start md:self-auto flex-wrap">
-          <div className="px-3.5 py-2 rounded-xl bg-[#0F0804] border border-[#FEC163]/30 text-right">
+          <div className="px-3.5 py-2 rounded-xl bg-[#0F0804] border border-[#CCFF00]/30 text-right">
             <div className="text-[10px] text-slate-400 font-mono uppercase">Indexed Tracks</div>
-            <div className="text-base font-bold text-[#FEC163] font-mono">
+            <div className="text-base font-bold text-[#CCFF00] font-mono">
               {allCareerLibrary.length} Career Roles
             </div>
           </div>
@@ -754,7 +754,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
           <button
             type="button"
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold text-xs hover:brightness-110 transition-all shadow-md cursor-pointer"
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold text-xs hover:brightness-110 transition-all shadow-md cursor-pointer"
           >
             <Plus className="h-4 w-4" />
             <span>Add Career Track</span>
@@ -778,11 +778,11 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-2 text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
-              <GraduationCap className="h-4 w-4 text-[#FEC163]" />
+              <GraduationCap className="h-4 w-4 text-[#CCFF00]" />
               <span>Select Engineering & Career Discipline:</span>
             </div>
             {user.education?.branch && (
-              <span className="text-[11px] text-[#FEC163] font-mono bg-[#200A04] border border-[#FEC163]/30 px-2 py-0.5 rounded-lg flex items-center gap-1">
+              <span className="text-[11px] text-[#CCFF00] font-mono bg-[#200A04] border border-[#CCFF00]/30 px-2 py-0.5 rounded-lg flex items-center gap-1">
                 <span>Active Profile:</span>
                 <strong className="text-white">{user.education?.degree} {user.education?.branch}</strong>
               </span>
@@ -800,16 +800,16 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   onClick={() => setSelectedBranchKey(bDef.key)}
                   className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 cursor-pointer ${
                     isSelected
-                      ? 'bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-extrabold shadow-md shadow-[#DE4313]/30 ring-1 ring-[#FEC163]'
+                      ? 'bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-extrabold shadow-md shadow-[#00F0FF]/30 ring-1 ring-[#CCFF00]'
                       : isMyBranchTab
-                      ? 'bg-[#220D05] border border-[#FEC163]/50 text-[#FEC163] hover:bg-[#301207]'
-                      : 'bg-[#0E0603] text-slate-300 hover:text-white hover:bg-[#1A0A05] border border-[#FEC163]/20'
+                      ? 'bg-[#220D05] border border-[#CCFF00]/50 text-[#CCFF00] hover:bg-[#301207]'
+                      : 'bg-[#0E0603] text-slate-300 hover:text-white hover:bg-[#1A0A05] border border-[#CCFF00]/20'
                   }`}
                 >
                   <span className="text-sm">{bDef.icon}</span>
                   <span>{isMyBranchTab && user.education?.branch ? `My Branch (${user.education.branch})` : bDef.label}</span>
                   {isMyBranchTab && (
-                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${isSelected ? 'bg-black text-[#FEC163]' : 'bg-[#3A1408] text-white'}`}>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${isSelected ? 'bg-black text-[#CCFF00]' : 'bg-[#3A1408] text-white'}`}>
                       {branchStats.myBranchTotal}
                     </span>
                   )}
@@ -822,12 +822,12 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
         {/* =========================================================================
            BRANCH INTELLIGENCE BANNER: Tailored specifically to student profile
            ========================================================================= */}
-        <div className="rounded-2xl border border-[#FEC163]/30 bg-gradient-to-br from-[#180A04] via-[#0E0502] to-[#080201] p-4 sm:p-5 shadow-2xl relative overflow-hidden space-y-4">
+        <div className="rounded-2xl border border-[#CCFF00]/30 bg-gradient-to-br from-[#180A04] via-[#0E0502] to-[#080201] p-4 sm:p-5 shadow-2xl relative overflow-hidden space-y-4">
           <div className="absolute top-0 right-0 w-80 h-80 bg-orange-600/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
             <div>
-              <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#FEC163] mb-1">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#CCFF00] mb-1">
                 <Target className="h-4 w-4" />
                 <span>
                   {selectedBranchKey === 'my_branch'
@@ -855,13 +855,13 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
 
             {/* Toggle: Core Only vs Core + Synergy */}
             {selectedBranchKey === 'my_branch' && user.education?.branch && (
-              <div className="shrink-0 flex items-center gap-2 bg-[#0A0402] border border-[#FEC163]/20 p-1.5 rounded-xl self-start md:self-auto">
+              <div className="shrink-0 flex items-center gap-2 bg-[#08090C] border border-[#CCFF00]/20 p-1.5 rounded-xl self-start md:self-auto">
                 <button
                   type="button"
                   onClick={() => setBranchOnlyCore(false)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                     !branchOnlyCore
-                      ? 'bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold'
+                      ? 'bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -872,7 +872,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   onClick={() => setBranchOnlyCore(true)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                     branchOnlyCore
-                      ? 'bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold'
+                      ? 'bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold'
                       : 'text-slate-400 hover:text-white'
                   }`}
                 >
@@ -883,9 +883,9 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
           </div>
 
           {/* Quick Salary Filter Shortcuts within this Branch */}
-          <div className="pt-3 border-t border-[#FEC163]/15 flex flex-wrap items-center justify-between gap-3 text-xs relative z-10">
+          <div className="pt-3 border-t border-[#CCFF00]/15 flex flex-wrap items-center justify-between gap-3 text-xs relative z-10">
             <div className="flex items-center gap-1.5 text-slate-400 font-mono text-[11px]">
-              <Coins className="h-3.5 w-3.5 text-[#FEC163]" />
+              <Coins className="h-3.5 w-3.5 text-[#CCFF00]" />
               <span>Salary Brackets in this Track:</span>
             </div>
 
@@ -896,8 +896,8 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                 onClick={() => setSelectedSalaryTier('All')}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
                   selectedSalaryTier === 'All'
-                    ? 'bg-[#FEC163] text-black font-bold shadow-sm'
-                    : 'bg-[#120603] text-slate-300 hover:text-white border border-[#FEC163]/25'
+                    ? 'bg-[#CCFF00] text-black font-bold shadow-sm'
+                    : 'bg-[#120603] text-slate-300 hover:text-white border border-[#CCFF00]/25'
                 }`}
               >
                 ✨ All Brackets ({branchStats.activeCount})
@@ -937,8 +937,8 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                 onClick={() => setSelectedSalaryTier('premium')}
                 className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
                   selectedSalaryTier === 'premium'
-                    ? 'bg-[#350F05] border border-[#DE4313] text-[#FEC163] font-bold shadow-sm'
-                    : 'bg-[#120603] text-[#FEC163] hover:text-white border border-[#DE4313]/40'
+                    ? 'bg-[#350F05] border border-[#00F0FF] text-[#CCFF00] font-bold shadow-sm'
+                    : 'bg-[#120603] text-[#CCFF00] hover:text-white border border-[#00F0FF]/40'
                 }`}
               >
                 <span>👑</span>
@@ -952,13 +952,13 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
         <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
           {/* Search Input */}
           <div className="relative flex-1 max-w-lg">
-            <Search className="absolute left-3.5 top-3 h-4 w-4 text-[#FEC163]/70" />
+            <Search className="absolute left-3.5 top-3 h-4 w-4 text-[#CCFF00]/70" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by role title, skill (Excel, Python, CAD), or company..."
-              className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#0F0804] border border-[#FEC163]/25 text-white placeholder-slate-500 focus:border-[#FEC163] focus:outline-none transition-all shadow-inner"
+              className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl bg-[#0F0804] border border-[#CCFF00]/25 text-white placeholder-slate-500 focus:border-[#CCFF00] focus:outline-none transition-all shadow-inner"
             />
             {searchQuery && (
               <button
@@ -973,8 +973,8 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
 
           {/* Sort & View Options */}
           <div className="flex items-center gap-2.5 flex-wrap">
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0F0804] border border-[#FEC163]/25 text-xs">
-              <SlidersHorizontal className="h-3.5 w-3.5 text-[#FEC163]" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0F0804] border border-[#CCFF00]/25 text-xs">
+              <SlidersHorizontal className="h-3.5 w-3.5 text-[#CCFF00]" />
               <span className="text-slate-400 text-[11px]">Sort:</span>
               <select
                 value={sortBy}
@@ -989,12 +989,12 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
             </div>
 
             {/* View Mode Toggle */}
-            <div className="inline-flex rounded-xl bg-[#0F0804] border border-[#FEC163]/25 p-1">
+            <div className="inline-flex rounded-xl bg-[#0F0804] border border-[#CCFF00]/25 p-1">
               <button
                 type="button"
                 onClick={() => setViewMode('grid')}
                 className={`px-2.5 py-1 text-xs rounded-lg font-medium transition-colors ${
-                  viewMode === 'grid' ? 'bg-[#FEC163] text-black font-bold' : 'text-slate-400 hover:text-white'
+                  viewMode === 'grid' ? 'bg-[#CCFF00] text-black font-bold' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 Grid
@@ -1003,7 +1003,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                 type="button"
                 onClick={() => setViewMode('list')}
                 className={`px-2.5 py-1 text-xs rounded-lg font-medium transition-colors ${
-                  viewMode === 'list' ? 'bg-[#FEC163] text-black font-bold' : 'text-slate-400 hover:text-white'
+                  viewMode === 'list' ? 'bg-[#CCFF00] text-black font-bold' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 List
@@ -1018,13 +1018,13 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
          ========================================================================= */}
       {loading ? (
         <div className="py-24 text-center space-y-3">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#FEC163] border-t-transparent"></div>
-          <p className="text-xs text-[#FEC163] font-mono">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#CCFF00] border-t-transparent"></div>
+          <p className="text-xs text-[#CCFF00] font-mono">
             Evaluating career match suitability across all salary brackets...
           </p>
         </div>
       ) : filteredAndSorted.length === 0 ? (
-        <div className="rounded-2xl border border-[#FEC163]/20 bg-[#0A0402]/90 p-12 text-center space-y-3">
+        <div className="rounded-2xl border border-[#CCFF00]/20 bg-[#08090C]/90 p-12 text-center space-y-3">
           <Compass className="h-8 w-8 text-slate-500 mx-auto" />
           <h3 className="text-base font-bold text-white">No Career Tracks Found for this Filter</h3>
           <p className="text-xs text-slate-400 max-w-md mx-auto">
@@ -1038,7 +1038,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
               setBranchOnlyCore(false);
               setSelectedSalaryTier('All');
             }}
-            className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#1A0A04] border border-[#FEC163]/40 text-[#FEC163] hover:text-white hover:bg-[#250C05] cursor-pointer"
+            className="px-4 py-2 text-xs font-semibold rounded-xl bg-[#1A0A04] border border-[#CCFF00]/40 text-[#CCFF00] hover:text-white hover:bg-[#250C05] cursor-pointer"
           >
             Reset Filters
           </button>
@@ -1049,15 +1049,15 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
             return (
               <div
                 key={career.id}
-                className={`relative rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 group hover:shadow-[0_15px_35px_rgba(222,67,19,0.18)] ${
+                className={`relative rounded-2xl border p-5 flex flex-col justify-between transition-all duration-300 group hover:shadow-[0_15px_35px_rgba(204,255,0,0.18)] ${
                   isTarget
-                    ? 'border-[#FEC163] bg-gradient-to-b from-[#1C0D05] to-[#0A0402] shadow-[0_0_25px_rgba(254,193,99,0.15)] ring-1 ring-[#FEC163]/40'
-                    : 'border-[#FEC163]/25 bg-[#0C0603]/95 hover:border-[#FEC163]/60 hover:bg-[#120704]'
+                    ? 'border-[#CCFF00] bg-gradient-to-b from-[#1C0D05] to-[#08090C] shadow-[0_0_25px_rgba(204,255,0,0.15)] ring-1 ring-[#CCFF00]/40'
+                    : 'border-[#CCFF00]/25 bg-[#0C0603]/95 hover:border-[#CCFF00]/60 hover:bg-[#120704]'
                 }`}
               >
                 {/* Active Goal Ribbon */}
                 {isTarget && (
-                  <div className="absolute -top-3 right-4 px-3 py-0.5 rounded-full bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-extrabold text-[10px] tracking-wider uppercase shadow-md flex items-center gap-1 z-10">
+                  <div className="absolute -top-3 right-4 px-3 py-0.5 rounded-full bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-extrabold text-[10px] tracking-wider uppercase shadow-md flex items-center gap-1 z-10">
                     <Star className="h-3 w-3 fill-black text-black" />
                     <span>Active Goal</span>
                   </div>
@@ -1088,7 +1088,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
 
                   {/* Title & Domain */}
                   <div>
-                    <h3 className="text-base font-bold text-white group-hover:text-[#FEC163] transition-colors leading-snug">
+                    <h3 className="text-base font-bold text-white group-hover:text-[#CCFF00] transition-colors leading-snug">
                       {career.title}
                     </h3>
                     <p className="text-[11px] text-slate-400 font-medium mt-0.5">
@@ -1098,7 +1098,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
 
                   {/* Branch Alignment Reasoning Box */}
                   <div className="p-2.5 rounded-xl bg-black/45 border border-white/[0.06] text-[11px] text-zinc-300 flex items-start gap-2">
-                    <GraduationCap className="h-3.5 w-3.5 text-[#FEC163] shrink-0 mt-0.5" />
+                    <GraduationCap className="h-3.5 w-3.5 text-[#CCFF00] shrink-0 mt-0.5" />
                     <p className="leading-relaxed">
                       {affinity.reason}
                     </p>
@@ -1110,7 +1110,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   </p>
 
                   {/* Key Highlights Micro-Bento */}
-                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[#060302] border border-[#FEC163]/15 text-xs font-mono">
+                  <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[#060302] border border-[#CCFF00]/15 text-xs font-mono">
                     <div>
                       <div className="text-[10px] text-slate-500 uppercase tracking-tight">Compensation</div>
                       <div className="text-xs font-bold text-amber-200 truncate">
@@ -1129,7 +1129,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-[11px] text-slate-400">
                       <span>Key Prerequisites</span>
-                      <span className="font-mono text-[#FEC163]">
+                      <span className="font-mono text-[#CCFF00]">
                         {matchedSkills.length} / {career.requiredSkills.length} Acquired
                       </span>
                     </div>
@@ -1145,7 +1145,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                             className={`text-[10px] px-2 py-0.5 rounded-md font-mono transition-colors ${
                               hasSkill
                                 ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-700/50 font-bold'
-                                : 'bg-[#180803] text-slate-400 border border-[#FEC163]/20'
+                                : 'bg-[#180803] text-slate-400 border border-[#CCFF00]/20'
                             }`}
                           >
                             {hasSkill ? '✓ ' : ''}{sk.name}
@@ -1162,7 +1162,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
 
                   {/* Top Recruiters */}
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-400 flex-wrap">
-                    <Building2 className="h-3.5 w-3.5 text-[#FEC163]/70 shrink-0" />
+                    <Building2 className="h-3.5 w-3.5 text-[#CCFF00]/70 shrink-0" />
                     <span className="text-slate-500 text-[10px]">Hiring Leaders:</span>
                     <span className="text-slate-300 truncate font-medium">
                       {career.topRecruiters.slice(0, 3).join(', ')}
@@ -1171,11 +1171,11 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                 </div>
 
                 {/* Footer Action Buttons */}
-                <div className="pt-4 mt-4 border-t border-[#FEC163]/15 flex items-center justify-between gap-2">
+                <div className="pt-4 mt-4 border-t border-[#CCFF00]/15 flex items-center justify-between gap-2">
                   <button
                     type="button"
                     onClick={() => setInspectingCareer(career)}
-                    className="inline-flex items-center gap-1 text-xs text-[#FEC163] hover:text-white font-semibold transition-colors cursor-pointer group/btn"
+                    className="inline-flex items-center gap-1 text-xs text-[#CCFF00] hover:text-white font-semibold transition-colors cursor-pointer group/btn"
                   >
                     <Eye className="h-3.5 w-3.5" />
                     <span>View Blueprint</span>
@@ -1191,7 +1191,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                       <button
                         type="button"
                         onClick={() => handleSetTarget(career.title, career.id)}
-                        className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black text-xs font-bold hover:brightness-110 transition-all shadow-sm cursor-pointer"
+                        className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black text-xs font-bold hover:brightness-110 transition-all shadow-sm cursor-pointer"
                       >
                         Set as Goal
                       </button>
@@ -1203,7 +1203,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                         onSelectCareer(career.id, career.title);
                         onNavigate('skillgap');
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-[#140603] hover:bg-[#200A05] border border-[#FEC163]/30 text-amber-200 text-xs font-medium transition-colors cursor-pointer"
+                      className="px-2.5 py-1 rounded-lg bg-[#14171E] hover:bg-[#200A05] border border-[#CCFF00]/30 text-amber-200 text-xs font-medium transition-colors cursor-pointer"
                       title="Run Skill Gap Analysis"
                     >
                       Gap Analysis →
@@ -1222,8 +1222,8 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
               key={career.id}
               className={`rounded-2xl border p-4.5 flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all ${
                 isTarget
-                  ? 'border-[#FEC163] bg-[#160A04]'
-                  : 'border-[#FEC163]/20 bg-[#0C0603] hover:border-[#FEC163]/50'
+                  ? 'border-[#CCFF00] bg-[#160A04]'
+                  : 'border-[#CCFF00]/20 bg-[#0C0603] hover:border-[#CCFF00]/50'
               }`}
             >
               <div className="space-y-1.5 max-w-2xl">
@@ -1268,7 +1268,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setInspectingCareer(career)}
-                  className="px-3 py-1.5 rounded-xl bg-[#1A0A04] border border-[#FEC163]/30 text-amber-200 hover:text-white text-xs font-semibold cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-[#1A0A04] border border-[#CCFF00]/30 text-amber-200 hover:text-white text-xs font-semibold cursor-pointer"
                 >
                   Blueprint
                 </button>
@@ -1277,7 +1277,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   <button
                     type="button"
                     onClick={() => handleSetTarget(career.title, career.id)}
-                    className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black text-xs font-bold hover:brightness-110 cursor-pointer"
+                    className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black text-xs font-bold hover:brightness-110 cursor-pointer"
                   >
                     Set Goal
                   </button>
@@ -1293,12 +1293,12 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
          ========================================================================= */}
       {inspectingCareer && (
         <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-3 sm:p-6 backdrop-blur-md animate-fade-in overflow-y-auto">
-          <div className="relative mx-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-[#FEC163]/40 bg-[#0E0704] text-white font-sans shadow-2xl my-auto max-h-[92vh] flex flex-col">
+          <div className="relative mx-auto w-full max-w-3xl overflow-hidden rounded-2xl border border-[#CCFF00]/40 bg-[#0E0704] text-white font-sans shadow-2xl my-auto max-h-[92vh] flex flex-col">
             {/* Modal Header */}
-            <div className="p-5 sm:p-6 border-b border-[#FEC163]/20 flex items-start justify-between gap-4 bg-[#140804]">
+            <div className="p-5 sm:p-6 border-b border-[#CCFF00]/20 flex items-start justify-between gap-4 bg-[#140804]">
               <div>
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="text-xs font-mono font-bold text-[#FEC163] uppercase tracking-wider">
+                  <span className="text-xs font-mono font-bold text-[#CCFF00] uppercase tracking-wider">
                     {inspectingCareer.category}
                   </span>
                   <span className="text-slate-600">·</span>
@@ -1319,7 +1319,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
               <button
                 type="button"
                 onClick={() => setInspectingCareer(null)}
-                className="p-1.5 rounded-xl bg-[#220D05] border border-[#FEC163]/30 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-xl bg-[#220D05] border border-[#CCFF00]/30 text-slate-400 hover:text-white transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1329,15 +1329,15 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
             <div className="p-5 sm:p-6 space-y-6 overflow-y-auto flex-1">
               {/* Compensation & Growth Bento */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3.5 rounded-xl bg-[#080302] border border-[#FEC163]/20">
+                <div className="p-3.5 rounded-xl bg-[#080302] border border-[#CCFF00]/20">
                   <div className="text-[10px] text-slate-500 uppercase font-mono">Compensation Range (INR)</div>
                   <div className="text-sm font-bold text-amber-200 mt-0.5">{inspectingCareer.salaryRange}</div>
                 </div>
-                <div className="p-3.5 rounded-xl bg-[#080302] border border-[#FEC163]/20">
+                <div className="p-3.5 rounded-xl bg-[#080302] border border-[#CCFF00]/20">
                   <div className="text-[10px] text-slate-500 uppercase font-mono">Market Demand</div>
                   <div className="text-sm font-bold text-emerald-400 mt-0.5">{inspectingCareer.growthOutlook}</div>
                 </div>
-                <div className="p-3.5 rounded-xl bg-[#080302] border border-[#FEC163]/20">
+                <div className="p-3.5 rounded-xl bg-[#080302] border border-[#CCFF00]/20">
                   <div className="text-[10px] text-slate-500 uppercase font-mono">Recommended Majors</div>
                   <div className="text-xs font-medium text-slate-300 mt-0.5 truncate">
                     {inspectingCareer.recommendedDisciplines.slice(0, 2).join(', ')}
@@ -1346,8 +1346,8 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
               </div>
 
               {/* Day in the Life */}
-              <div className="p-4 rounded-xl bg-[#1A0A04]/80 border border-[#FEC163]/25 space-y-1.5">
-                <div className="text-xs font-bold text-[#FEC163] uppercase tracking-wider font-mono flex items-center gap-1.5">
+              <div className="p-4 rounded-xl bg-[#1A0A04]/80 border border-[#CCFF00]/25 space-y-1.5">
+                <div className="text-xs font-bold text-[#CCFF00] uppercase tracking-wider font-mono flex items-center gap-1.5">
                   <Zap className="h-3.5 w-3.5" />
                   <span>A Day in the Life</span>
                 </div>
@@ -1364,7 +1364,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                 <ul className="space-y-1.5">
                   {inspectingCareer.keyResponsibilities.map((resp, idx) => (
                     <li key={idx} className="text-xs text-slate-300 flex items-start gap-2">
-                      <ChevronRight className="h-3.5 w-3.5 text-[#FEC163] shrink-0 mt-0.5" />
+                      <ChevronRight className="h-3.5 w-3.5 text-[#CCFF00] shrink-0 mt-0.5" />
                       <span>{resp}</span>
                     </li>
                   ))}
@@ -1387,7 +1387,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                         className={`p-2.5 rounded-xl border text-xs flex items-center justify-between ${
                           hasSkill
                             ? 'bg-emerald-950/40 border-emerald-700/60 text-emerald-200'
-                            : 'bg-[#120603] border-[#FEC163]/20 text-slate-300'
+                            : 'bg-[#120603] border-[#CCFF00]/20 text-slate-300'
                         }`}
                       >
                         <div>
@@ -1410,9 +1410,9 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   {inspectingCareer.portfolioProjects.map((proj, pIdx) => (
                     <div
                       key={pIdx}
-                      className="p-3 rounded-xl bg-[#080302] border border-[#FEC163]/20 text-xs flex items-center gap-2.5 text-slate-200"
+                      className="p-3 rounded-xl bg-[#080302] border border-[#CCFF00]/20 text-xs flex items-center gap-2.5 text-slate-200"
                     >
-                      <Briefcase className="h-4 w-4 text-[#FEC163] shrink-0" />
+                      <Briefcase className="h-4 w-4 text-[#CCFF00] shrink-0" />
                       <span>{proj}</span>
                     </div>
                   ))}
@@ -1428,7 +1428,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   {inspectingCareer.interviewTopics.map((topic, tIdx) => (
                     <span
                       key={tIdx}
-                      className="px-2.5 py-1 rounded-lg bg-[#180A04] border border-[#FEC163]/25 text-amber-200 text-xs font-mono"
+                      className="px-2.5 py-1 rounded-lg bg-[#180A04] border border-[#CCFF00]/25 text-amber-200 text-xs font-mono"
                     >
                       {topic}
                     </span>
@@ -1445,7 +1445,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   {inspectingCareer.topRecruiters.map((rec, rIdx) => (
                     <span
                       key={rIdx}
-                      className="px-3 py-1 rounded-xl bg-[#0D0502] border border-[#FEC163]/30 text-white text-xs font-medium"
+                      className="px-3 py-1 rounded-xl bg-[#0E1015] border border-[#CCFF00]/30 text-white text-xs font-medium"
                     >
                       {rec}
                     </span>
@@ -1455,7 +1455,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
             </div>
 
             {/* Modal Footer CTA Bar */}
-            <div className="p-4 sm:p-5 border-t border-[#FEC163]/20 bg-[#120603] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="p-4 sm:p-5 border-t border-[#CCFF00]/20 bg-[#120603] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="text-xs text-slate-400">
                 Ready to prepare for <strong className="text-white">{inspectingCareer.title}</strong>?
               </div>
@@ -1467,7 +1467,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                     handleSetTarget(inspectingCareer.title, inspectingCareer.id);
                     setInspectingCareer(null);
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black text-xs font-bold hover:brightness-110 transition-all shadow-md cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black text-xs font-bold hover:brightness-110 transition-all shadow-md cursor-pointer"
                 >
                   Set as My Goal
                 </button>
@@ -1479,7 +1479,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                     setInspectingCareer(null);
                     onNavigate('skillgap');
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-[#220D05] hover:bg-[#301207] border border-[#FEC163]/40 text-amber-200 text-xs font-semibold cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-[#220D05] hover:bg-[#301207] border border-[#CCFF00]/40 text-amber-200 text-xs font-semibold cursor-pointer"
                 >
                   Skill Gap Audit →
                 </button>
@@ -1491,7 +1491,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                     setInspectingCareer(null);
                     onNavigate('interview');
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-[#2A0E06] hover:bg-[#3C1408] border border-[#DE4313]/60 text-white text-xs font-bold cursor-pointer"
+                  className="px-3.5 py-2 rounded-xl bg-[#2A0E06] hover:bg-[#3C1408] border border-[#00F0FF]/60 text-white text-xs font-bold cursor-pointer"
                 >
                   Mock Studio →
                 </button>
@@ -1506,8 +1506,8 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
          ========================================================================= */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 backdrop-blur-md animate-fade-in overflow-y-auto">
-          <div className="relative mx-auto w-full max-w-lg rounded-2xl border border-[#FEC163]/40 bg-[#0E0704] text-white font-sans shadow-2xl p-6 space-y-5 my-auto">
-            <div className="flex items-center justify-between border-b border-[#FEC163]/20 pb-4">
+          <div className="relative mx-auto w-full max-w-lg rounded-2xl border border-[#CCFF00]/40 bg-[#0E0704] text-white font-sans shadow-2xl p-6 space-y-5 my-auto">
+            <div className="flex items-center justify-between border-b border-[#CCFF00]/20 pb-4">
               <div>
                 <h3 className="text-lg font-bold text-white">Add New Career Pathway</h3>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -1532,7 +1532,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   placeholder="e.g., Junior QA Engineer, Cloud Security Trainee"
-                  className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#FEC163]/30 text-white placeholder-slate-500 focus:border-[#FEC163] focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#CCFF00]/30 text-white placeholder-slate-500 focus:border-[#CCFF00] focus:outline-none"
                 />
               </div>
 
@@ -1542,7 +1542,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   <select
                     value={newDomain}
                     onChange={(e) => setNewDomain(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#FEC163]/30 text-white focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#CCFF00]/30 text-white focus:outline-none"
                   >
                     {CAREER_DOMAINS.filter((d) => d !== 'All').map((d) => (
                       <option key={d} value={d} className="bg-[#1A0A04]">
@@ -1557,7 +1557,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   <select
                     value={newSalaryTier}
                     onChange={(e) => setNewSalaryTier(e.target.value as SalaryTier)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#FEC163]/30 text-white focus:outline-none"
+                    className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#CCFF00]/30 text-white focus:outline-none"
                   >
                     <option value="foundation" className="bg-[#1A0A04]">🌱 Foundation (₹3.5 - ₹7 LPA)</option>
                     <option value="growth" className="bg-[#1A0A04]">⚡ Growth (₹7 - ₹15 LPA)</option>
@@ -1573,7 +1573,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   value={newSalary}
                   onChange={(e) => setNewSalary(e.target.value)}
                   placeholder="e.g., ₹4.5 LPA - ₹7.5 LPA"
-                  className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#FEC163]/30 text-white focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#CCFF00]/30 text-white focus:outline-none"
                 />
               </div>
 
@@ -1584,7 +1584,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
                   placeholder="Describe the core mission and day-to-day value of this career..."
-                  className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#FEC163]/30 text-white placeholder-slate-500 focus:border-[#FEC163] focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#CCFF00]/30 text-white placeholder-slate-500 focus:border-[#CCFF00] focus:outline-none"
                 />
               </div>
 
@@ -1595,7 +1595,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   value={newSkills}
                   onChange={(e) => setNewSkills(e.target.value)}
                   placeholder="e.g., Excel, Manual Testing, SQL, Problem Solving"
-                  className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#FEC163]/30 text-white focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#CCFF00]/30 text-white focus:outline-none"
                 />
               </div>
 
@@ -1606,11 +1606,11 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                   value={newRecruiters}
                   onChange={(e) => setNewRecruiters(e.target.value)}
                   placeholder="e.g., TCS, Infosys, Wipro, Capgemini"
-                  className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#FEC163]/30 text-white focus:outline-none"
+                  className="w-full px-3 py-2 rounded-xl bg-[#1A0A04] border border-[#CCFF00]/30 text-white focus:outline-none"
                 />
               </div>
 
-              <div className="pt-3 border-t border-[#FEC163]/20 flex items-center justify-end gap-2.5">
+              <div className="pt-3 border-t border-[#CCFF00]/20 flex items-center justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
@@ -1620,7 +1620,7 @@ export const CareerExplorerView: React.FC<CareerExplorerViewProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold hover:brightness-110 transition-all cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold hover:brightness-110 transition-all cursor-pointer"
                 >
                   Save Career Pathway
                 </button>

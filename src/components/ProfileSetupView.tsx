@@ -383,10 +383,10 @@ export const ProfileSetupView: React.FC<ProfileSetupViewProps> = ({
             <button
               type="button"
               onClick={onContinueToDashboard}
-              className="self-start sm:self-center shrink-0 px-4 py-2 text-xs font-semibold text-[#FEC163] hover:text-white bg-[#140603] hover:bg-[#200A04] border border-[#FEC163]/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+              className="self-start sm:self-center shrink-0 px-4 py-2 text-xs font-semibold text-[#CCFF00] hover:text-white bg-[#14171E] hover:bg-[#200A04] border border-[#CCFF00]/40 rounded-xl transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
             >
               <span>Go to Dashboard</span>
-              <ArrowRight className="h-3.5 w-3.5 text-[#FEC163]" />
+              <ArrowRight className="h-3.5 w-3.5 text-[#CCFF00]" />
             </button>
           )}
         </div>
@@ -913,7 +913,7 @@ export const ProfileSetupView: React.FC<ProfileSetupViewProps> = ({
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-white text-sm">{proj.title}</span>
                         {proj.aiAnalysis?.recruiterScore && (
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-orange-500/15 text-[#FEC163] border border-orange-500/30 font-bold">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-orange-500/15 text-[#CCFF00] border border-orange-500/30 font-bold">
                             AI Score: {proj.aiAnalysis.recruiterScore}%
                           </span>
                         )}
@@ -1480,7 +1480,7 @@ export const ProfileSetupView: React.FC<ProfileSetupViewProps> = ({
                 type="button"
                 disabled={isAnalyzingProj || !newProjTitle.trim()}
                 onClick={() => handleAddProject(true)}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:from-[#ffd28e] hover:to-[#ef5323] text-black font-bold text-xs flex items-center gap-1.5 shadow-md disabled:opacity-50 cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] hover:from-[#ffd28e] hover:to-[#ef5323] text-black font-bold text-xs flex items-center gap-1.5 shadow-md disabled:opacity-50 cursor-pointer"
               >
                 {isAnalyzingProj ? (
                   <>

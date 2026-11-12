@@ -63,7 +63,7 @@ export const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLink
         ref={ref}
         href={href || '#'}
         onClick={handleClick}
-        className={`transition-colors text-slate-400 hover:text-[#FEC163] hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#FEC163] cursor-pointer inline-flex items-center gap-1 font-medium ${className}`}
+        className={`transition-colors text-slate-400 hover:text-[#CCFF00] hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#CCFF00] cursor-pointer inline-flex items-center gap-1 font-medium ${className}`}
         {...props}
       >
         {children}
@@ -176,7 +176,7 @@ export const Breadcrumb1: React.FC<{
                 {segment.icon && <span className="shrink-0">{segment.icon}</span>}
                 <span>{segment.label}</span>
                 {segment.badge && (
-                  <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-[#FEC163]/20 text-[#FEC163] border border-[#FEC163]/30">
+                  <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-[#CCFF00]/20 text-[#CCFF00] border border-[#CCFF00]/30">
                     {segment.badge}
                   </span>
                 )}

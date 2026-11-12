@@ -574,7 +574,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, on
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-white text-sm">{proj.title}</span>
                       {proj.aiAnalysis?.recruiterScore && (
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-orange-500/15 text-[#FEC163] border border-orange-500/30 font-bold">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-orange-500/15 text-[#CCFF00] border border-orange-500/30 font-bold">
                           AI Score: {proj.aiAnalysis.recruiterScore}%
                         </span>
                       )}
@@ -831,7 +831,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, on
                 type="button"
                 disabled={isAnalyzingProj || !projTitle.trim()}
                 onClick={() => handleAddProject(true)}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:from-[#ffd28e] hover:to-[#ef5323] text-black font-bold text-xs flex items-center gap-1.5 shadow-md disabled:opacity-50 cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] hover:from-[#ffd28e] hover:to-[#ef5323] text-black font-bold text-xs flex items-center gap-1.5 shadow-md disabled:opacity-50 cursor-pointer"
               >
                 {isAnalyzingProj ? (
                   <>

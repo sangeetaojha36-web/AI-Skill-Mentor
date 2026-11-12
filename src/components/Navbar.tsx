@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User } from '../types.ts';
-import { Compass, Bot, Shield, UserCircle, LogOut, CheckCircle, Sparkles } from 'lucide-react';
+import { GraduationCap, Compass, Bot, Shield, UserCircle, LogOut, CheckCircle, Sparkles } from 'lucide-react';
 
 interface NavbarProps {
   currentUser: User | null;
@@ -40,7 +40,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className="flex items-center gap-2.5 text-left group focus:outline-none"
+            className="flex items-center gap-2.5 text-left group focus:outline-none cursor-pointer"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-600 text-white shadow-sm transition-transform group-hover:scale-105">
               <Compass className="h-4 w-4" />

@@ -105,7 +105,7 @@ const FilterButton: React.FC<{
     onClick={onClick}
     className={`relative flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition cursor-pointer active:scale-95 ${
       active
-        ? 'border-amber-400/60 bg-amber-500/15 text-[#FEC163]'
+        ? 'border-amber-400/60 bg-amber-500/15 text-[#CCFF00]'
         : selected
         ? 'border-white/20 bg-white/[0.08] text-white'
         : 'border-white/[0.08] bg-white/[0.03] text-zinc-400 hover:text-white hover:border-white/15'
@@ -114,7 +114,7 @@ const FilterButton: React.FC<{
     <span>{selected || label}</span>
     <ChevronDown
       size={12}
-      className={`transition-transform duration-300 ${active ? 'rotate-180 text-[#FEC163]' : 'text-zinc-500'}`}
+      className={`transition-transform duration-300 ${active ? 'rotate-180 text-[#CCFF00]' : 'text-zinc-500'}`}
     />
   </button>
 );
@@ -139,7 +139,7 @@ const RoadmapMilestoneCard: React.FC<{
 
   const getBorderColor = () => {
     if (step.completed) return 'border-emerald-500/30 hover:border-emerald-500/50';
-    if (isCurrent) return 'border-[#FEC163]/50 hover:border-[#FEC163]/80';
+    if (isCurrent) return 'border-[#CCFF00]/50 hover:border-[#CCFF00]/80';
     return 'border-white/[0.08] hover:border-white/20';
   };
 
@@ -161,7 +161,7 @@ const RoadmapMilestoneCard: React.FC<{
             step.completed
               ? 'border-emerald-500/30 bg-emerald-950/40 text-emerald-400'
               : isCurrent
-              ? 'border-amber-500/40 bg-amber-950/40 text-[#FEC163] shadow-md shadow-amber-950/40'
+              ? 'border-amber-500/40 bg-amber-950/40 text-[#CCFF00] shadow-md shadow-[#CCFF00]/10'
               : 'border-white/10 bg-white/[0.04] text-zinc-400'
           }`}
         >
@@ -180,7 +180,7 @@ const RoadmapMilestoneCard: React.FC<{
                 <span className="text-zinc-600">·</span>
                 <span className="text-[10px] font-mono text-zinc-400">~{step.estimatedWeeks} Weeks</span>
               </div>
-              <h3 className="text-[15px] font-bold text-white mt-0.5 group-hover:text-[#FEC163] transition-colors leading-snug">
+              <h3 className="text-[15px] font-bold text-white mt-0.5 group-hover:text-[#CCFF00] transition-colors leading-snug">
                 {step.title}
               </h3>
             </div>
@@ -193,8 +193,8 @@ const RoadmapMilestoneCard: React.FC<{
                   <span>COMPLETED</span>
                 </span>
               ) : isCurrent ? (
-                <span className="shrink-0 rounded-full border border-amber-500/40 bg-amber-950/60 px-2.5 py-0.5 text-[9px] font-bold text-[#FEC163] uppercase tracking-wider flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full bg-[#FEC163] animate-pulse" />
+                <span className="shrink-0 rounded-full border border-amber-500/40 bg-amber-950/60 px-2.5 py-0.5 text-[9px] font-bold text-[#CCFF00] uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full bg-[#CCFF00] animate-pulse" />
                   <span>IN PROGRESS</span>
                 </span>
               ) : (
@@ -254,7 +254,7 @@ const RoadmapMilestoneCard: React.FC<{
               <button
                 type="button"
                 onClick={() => setExpanded(!expanded)}
-                className="text-[11px] text-[#FEC163] hover:underline cursor-pointer flex items-center gap-1 font-semibold"
+                className="text-[11px] text-[#CCFF00] hover:underline cursor-pointer flex items-center gap-1 font-semibold"
               >
                 <span>{expanded ? 'Hide Details' : 'Deep Dive'}</span>
                 <ChevronDown
@@ -279,7 +279,7 @@ const RoadmapMilestoneCard: React.FC<{
                 {step.recommendedResources && step.recommendedResources.length > 0 && (
                   <div className="space-y-1.5">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-semibold flex items-center gap-1">
-                      <BookOpen className="size-3 text-[#FEC163]" />
+                      <BookOpen className="size-3 text-[#CCFF00]" />
                       <span>Curated Learning Modules for this Phase</span>
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -296,7 +296,7 @@ const RoadmapMilestoneCard: React.FC<{
                             <button
                               type="button"
                               onClick={() => window.open(res.url, '_blank')}
-                              className="px-2 py-1 rounded bg-white/[0.08] hover:bg-white/[0.14] text-[10px] font-semibold text-[#FEC163] shrink-0 cursor-pointer flex items-center gap-1"
+                              className="px-2 py-1 rounded bg-white/[0.08] hover:bg-white/[0.14] text-[10px] font-semibold text-[#CCFF00] shrink-0 cursor-pointer flex items-center gap-1"
                             >
                               <span>Launch</span>
                               <ExternalLink className="size-2.5" />
@@ -305,7 +305,7 @@ const RoadmapMilestoneCard: React.FC<{
                             <button
                               type="button"
                               onClick={() => onNavigate('courses')}
-                              className="px-2 py-1 rounded bg-[#FEC163]/15 hover:bg-[#FEC163]/25 text-[10px] font-semibold text-[#FEC163] shrink-0 cursor-pointer flex items-center gap-1"
+                              className="px-2 py-1 rounded bg-[#CCFF00]/15 hover:bg-[#CCFF00]/25 text-[10px] font-semibold text-[#CCFF00] shrink-0 cursor-pointer flex items-center gap-1"
                             >
                               <span>View</span>
                               <ArrowRight className="size-2.5" />
@@ -499,7 +499,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
       {/* Top Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-white/[0.08]">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#FEC163] mb-1 flex-wrap font-mono">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#CCFF00] mb-1 flex-wrap font-mono">
             <span className="uppercase">Adaptive Placement Curriculum</span>
             <span aria-hidden="true" className="text-zinc-600">·</span>
             <span>Bypasses Known Prerequisites</span>
@@ -513,7 +513,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
 
           <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-2xl">
             Target Career:{' '}
-            <span className="text-[#FEC163] font-semibold">
+            <span className="text-[#CCFF00] font-semibold">
               {roadmap?.careerTitle || user.careerGoal || 'Software Engineer'}
             </span>
             {' · '}
@@ -528,14 +528,14 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
             disabled={regenerating}
             className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-zinc-200 bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 rounded-xl transition-all whitespace-nowrap shadow-sm disabled:opacity-50 cursor-pointer"
           >
-            <Sparkles className={`size-3.5 text-[#FEC163] ${regenerating ? 'animate-spin' : ''}`} />
+            <Sparkles className={`size-3.5 text-[#CCFF00] ${regenerating ? 'animate-spin' : ''}`} />
             <span>{regenerating ? 'Calibrating with AI...' : 'Regenerate with AI'}</span>
           </button>
 
           <button
             type="button"
             onClick={() => onNavigate('careers')}
-            className="px-4 py-2 text-xs font-semibold text-zinc-950 bg-[#FEC163] hover:bg-[#ffcd7d] rounded-xl transition-colors cursor-pointer whitespace-nowrap"
+            className="px-4 py-2 text-xs font-semibold text-zinc-950 bg-[#CCFF00] hover:bg-[#ffcd7d] rounded-xl transition-colors cursor-pointer whitespace-nowrap"
           >
             Change Target Role
           </button>
@@ -544,11 +544,11 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
 
       {/* Progress Cockpit Overview Card */}
       <div className="rounded-2xl border border-white/[0.08] bg-[#120603]/80 p-5 sm:p-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-[#DE4313]/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[#00F0FF]/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20" />
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-xs font-mono font-semibold text-[#FEC163] uppercase">
+            <div className="flex items-center gap-2 text-xs font-mono font-semibold text-[#CCFF00] uppercase">
               <Compass className="size-3.5" />
               <span>Overall Placement Readiness</span>
             </div>
@@ -562,7 +562,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
 
           <div className="flex items-center gap-5 sm:min-w-[200px] justify-between sm:justify-end">
             <div className="text-left sm:text-right">
-              <div className="text-3xl sm:text-4xl font-bold font-mono text-[#FEC163] tabular-nums">
+              <div className="text-3xl sm:text-4xl font-bold font-mono text-[#CCFF00] tabular-nums">
                 {progress}%
               </div>
               <div className="text-xs text-zinc-400 mt-0.5">~{totalEstimatedWeeks} Weeks Total</div>
@@ -571,7 +571,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
             <div className="size-14 rounded-full border-4 border-white/10 flex items-center justify-center relative shrink-0">
               <span className="text-xs font-bold font-mono text-white">{completedSteps}/{totalSteps}</span>
               <div
-                className="absolute inset-0 rounded-full border-4 border-[#FEC163] transition-all duration-700"
+                className="absolute inset-0 rounded-full border-4 border-[#CCFF00] transition-all duration-700"
                 style={{
                   clipPath: `polygon(50% 50%, 50% 0%, ${progress >= 25 ? '100% 0%' : '50% 0%'}, ${
                     progress >= 50 ? '100% 100%' : progress >= 25 ? '100% 50%' : '50% 0%'
@@ -585,7 +585,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
         {/* Progress Bar Strip */}
         <div className="w-full bg-black/60 rounded-full h-2 mt-5 overflow-hidden border border-white/5 relative z-10">
           <div
-            className="bg-gradient-to-r from-amber-600 via-amber-500 to-[#FEC163] h-full rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-amber-600 via-amber-500 to-[#CCFF00] h-full rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -601,7 +601,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-semibold tracking-tight text-white flex items-center gap-2">
                 <span>Curated Phase Milestones & Deliverables</span>
-                <span className="flex size-1.5 rounded-full bg-[#FEC163] animate-pulse" />
+                <span className="flex size-1.5 rounded-full bg-[#CCFF00] animate-pulse" />
               </h2>
             </div>
 
@@ -642,7 +642,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
             <div className="group relative w-full md:w-64">
               <Search
                 size={14}
-                className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-[#FEC163]"
+                className="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-400 transition-colors group-focus-within:text-[#CCFF00]"
               />
               <input
                 value={searchQuery}
@@ -651,7 +651,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
                   setCurrentPage(1);
                 }}
                 placeholder="Search milestone, skill or tool..."
-                className="w-full rounded-lg border border-white/10 bg-black/40 py-1.5 pr-8 pl-9 text-[12px] text-white placeholder-zinc-500 transition-all focus:border-[#FEC163]/50 focus:outline-none focus:ring-1 focus:ring-[#FEC163]/30"
+                className="w-full rounded-lg border border-white/10 bg-black/40 py-1.5 pr-8 pl-9 text-[12px] text-white placeholder-zinc-500 transition-all focus:border-[#CCFF00]/50 focus:outline-none focus:ring-1 focus:ring-[#CCFF00]/30"
               />
               {searchQuery && (
                 <button
@@ -688,7 +688,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
                         className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-[12px] font-medium text-zinc-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
                       >
                         <span>{opt}</span>
-                        {selectedStatus === opt && <Check size={12} className="text-[#FEC163]" />}
+                        {selectedStatus === opt && <Check size={12} className="text-[#CCFF00]" />}
                       </button>
                     ))}
 
@@ -707,7 +707,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
                           className="flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-[12px] font-medium text-zinc-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
                         >
                           <span className="truncate">{sk}</span>
-                          {selectedSkill === sk && <Check size={12} className="text-[#FEC163] shrink-0" />}
+                          {selectedSkill === sk && <Check size={12} className="text-[#CCFF00] shrink-0" />}
                         </button>
                       ))}
                     </div>
@@ -795,7 +795,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
                       setSelectedStatus('All statuses');
                       setSelectedSkill('All skills');
                     }}
-                    className="text-[12px] font-bold text-[#FEC163] hover:underline cursor-pointer"
+                    className="text-[12px] font-bold text-[#CCFF00] hover:underline cursor-pointer"
                   >
                     Clear all filters
                   </button>
@@ -831,7 +831,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
                       onClick={() => setCurrentPage(pageNum)}
                       className={`flex size-7 items-center justify-center rounded-lg text-[11px] font-bold transition-all cursor-pointer font-mono ${
                         currentPage === pageNum
-                          ? 'border border-amber-400/40 bg-amber-500/20 text-[#FEC163] shadow-sm'
+                          ? 'border border-amber-400/40 bg-amber-500/20 text-[#CCFF00] shadow-sm'
                           : 'text-zinc-400 hover:bg-white/10 hover:text-white'
                       }`}
                     >
@@ -857,13 +857,13 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
       {/* Next in Workflow: Proceed to Step 5 (Courses & Projects) */}
       <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#120603]/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="size-8 rounded-full bg-[#FEC163] text-black font-bold text-sm flex items-center justify-center font-mono shrink-0">
+          <div className="size-8 rounded-full bg-[#CCFF00] text-black font-bold text-sm flex items-center justify-center font-mono shrink-0">
             5
           </div>
           <div>
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
               <span>Next in Workflow: AI Recommends Courses & Projects</span>
-              <span className="text-[10px] font-mono text-[#FEC163] bg-[#FEC163]/10 px-2 py-0.5 rounded border border-[#FEC163]/20">
+              <span className="text-[10px] font-mono text-[#CCFF00] bg-[#CCFF00]/10 px-2 py-0.5 rounded border border-[#CCFF00]/20">
                 Verified
               </span>
             </h4>
@@ -877,7 +877,7 @@ export const RoadmapView: React.FC<RoadmapViewProps> = ({ user, onNavigate }) =>
           <button
             type="button"
             onClick={() => onNavigate('courses')}
-            className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-[#FEC163] hover:bg-[#ffcd7d] rounded-xl shadow-lg shadow-amber-950/40 transition-colors whitespace-nowrap cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-[#CCFF00] hover:bg-[#ffcd7d] rounded-xl shadow-lg shadow-[#CCFF00]/10 transition-colors whitespace-nowrap cursor-pointer"
           >
             <span>Learning Academy</span>
             <ArrowRight className="size-3.5" />

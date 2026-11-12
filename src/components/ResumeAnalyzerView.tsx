@@ -1,4 +1,8 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 import { User, ResumeAnalysis } from '../types.ts';
 import { api } from '../services/api.ts';
 import { COMPREHENSIVE_CAREERS, CareerPath, CareerSkill } from '../data/careersData.ts';
@@ -233,6 +237,70 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
   const [activeAnalysisTab, setActiveAnalysisTab] = useState<'skillgap' | 'ats' | 'recruiter' | 'prep'>('skillgap');
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // GSAP ScrollTrigger for cards and list items with magnetic hover & staggered reveal
+  useEffect(() => {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const ctx = gsap.context(() => {
+      const targets = containerRef.current?.querySelectorAll<HTMLElement>(
+        ".spotlight-card, [data-card], .grid > div, .rounded-2xl, .rounded-xl, .rounded-3xl, li, .space-y-4 > div, .space-y-6 > div"
+      );
+
+      if (targets && targets.length > 0) {
+        ScrollTrigger.batch(Array.from(targets), {
+          start: "top 88%",
+          once: true,
+          onEnter: (batch) => {
+            gsap.fromTo(
+              batch,
+              { y: 36, opacity: 0, scale: 0.98 },
+              {
+                y: 0,
+                opacity: 1,
+                scale: 1,
+                duration: 0.75,
+                stagger: 0.07,
+                ease: "power3.out",
+                clearProps: "transform,opacity",
+              }
+            );
+          },
+        });
+
+        targets.forEach((card) => {
+          const handleMouseMove = (e: MouseEvent) => {
+            const rect = card.getBoundingClientRect();
+            const relX = e.clientX - rect.left - rect.width / 2;
+            const relY = e.clientY - rect.top - rect.height / 2;
+            gsap.to(card, {
+              x: relX * 0.04,
+              y: relY * 0.04,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          };
+
+          const handleMouseLeave = () => {
+            gsap.to(card, {
+              x: 0,
+              y: 0,
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          };
+
+          card.addEventListener("mousemove", handleMouseMove);
+          card.addEventListener("mouseleave", handleMouseLeave);
+        });
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [analysisResult, selectedRole]);
+
 
   // Available unique categories for role grouping
   const roleCategories = useMemo(() => {
@@ -506,12 +574,12 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
   };
 
   return (
-    <div className="space-y-8 pb-12 font-sans">
+    <div ref={containerRef} className="space-y-8 pb-12 font-sans">
       {/* Top Header Bar */}
-      <div className="border-b border-amber-500/20 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="border-b border-white/10 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-amber-300 mb-1 font-mono">
-            <span className="font-semibold uppercase tracking-wider text-amber-400">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-[#CCFF00] mb-1 font-mono">
+            <span className="font-semibold uppercase tracking-wider text-[#CCFF00]">
               ATS Resume Audit & Skill Gap Engine
             </span>
             <span aria-hidden="true" className="text-slate-600">·</span>
@@ -520,7 +588,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
             <span>PDF & PNG Direct Ingestion</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
-            <FileText className="h-7 w-7 text-amber-400 shrink-0" />
+            <FileText className="h-7 w-7 text-[#CCFF00] shrink-0" />
             <span>Resume Analyzer & Role Skill Gaps</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-3xl">
@@ -532,7 +600,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
         <div className="flex items-center gap-2.5 shrink-0">
           <button
             onClick={() => onNavigate('skillgap')}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-md cursor-pointer whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#CCFF00] text-[#08090C] hover:bg-[#b8e600] text-black text-xs font-bold transition-all shadow-md cursor-pointer whitespace-nowrap"
           >
             <Compass className="h-4 w-4 text-black" />
             <span>Go to Skill Gap Matrix →</span>
@@ -542,21 +610,21 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
 
       {/* WORKFLOW PIPELINE PROGRESS INDICATOR */}
       <div className="rounded-xl border border-white/10 bg-slate-950/80 p-3.5 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
-        <div className="flex items-center gap-2 text-amber-400">
-          <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-300 font-bold flex items-center justify-center text-[11px]">1</span>
+        <div className="flex items-center gap-2 text-[#CCFF00]">
+          <span className="h-5 w-5 rounded-full bg-[#CCFF00]/20 text-[#CCFF00] font-bold flex items-center justify-center text-[11px]">1</span>
           <span className="font-semibold">Select Job Role</span>
         </div>
         <span className="text-slate-600">→</span>
-        <div className="flex items-center gap-2 text-amber-400">
-          <span className="h-5 w-5 rounded-full bg-amber-500/20 text-amber-300 font-bold flex items-center justify-center text-[11px]">2</span>
+        <div className="flex items-center gap-2 text-[#CCFF00]">
+          <span className="h-5 w-5 rounded-full bg-[#CCFF00]/20 text-[#CCFF00] font-bold flex items-center justify-center text-[11px]">2</span>
           <span className="font-semibold">Resume Ingestion & Match</span>
         </div>
         <span className="text-slate-600">→</span>
         <button
           onClick={() => onNavigate('skillgap')}
-          className="flex items-center gap-2 text-amber-300 hover:text-white cursor-pointer underline decoration-dotted"
+          className="flex items-center gap-2 text-[#CCFF00] hover:text-white cursor-pointer underline decoration-dotted"
         >
-          <span className="h-5 w-5 rounded-full bg-amber-500 text-black font-bold flex items-center justify-center text-[11px]">3</span>
+          <span className="h-5 w-5 rounded-full bg-[#CCFF00] text-[#08090C] text-black font-bold flex items-center justify-center text-[11px]">3</span>
           <span className="font-bold">Next: Skill Gap Matrix</span>
         </button>
         <span className="text-slate-600">→</span>
@@ -570,11 +638,11 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
       </div>
 
       {/* SECTION 1: JOB ROLE SELECTION DROPDOWN (USER REQUIREMENT) */}
-      <div className="rounded-2xl border border-amber-500/30 bg-[#0C0603] p-5 sm:p-6 shadow-xl backdrop-blur-xl space-y-5">
+      <div className="rounded-2xl border border-white/15 bg-[#0E1015] p-5 sm:p-6 shadow-xl backdrop-blur-xl space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-500/15 pb-4">
           <div className="space-y-0.5">
-            <div className="text-xs font-bold text-amber-400 uppercase tracking-wider font-mono flex items-center gap-1.5">
-              <Target className="h-3.5 w-3.5 text-amber-400" />
+            <div className="text-xs font-bold text-[#CCFF00] uppercase tracking-wider font-mono flex items-center gap-1.5">
+              <Target className="h-3.5 w-3.5 text-[#CCFF00]" />
               <span>Step 1: Preferred Job Role Selection</span>
             </div>
             <p className="text-xs text-slate-400">
@@ -583,8 +651,8 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
           </div>
 
           {isReanalyzingApi && (
-            <div className="flex items-center gap-2 text-xs font-mono text-amber-300 bg-amber-500/15 border border-amber-500/40 px-3 py-1.5 rounded-lg animate-pulse">
-              <RefreshCw className="h-3.5 w-3.5 animate-spin text-amber-400" />
+            <div className="flex items-center gap-2 text-xs font-mono text-[#CCFF00] bg-[#CCFF00]/15 border border-[#CCFF00]/40 px-3 py-1.5 rounded-lg animate-pulse">
+              <RefreshCw className="h-3.5 w-3.5 animate-spin text-[#CCFF00]" />
               <span>Re-analyzing against {selectedRole?.title}...</span>
             </div>
           )}
@@ -595,11 +663,11 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
           <div className="md:col-span-8 space-y-1.5">
             <label htmlFor="preferred-job-role-dropdown" className="text-xs font-bold text-white flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <Briefcase className="h-3.5 w-3.5 text-amber-400" />
+                <Briefcase className="h-3.5 w-3.5 text-[#CCFF00]" />
                 <span>Preferred Job Role Dropdown:</span>
               </span>
               {selectedRole && (
-                <span className="text-[11px] text-amber-400 font-mono">
+                <span className="text-[11px] text-[#CCFF00] font-mono">
                   {selectedRole.requiredSkills.length} Required Placement Competencies
                 </span>
               )}
@@ -612,13 +680,13 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                 const found = careersList.find((c) => c.id === e.target.value);
                 if (found) handleSelectRole(found);
               }}
-              className="w-full bg-slate-950 border-2 border-amber-500/50 hover:border-amber-400 focus:border-amber-400 rounded-xl px-4 py-3 text-xs sm:text-sm text-white font-semibold focus:outline-none shadow-lg cursor-pointer transition-colors"
+              className="w-full bg-slate-950 border-2 border-amber-500/50 hover:border-[#CCFF00] focus:border-[#CCFF00] rounded-xl px-4 py-3 text-xs sm:text-sm text-white font-semibold focus:outline-none shadow-lg cursor-pointer transition-colors"
             >
               {roleCategories.map((category) => (
                 <optgroup
                   key={category}
                   label={`── Domain: ${category} ──`}
-                  className="bg-slate-900 text-amber-300 font-bold"
+                  className="bg-slate-900 text-[#CCFF00] font-bold"
                 >
                   {careersList
                     .filter((c) => c.category === category)
@@ -661,7 +729,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                     }
                   }
                 }}
-                className="w-full pl-8 pr-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                className="w-full pl-8 pr-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#CCFF00]"
               />
             </div>
           </div>
@@ -684,7 +752,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                   onClick={() => handleSelectRole(matchedRole)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
                     isSelected
-                      ? 'bg-amber-500 text-black font-bold shadow-md shadow-amber-500/20'
+                      ? 'bg-[#CCFF00] text-[#08090C] text-black font-bold shadow-md shadow-amber-500/20'
                       : 'bg-slate-950/90 text-slate-300 hover:text-white hover:bg-slate-900 border border-slate-800'
                   }`}
                 >
@@ -698,9 +766,9 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
 
         {/* Selected Role Snapshot */}
         {selectedRole && (
-          <div className="p-3.5 rounded-xl bg-slate-950/90 border border-amber-500/25 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+          <div className="p-3.5 rounded-xl bg-slate-950/90 border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
             <div className="flex items-start md:items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+              <div className="h-10 w-10 rounded-xl bg-[#CCFF00]/15 border border-white/15 text-[#CCFF00] flex items-center justify-center shrink-0">
                 <Briefcase className="h-5 w-5" />
               </div>
               <div>
@@ -713,7 +781,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                 <div className="text-slate-400 text-xs mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
                   <span>Domain: <strong className="text-slate-200">{selectedRole.domain}</strong></span>
                   <span aria-hidden="true" className="text-slate-600">·</span>
-                  <span>Typical Package: <strong className="text-amber-300 font-mono">{selectedRole.salaryRange}</strong></span>
+                  <span>Typical Package: <strong className="text-[#CCFF00] font-mono">{selectedRole.salaryRange}</strong></span>
                   <span aria-hidden="true" className="text-slate-600">·</span>
                   <span>Required Skills: <strong className="text-slate-200 font-mono">{selectedRole.requiredSkills.length} Core Competencies</strong></span>
                 </div>
@@ -721,7 +789,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
             </div>
 
             <div className="hidden lg:flex items-center gap-1.5 text-[11px] text-slate-400 border-l border-slate-800 pl-4 shrink-0">
-              <Building2 className="h-4 w-4 text-amber-400 shrink-0" />
+              <Building2 className="h-4 w-4 text-[#CCFF00] shrink-0" />
               <span>Top Recruiters: </span>
               <span className="text-slate-300 font-medium truncate max-w-[220px]">
                 {selectedRole.topRecruiters?.slice(0, 3).join(', ')}
@@ -735,9 +803,9 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: File Upload Area (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="rounded-2xl border border-amber-500/30 bg-[#0C0603] p-6 shadow-xl backdrop-blur-xl space-y-5">
+          <div className="rounded-2xl border border-white/15 bg-[#0E1015] p-6 shadow-xl backdrop-blur-xl space-y-5">
             <div>
-              <div className="text-xs font-bold text-amber-400 uppercase tracking-wider font-mono">
+              <div className="text-xs font-bold text-[#CCFF00] uppercase tracking-wider font-mono">
                 Step 2: Upload Resume Document
               </div>
               <h2 className="text-base font-bold text-white mt-0.5">
@@ -766,16 +834,16 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                 onClick={() => fileInputRef.current?.click()}
                 className={`rounded-2xl border-2 border-dashed p-8 text-center transition-all cursor-pointer flex flex-col items-center justify-center gap-3.5 ${
                   isDragOver
-                    ? 'border-amber-400 bg-amber-950/20'
-                    : 'border-amber-500/30 hover:border-amber-400 bg-slate-950/60 hover:bg-slate-900/80'
+                    ? 'border-[#CCFF00] bg-[#14171E]'
+                    : 'border-white/15 hover:border-[#CCFF00] bg-slate-950/60 hover:bg-slate-900/80'
                 }`}
               >
-                <div className="h-14 w-14 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-400 flex items-center justify-center shadow-md">
-                  <FileUp className="h-7 w-7 text-amber-400" />
+                <div className="h-14 w-14 rounded-2xl bg-[#CCFF00]/15 border border-[#CCFF00]/40 text-[#CCFF00] flex items-center justify-center shadow-md">
+                  <FileUp className="h-7 w-7 text-[#CCFF00]" />
                 </div>
                 <div>
                   <div className="text-sm font-bold text-white">
-                    Drop your resume file here or <span className="text-amber-400 underline">browse</span>
+                    Drop your resume file here or <span className="text-[#CCFF00] underline">browse</span>
                   </div>
                   <div className="text-xs text-slate-400 mt-1.5 flex items-center justify-center gap-2">
                     <span className="px-2 py-0.5 rounded bg-rose-950/60 border border-rose-800/60 text-rose-300 font-mono text-[11px]">
@@ -793,7 +861,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
               </div>
             ) : (
               /* Active Uploaded Document Card */
-              <div className="rounded-xl border border-amber-500/40 bg-slate-950/90 p-4 space-y-4">
+              <div className="rounded-xl border border-[#CCFF00]/40 bg-slate-950/90 p-4 space-y-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     {fileType === 'pdf' ? (
@@ -812,7 +880,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                       <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5 font-mono">
                         <span>{fileSize}</span>
                         <span>•</span>
-                        <span className="text-amber-300">{fileType === 'pdf' ? 'PDF Document' : 'Image Scan'}</span>
+                        <span className="text-[#CCFF00]">{fileType === 'pdf' ? 'PDF Document' : 'Image Scan'}</span>
                       </div>
                     </div>
                   </div>
@@ -853,7 +921,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-amber-400 hover:underline cursor-pointer"
+                    className="text-[#CCFF00] hover:underline cursor-pointer"
                   >
                     Change File
                   </button>
@@ -874,7 +942,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
               disabled={analyzing || !fileName}
               className={`w-full py-3.5 px-4 text-xs sm:text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 shadow-xl cursor-pointer ${
                 fileName
-                  ? 'bg-amber-500 hover:bg-amber-400 text-black shadow-amber-500/20 active:scale-[0.99]'
+                  ? 'bg-[#CCFF00] text-[#08090C] hover:bg-[#b8e600] text-black shadow-amber-500/20 active:scale-[0.99]'
                   : 'bg-slate-800 text-slate-500 cursor-not-allowed opacity-60'
               }`}
             >
@@ -894,7 +962,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
           </div>
 
           {/* Quick 1-Click Test Resumes for Testing */}
-          <div className="rounded-2xl border border-amber-500/20 bg-[#0C0603] p-5 space-y-3">
+          <div className="rounded-2xl border border-white/10 bg-[#0E1015] p-5 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-white uppercase tracking-wider font-mono">
                 1-Click Sample Resumes
@@ -909,45 +977,45 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
               <button
                 type="button"
                 onClick={() => loadSampleDoc('software')}
-                className="w-full p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-amber-500/20 hover:border-amber-400/50 transition-all cursor-pointer flex items-center justify-between text-xs group"
+                className="w-full p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-white/10 hover:border-[#CCFF00]/50 transition-all cursor-pointer flex items-center justify-between text-xs group"
               >
                 <div className="flex items-center gap-2">
                   <span className="px-1.5 py-0.5 rounded bg-rose-950/60 border border-rose-800/40 text-rose-300 font-mono text-[10px]">
                     PDF
                   </span>
-                  <span className="font-semibold text-white group-hover:text-amber-300 transition-colors">
+                  <span className="font-semibold text-white group-hover:text-[#CCFF00] transition-colors">
                     Kavita_Verma_IIT_FullStack.pdf
                   </span>
                 </div>
-                <span className="text-[11px] text-amber-300 font-mono">💻 Web / Frontend</span>
+                <span className="text-[11px] text-[#CCFF00] font-mono">💻 Web / Frontend</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => loadSampleDoc('mechanical')}
-                className="w-full p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-amber-500/20 hover:border-amber-400/50 transition-all cursor-pointer flex items-center justify-between text-xs group"
+                className="w-full p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-white/10 hover:border-[#CCFF00]/50 transition-all cursor-pointer flex items-center justify-between text-xs group"
               >
                 <div className="flex items-center gap-2">
                   <span className="px-1.5 py-0.5 rounded bg-rose-950/60 border border-rose-800/40 text-rose-300 font-mono text-[10px]">
                     PDF
                   </span>
-                  <span className="font-semibold text-white group-hover:text-amber-300 transition-colors">
+                  <span className="font-semibold text-white group-hover:text-[#CCFF00] transition-colors">
                     Rohan_Sharma_AKTU_Mechanical.pdf
                   </span>
                 </div>
-                <span className="text-[11px] text-amber-300 font-mono">⚙️ CAD / Mech</span>
+                <span className="text-[11px] text-[#CCFF00] font-mono">⚙️ CAD / Mech</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => loadSampleDoc('biotech')}
-                className="w-full p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-amber-500/20 hover:border-amber-400/50 transition-all cursor-pointer flex items-center justify-between text-xs group"
+                className="w-full p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-white/10 hover:border-[#CCFF00]/50 transition-all cursor-pointer flex items-center justify-between text-xs group"
               >
                 <div className="flex items-center gap-2">
                   <span className="px-1.5 py-0.5 rounded bg-sky-950/60 border border-sky-800/40 text-sky-300 font-mono text-[10px]">
                     PNG
                   </span>
-                  <span className="font-semibold text-white group-hover:text-amber-300 transition-colors">
+                  <span className="font-semibold text-white group-hover:text-[#CCFF00] transition-colors">
                     Ananya_Iyer_DU_Biotech.png
                   </span>
                 </div>
@@ -957,17 +1025,17 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
               <button
                 type="button"
                 onClick={() => loadSampleDoc('commerce')}
-                className="w-full p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-amber-500/20 hover:border-amber-400/50 transition-all cursor-pointer flex items-center justify-between text-xs group"
+                className="w-full p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-white/10 hover:border-[#CCFF00]/50 transition-all cursor-pointer flex items-center justify-between text-xs group"
               >
                 <div className="flex items-center gap-2">
                   <span className="px-1.5 py-0.5 rounded bg-rose-950/60 border border-rose-800/40 text-rose-300 font-mono text-[10px]">
                     PDF
                   </span>
-                  <span className="font-semibold text-white group-hover:text-amber-300 transition-colors">
+                  <span className="font-semibold text-white group-hover:text-[#CCFF00] transition-colors">
                     Aryan_Patel_Xaviers_FinTech.pdf
                   </span>
                 </div>
-                <span className="text-[11px] text-amber-300 font-mono">📈 FinTech / Ops</span>
+                <span className="text-[11px] text-[#CCFF00] font-mono">📈 FinTech / Ops</span>
               </button>
             </div>
           </div>
@@ -978,11 +1046,11 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
           {analysisResult && computedGapData && selectedRole ? (
             <div className="space-y-6 animate-fade-in">
               {/* PRIMARY ROLE MATCH & SKILL GAP HERO CARD */}
-              <div className="rounded-2xl border border-amber-500/30 bg-[#0C0603] p-6 space-y-6 shadow-xl backdrop-blur-xl">
+              <div className="rounded-2xl border border-white/15 bg-[#0E1015] p-6 space-y-6 shadow-xl backdrop-blur-xl">
                 {/* Header: Role Fit Summary */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-amber-500/15 pb-4">
                   <div>
-                    <div className="text-xs font-bold text-amber-400 uppercase tracking-wider font-mono">
+                    <div className="text-xs font-bold text-[#CCFF00] uppercase tracking-wider font-mono">
                       Tailored Placement Benchmark
                     </div>
                     <div className="text-lg font-bold text-white mt-0.5 flex items-center gap-2">
@@ -994,9 +1062,9 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                   </div>
 
                   {/* Big Match Score Gauge */}
-                  <div className="flex items-center gap-3 bg-slate-950/90 border border-amber-500/25 px-4 py-2.5 rounded-xl">
+                  <div className="flex items-center gap-3 bg-slate-950/90 border border-white/10 px-4 py-2.5 rounded-xl">
                     <div className="text-right">
-                      <div className="text-2xl sm:text-3xl font-bold font-mono text-amber-400 tabular-nums">
+                      <div className="text-2xl sm:text-3xl font-bold font-mono text-[#CCFF00] tabular-nums">
                         {computedGapData.matchPercent}%
                       </div>
                       <div className="text-[10px] uppercase tracking-wider text-slate-400 font-mono">
@@ -1010,7 +1078,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                           computedGapData.matchPercent >= 75
                             ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-600/50'
                             : computedGapData.matchPercent >= 50
-                            ? 'bg-amber-950/80 text-amber-300 border border-amber-600/50'
+                            ? 'bg-[#14171E]/80 text-[#CCFF00] border border-amber-600/50'
                             : 'bg-rose-950/80 text-rose-400 border border-rose-600/50'
                         }`}
                       >
@@ -1026,7 +1094,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                     onClick={() => setActiveAnalysisTab('skillgap')}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                       activeAnalysisTab === 'skillgap'
-                        ? 'bg-amber-500 text-black shadow-sm'
+                        ? 'bg-[#CCFF00] text-[#08090C] text-black shadow-sm'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -1038,7 +1106,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                     onClick={() => setActiveAnalysisTab('ats')}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                       activeAnalysisTab === 'ats'
-                        ? 'bg-amber-500 text-black shadow-sm'
+                        ? 'bg-[#CCFF00] text-[#08090C] text-black shadow-sm'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -1050,7 +1118,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                     onClick={() => setActiveAnalysisTab('recruiter')}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                       activeAnalysisTab === 'recruiter'
-                        ? 'bg-amber-500 text-black shadow-sm'
+                        ? 'bg-[#CCFF00] text-[#08090C] text-black shadow-sm'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -1062,7 +1130,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                     onClick={() => setActiveAnalysisTab('prep')}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all cursor-pointer whitespace-nowrap ${
                       activeAnalysisTab === 'prep'
-                        ? 'bg-amber-500 text-black shadow-sm'
+                        ? 'bg-[#CCFF00] text-[#08090C] text-black shadow-sm'
                         : 'text-slate-400 hover:text-white'
                     }`}
                   >
@@ -1076,8 +1144,8 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                   <div className="space-y-6">
                     {/* Simulated Skills Notification Banner */}
                     {simulatedSkills.size > 0 && (
-                      <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                        <div className="flex items-center gap-2 text-amber-300">
+                      <div className="p-3.5 rounded-xl bg-[#CCFF00]/10 border border-white/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                        <div className="flex items-center gap-2 text-[#CCFF00]">
                           <Sparkles className="h-4 w-4 shrink-0" />
                           <span>
                             Simulating <strong>{simulatedSkills.size}</strong> additional skills. Match score increased to <strong>{computedGapData.matchPercent}%</strong>!
@@ -1086,7 +1154,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                         <div className="flex items-center gap-2">
                           <button
                             onClick={handleSyncSimulatedToProfile}
-                            className="px-3 py-1.5 rounded-lg bg-amber-500 text-black font-bold text-xs hover:bg-amber-400 cursor-pointer transition-all"
+                            className="px-3 py-1.5 rounded-lg bg-[#CCFF00] text-[#08090C] text-black font-bold text-xs hover:bg-[#b8e600] cursor-pointer transition-all"
                           >
                             Save to My Profile
                           </button>
@@ -1141,7 +1209,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                     {/* Missing Skills / Skill Gaps Overview */}
                     <div className="space-y-3 pt-2 border-t border-amber-500/15">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                        <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase font-mono tracking-wider">
+                        <div className="text-xs font-bold text-[#CCFF00] flex items-center gap-1.5 uppercase font-mono tracking-wider">
                           <AlertTriangle className="h-4 w-4" />
                           <span>Identified Skill Gaps for {selectedRole.title} ({computedGapData.missingList.length})</span>
                         </div>
@@ -1164,7 +1232,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                                   isHigh
                                     ? 'bg-rose-950/20 border-rose-800/40 hover:border-rose-600/50'
                                     : isMed
-                                    ? 'bg-amber-950/20 border-amber-800/40 hover:border-amber-600/50'
+                                    ? 'bg-[#14171E] border-white/10/40 hover:border-amber-600/50'
                                     : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
                                 }`}
                               >
@@ -1175,7 +1243,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                                         isHigh
                                           ? 'bg-rose-950 text-rose-300 border border-rose-800'
                                           : isMed
-                                          ? 'bg-amber-950 text-amber-300 border border-amber-800'
+                                          ? 'bg-[#14171E] text-[#CCFF00] border border-white/10'
                                           : 'bg-slate-900 text-slate-300 border border-slate-800'
                                       }`}
                                     >
@@ -1191,7 +1259,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                                       onClick={() => toggleLearningPlan(gap.name)}
                                       className={`px-2.5 py-1 rounded text-[11px] font-medium transition-all cursor-pointer ${
                                         inPlan
-                                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                                          ? 'bg-[#CCFF00]/20 text-[#CCFF00] border border-[#CCFF00]/40'
                                           : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800'
                                       }`}
                                     >
@@ -1201,7 +1269,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                                     <button
                                       type="button"
                                       onClick={() => toggleSimulatedSkill(gap.name)}
-                                      className="px-2.5 py-1 rounded text-[11px] font-bold bg-amber-500/10 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 transition-all cursor-pointer flex items-center gap-1"
+                                      className="px-2.5 py-1 rounded text-[11px] font-bold bg-[#CCFF00]/10 hover:bg-[#CCFF00]/25 border border-[#CCFF00]/40 text-[#CCFF00] transition-all cursor-pointer flex items-center gap-1"
                                       title="Simulate having this skill to see your updated role match percentage"
                                     >
                                       <Plus className="h-3 w-3" />
@@ -1228,10 +1296,10 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                     </div>
 
                     {/* USER REQUIREMENT: Directs to Step 3 Skill Gap Page first before Roadmap */}
-                    <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/15 via-[#1E0904] to-transparent border border-amber-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/15 via-[#1E0904] to-transparent border border-[#CCFF00]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
                       <div className="space-y-0.5">
                         <div className="text-xs font-bold text-white flex items-center gap-1.5">
-                          <Compass className="h-4 w-4 text-amber-400" />
+                          <Compass className="h-4 w-4 text-[#CCFF00]" />
                           <span>Next in Placement Pipeline: Step 3 — Skill Gap Matrix</span>
                         </div>
                         <p className="text-[11px] text-slate-400">
@@ -1250,7 +1318,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                         <button
                           type="button"
                           onClick={() => onNavigate('skillgap')}
-                          className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-md cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+                          className="px-4 py-2 rounded-lg bg-[#CCFF00] text-[#08090C] hover:bg-[#b8e600] text-black text-xs font-bold transition-all shadow-md cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
                         >
                           <span>Proceed to Skill Gap Matrix</span>
                           <ArrowRight className="h-3.5 w-3.5" />
@@ -1267,7 +1335,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                       {Object.entries(analysisResult.scoreBreakdown).map(([cat, val]) => (
                         <div
                           key={cat}
-                          className="p-3.5 rounded-xl bg-slate-950/80 border border-amber-500/20 text-xs space-y-1.5"
+                          className="p-3.5 rounded-xl bg-slate-950/80 border border-white/10 text-xs space-y-1.5"
                         >
                           <div className="text-slate-400 capitalize truncate text-[11px] font-mono">
                             {cat.replace(/([A-Z])/g, ' $1')}
@@ -1287,13 +1355,13 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                       ))}
                     </div>
 
-                    <div className="p-4 rounded-xl bg-slate-950/80 border border-amber-500/20 space-y-3">
+                    <div className="p-4 rounded-xl bg-slate-950/80 border border-white/10 space-y-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-1.5">
-                          <Layers className="h-3.5 w-3.5 text-amber-400" />
+                          <Layers className="h-3.5 w-3.5 text-[#CCFF00]" />
                           <span>All Extracted Technical Entities ({analysisResult.extractedData.skills.length})</span>
                         </span>
-                        <span className="text-[11px] text-amber-300 font-mono">
+                        <span className="text-[11px] text-[#CCFF00] font-mono">
                           Auto-synced to Profile
                         </span>
                       </div>
@@ -1302,7 +1370,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                         {analysisResult.extractedData.skills.map((skill) => (
                           <span
                             key={skill}
-                            className="px-2.5 py-1 rounded-lg bg-slate-900 border border-amber-500/20 text-xs text-amber-200 font-medium"
+                            className="px-2.5 py-1 rounded-lg bg-slate-900 border border-white/10 text-xs text-neutral-200 font-medium"
                           >
                             {skill}
                           </span>
@@ -1331,15 +1399,15 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                         </ul>
                       </div>
 
-                      <div className="p-4 rounded-xl border border-amber-500/30 bg-slate-950/80 space-y-2">
-                        <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase font-mono tracking-wider">
+                      <div className="p-4 rounded-xl border border-white/15 bg-slate-950/80 space-y-2">
+                        <div className="text-xs font-bold text-[#CCFF00] flex items-center gap-1.5 uppercase font-mono tracking-wider">
                           <AlertTriangle className="h-4 w-4" />
                           <span>Placement Bottlenecks</span>
                         </div>
                         <ul className="space-y-1.5 text-xs text-slate-300">
                           {analysisResult.weaknesses.map((wk, i) => (
                             <li key={i} className="flex items-start gap-1.5">
-                              <span className="text-amber-400 font-bold">!</span>
+                              <span className="text-[#CCFF00] font-bold">!</span>
                               <span>{wk}</span>
                             </li>
                           ))}
@@ -1347,15 +1415,15 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-xl border border-amber-500/20 bg-slate-950/80 space-y-2">
-                      <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase font-mono tracking-wider">
+                    <div className="p-4 rounded-xl border border-white/10 bg-slate-950/80 space-y-2">
+                      <div className="text-xs font-bold text-[#CCFF00] flex items-center gap-1.5 uppercase font-mono tracking-wider">
                         <Lightbulb className="h-4 w-4" />
                         <span>Actionable Mentoring Recommendations</span>
                       </div>
                       <ul className="space-y-1.5 text-xs text-slate-300">
                         {analysisResult.suggestions.map((sug, i) => (
                           <li key={i} className="flex items-start gap-2">
-                            <span className="text-amber-400 font-bold">→</span>
+                            <span className="text-[#CCFF00] font-bold">→</span>
                             <span>{sug}</span>
                           </li>
                         ))}
@@ -1367,8 +1435,8 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                 {/* TAB 4: ROLE PREPARATION */}
                 {activeAnalysisTab === 'prep' && (
                   <div className="space-y-4 animate-fade-in">
-                    <div className="p-4 rounded-xl border border-amber-500/25 bg-slate-950/80 space-y-3">
-                      <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase font-mono tracking-wider">
+                    <div className="p-4 rounded-xl border border-white/10 bg-slate-950/80 space-y-3">
+                      <div className="text-xs font-bold text-[#CCFF00] flex items-center gap-1.5 uppercase font-mono tracking-wider">
                         <HelpCircle className="h-4 w-4" />
                         <span>High-Frequency Interview Topics for {selectedRole.title}</span>
                       </div>
@@ -1378,7 +1446,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                             key={i}
                             className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs text-slate-200 flex items-center gap-2"
                           >
-                            <span className="h-5 w-5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-bold font-mono flex items-center justify-center shrink-0">
+                            <span className="h-5 w-5 rounded-full bg-[#CCFF00]/10 text-[#CCFF00] text-[10px] font-bold font-mono flex items-center justify-center shrink-0">
                               {i + 1}
                             </span>
                             <span className="truncate">{topic}</span>
@@ -1387,8 +1455,8 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-xl border border-amber-500/25 bg-slate-950/80 space-y-3">
-                      <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5 uppercase font-mono tracking-wider">
+                    <div className="p-4 rounded-xl border border-white/10 bg-slate-950/80 space-y-3">
+                      <div className="text-xs font-bold text-[#CCFF00] flex items-center gap-1.5 uppercase font-mono tracking-wider">
                         <Layers className="h-4 w-4" />
                         <span>High-Impact Portfolio Projects to Close Gaps</span>
                       </div>
@@ -1398,7 +1466,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                             key={i}
                             className="p-3 rounded-lg bg-slate-900/80 border border-slate-800 text-xs text-slate-200 flex items-start gap-2.5"
                           >
-                            <Award className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+                            <Award className="h-4 w-4 text-[#CCFF00] shrink-0 mt-0.5" />
                             <div>
                               <div className="font-semibold text-white">{proj}</div>
                               <div className="text-[11px] text-slate-400 mt-0.5">
@@ -1411,7 +1479,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                     </div>
 
                     {/* Next Step Shortcut */}
-                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between gap-3">
+                    <div className="p-4 rounded-xl bg-[#CCFF00]/10 border border-white/15 flex items-center justify-between gap-3">
                       <div>
                         <div className="text-xs font-bold text-white">
                           Ready for Step 3: Skill Gap Matrix?
@@ -1422,7 +1490,7 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
                       </div>
                       <button
                         onClick={() => onNavigate('skillgap')}
-                        className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs transition-colors shrink-0 cursor-pointer"
+                        className="px-4 py-2 rounded-lg bg-[#CCFF00] text-[#08090C] hover:bg-[#b8e600] text-black font-bold text-xs transition-colors shrink-0 cursor-pointer"
                       >
                         Proceed to Skill Gap Matrix →
                       </button>
@@ -1433,21 +1501,21 @@ export const ResumeAnalyzerView: React.FC<ResumeAnalyzerViewProps> = ({
             </div>
           ) : (
             /* Empty State */
-            <div className="rounded-2xl border-2 border-dashed border-amber-500/25 bg-[#0C0603]/80 p-12 text-center space-y-4 shadow-xl">
-              <div className="h-16 w-16 rounded-2xl bg-slate-950 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto shadow-md">
+            <div className="rounded-2xl border-2 border-dashed border-white/10 bg-[#0E1015]/80 p-12 text-center space-y-4 shadow-xl">
+              <div className="h-16 w-16 rounded-2xl bg-slate-950 border border-white/15 text-[#CCFF00] flex items-center justify-center mx-auto shadow-md">
                 <FileText className="h-8 w-8" />
               </div>
               <div className="space-y-1">
                 <h3 className="text-base font-bold text-white">No Resume Analyzed Yet</h3>
                 <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                  Target job role is set to <strong className="text-amber-300">{selectedRole?.title || 'a selected role'}</strong>. Upload your resume or click one of the 1-click test documents on the left to immediately benchmark your skills.
+                  Target job role is set to <strong className="text-[#CCFF00]">{selectedRole?.title || 'a selected role'}</strong>. Upload your resume or click one of the 1-click test documents on the left to immediately benchmark your skills.
                 </p>
               </div>
 
               {selectedRole && (
                 <div className="pt-2">
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300 font-mono">
-                    <Target className="h-3.5 w-3.5 text-amber-400" />
+                    <Target className="h-3.5 w-3.5 text-[#CCFF00]" />
                     <span>Target: {selectedRole.title} ({selectedRole.requiredSkills.length} skills expected)</span>
                   </div>
                 </div>

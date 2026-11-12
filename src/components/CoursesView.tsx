@@ -212,7 +212,7 @@ function ExpandableCourseCard({
     <motion.div
       layoutId={layoutId}
       onClick={() => onOpenModal(course)}
-      className="cursor-pointer overflow-hidden rounded-2xl border border-white/[0.08] bg-[#140603] hover:bg-[#1a0804] hover:border-[#FEC163]/50 transition-all duration-300 group shadow-md flex flex-col justify-between select-none"
+      className="cursor-pointer overflow-hidden rounded-2xl border border-white/[0.08] bg-[#14171E] hover:bg-[#1a0804] hover:border-[#CCFF00]/50 transition-all duration-300 group shadow-md flex flex-col justify-between select-none"
     >
       <div>
         {/* Cover Image Banner with shared layoutId */}
@@ -228,10 +228,10 @@ function ExpandableCourseCard({
           />
 
           {/* Gradient Scrim */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#140603] via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#14171E] via-black/30 to-transparent" />
 
           {/* Provider Pill on Image */}
-          <div className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-sm border border-white/15 text-[10px] font-mono font-semibold text-[#FEC163]">
+          <div className="absolute top-2.5 left-2.5 z-10 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-sm border border-white/15 text-[10px] font-mono font-semibold text-[#CCFF00]">
             {course.provider.split('/')[0]}
           </div>
 
@@ -253,7 +253,7 @@ function ExpandableCourseCard({
         {/* Card Content with shared layoutId */}
         <div className="p-4 sm:p-5 space-y-2.5">
           <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-400">
-            <span className="text-[#FEC163] font-semibold uppercase">{course.type}</span>
+            <span className="text-[#CCFF00] font-semibold uppercase">{course.type}</span>
             <span>·</span>
             <span>{course.difficulty}</span>
             <span>·</span>
@@ -265,7 +265,7 @@ function ExpandableCourseCard({
 
           <motion.h3
             layoutId={`title-${layoutId}`}
-            className="text-sm font-bold tracking-tight text-white leading-snug group-hover:text-[#FEC163] transition-colors line-clamp-2"
+            className="text-sm font-bold tracking-tight text-white leading-snug group-hover:text-[#CCFF00] transition-colors line-clamp-2"
           >
             {course.title}
           </motion.h3>
@@ -294,7 +294,7 @@ function ExpandableCourseCard({
           <span>{isEnrolled ? 'Saved' : 'Save Plan'}</span>
         </button>
 
-        <span className="text-xs font-semibold text-[#FEC163] group-hover:text-white transition-colors flex items-center gap-1">
+        <span className="text-xs font-semibold text-[#CCFF00] group-hover:text-white transition-colors flex items-center gap-1">
           <span>Inspect Curriculum</span>
           <ArrowRight className="size-3 group-hover:translate-x-0.5 transition-transform" />
         </span>
@@ -399,7 +399,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
       {/* Top Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-white/[0.08]">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#FEC163] mb-1 flex-wrap font-mono">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#CCFF00] mb-1 flex-wrap font-mono">
             <span className="uppercase">Learning Academy</span>
             <span aria-hidden="true" className="text-zinc-600">·</span>
             <span>Placement Mapped Modules</span>
@@ -425,13 +425,13 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
 
           <div className="px-3.5 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs">
             <span className="text-zinc-400 block text-[10px] font-mono uppercase">My Study Plan</span>
-            <span className="font-bold text-[#FEC163] font-mono">{enrolledIds.length} Saved</span>
+            <span className="font-bold text-[#CCFF00] font-mono">{enrolledIds.length} Saved</span>
           </div>
 
           <button
             type="button"
             onClick={() => onNavigate('roadmap')}
-            className="px-4 py-2 text-xs font-semibold text-zinc-950 bg-[#FEC163] hover:bg-[#ffcd7d] rounded-xl transition-colors cursor-pointer whitespace-nowrap"
+            className="px-4 py-2 text-xs font-semibold text-zinc-950 bg-[#CCFF00] hover:bg-[#ffcd7d] rounded-xl transition-colors cursor-pointer whitespace-nowrap"
           >
             View Career Roadmap
           </button>
@@ -448,7 +448,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
               onClick={() => setActiveTabFilter('all')}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer ${
                 activeTabFilter === 'all'
-                  ? 'bg-[#FEC163] text-zinc-950 font-semibold shadow-sm'
+                  ? 'bg-[#CCFF00] text-zinc-950 font-semibold shadow-sm'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -459,7 +459,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
               onClick={() => setActiveTabFilter('enrolled')}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 ${
                 activeTabFilter === 'enrolled'
-                  ? 'bg-[#FEC163] text-zinc-950 font-semibold shadow-sm'
+                  ? 'bg-[#CCFF00] text-zinc-950 font-semibold shadow-sm'
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -496,7 +496,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by skill, topic or provider (e.g. SQL, System Design, Power BI)..."
-              className="w-full pl-10 pr-9 py-2.5 text-xs rounded-xl bg-black/40 border border-white/10 text-white placeholder-zinc-500 focus:border-[#FEC163]/60 focus:outline-none focus:ring-1 focus:ring-[#FEC163]/30"
+              className="w-full pl-10 pr-9 py-2.5 text-xs rounded-xl bg-black/40 border border-white/10 text-white placeholder-zinc-500 focus:border-[#CCFF00]/60 focus:outline-none focus:ring-1 focus:ring-[#CCFF00]/30"
             />
             {searchQuery && (
               <button
@@ -513,7 +513,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
             <select
               value={selectedDomain}
               onChange={(e) => setSelectedDomain(e.target.value)}
-              className="px-3.5 py-2.5 text-xs rounded-xl bg-[#140603] border border-white/10 text-zinc-300 focus:border-[#FEC163] focus:outline-none cursor-pointer"
+              className="px-3.5 py-2.5 text-xs rounded-xl bg-[#14171E] border border-white/10 text-zinc-300 focus:border-[#CCFF00] focus:outline-none cursor-pointer"
             >
               <option value="All Disciplines">All Career Disciplines</option>
               <option value="Data">Data Science & Analytics</option>
@@ -530,7 +530,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
       {loading ? (
         <div className="py-20 text-center text-zinc-500 text-xs">Loading verified academy modules...</div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.08] bg-[#140603]/60 p-12 text-center text-xs text-zinc-400 space-y-2">
+        <div className="rounded-2xl border border-white/[0.08] bg-[#14171E]/60 p-12 text-center text-xs text-zinc-400 space-y-2">
           <p className="text-sm font-semibold text-white">No courses match your criteria</p>
           <p>Try clearing filters or adjusting your search keyword.</p>
           <button
@@ -541,7 +541,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
               setSelectedDomain('All Disciplines');
               setActiveTabFilter('all');
             }}
-            className="mt-2 text-xs font-semibold text-[#FEC163] hover:underline cursor-pointer"
+            className="mt-2 text-xs font-semibold text-[#CCFF00] hover:underline cursor-pointer"
           >
             Clear all filters
           </button>
@@ -563,13 +563,13 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
       {/* Next in Workflow: Proceed to Mock Interview & Progress */}
       <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#120603]/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="size-8 rounded-full bg-[#FEC163] text-black font-bold text-sm flex items-center justify-center font-mono shrink-0">
+          <div className="size-8 rounded-full bg-[#CCFF00] text-black font-bold text-sm flex items-center justify-center font-mono shrink-0">
             6
           </div>
           <div>
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
               <span>Next: Mock Interview & Progress Tracking</span>
-              <span className="text-[10px] font-mono text-[#FEC163] bg-[#FEC163]/10 px-2 py-0.5 rounded border border-[#FEC163]/20">
+              <span className="text-[10px] font-mono text-[#CCFF00] bg-[#CCFF00]/10 px-2 py-0.5 rounded border border-[#CCFF00]/20">
                 Greenroom
               </span>
             </h4>
@@ -583,7 +583,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
           <button
             type="button"
             onClick={() => onNavigate('interview')}
-            className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:brightness-110 rounded-xl shadow-lg shadow-amber-950/40 transition-colors whitespace-nowrap cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] hover:brightness-110 rounded-xl shadow-lg shadow-[#CCFF00]/10 transition-colors whitespace-nowrap cursor-pointer"
           >
             <span>Proceed to Mock Interview</span>
             <ArrowRight className="size-3.5" />
@@ -616,7 +616,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
             {/* Morphing Container with shared layoutId */}
             <motion.div
               layoutId={activeCourseLayoutId}
-              className="relative w-full max-w-2xl bg-[#140603] rounded-3xl overflow-hidden border border-white/[0.15] z-10 flex flex-col shadow-2xl max-h-[90vh] my-auto"
+              className="relative w-full max-w-2xl bg-[#14171E] rounded-3xl overflow-hidden border border-white/[0.15] z-10 flex flex-col shadow-2xl max-h-[90vh] my-auto"
             >
               {/* Close Button with backdrop-blur */}
               <button
@@ -641,12 +641,12 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
                 />
 
                 {/* Scrim Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#140603] via-black/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#14171E] via-black/40 to-transparent" />
 
                 {/* Floating Chips on Banner */}
                 <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 flex-wrap">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-md bg-black/85 backdrop-blur-md border border-white/20 text-xs font-mono font-semibold text-[#FEC163]">
+                    <span className="px-2.5 py-1 rounded-md bg-black/85 backdrop-blur-md border border-white/20 text-xs font-mono font-semibold text-[#CCFF00]">
                       {activeCourse.provider}
                     </span>
                     <span className="px-2.5 py-1 rounded-md bg-emerald-950/85 backdrop-blur-md border border-emerald-500/30 text-xs font-mono font-bold text-emerald-300">
@@ -673,7 +673,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
 
                   <motion.p
                     layoutId={`desc-${activeCourseLayoutId}`}
-                    className="text-[#FEC163] text-xs font-mono font-semibold tracking-wider uppercase mb-3"
+                    className="text-[#CCFF00] text-xs font-mono font-semibold tracking-wider uppercase mb-3"
                   >
                     {activeCourse.domain} · {activeCourse.difficulty} Level · {activeCourse.duration}
                   </motion.p>
@@ -690,7 +690,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
                   {/* Overview Card */}
                   <div className="p-4 rounded-xl border border-white/[0.08] bg-black/40 space-y-2">
                     <h4 className="text-white font-semibold text-sm flex items-center gap-2">
-                      <GraduationCap className="size-4 text-[#FEC163]" />
+                      <GraduationCap className="size-4 text-[#CCFF00]" />
                       <span>Placement Syllabus & Competency Goals</span>
                     </h4>
                     <p className="text-zinc-400 text-xs leading-relaxed">
@@ -709,7 +709,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
                           key={mIdx}
                           className="flex items-start gap-3 p-3 rounded-lg border border-white/[0.06] bg-black/30"
                         >
-                          <div className="size-5 rounded-full bg-[#FEC163]/10 border border-[#FEC163]/30 flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-mono text-[#FEC163] font-bold">
+                          <div className="size-5 rounded-full bg-[#CCFF00]/10 border border-[#CCFF00]/30 flex items-center justify-center shrink-0 mt-0.5 text-[10px] font-mono text-[#CCFF00] font-bold">
                             {mIdx + 1}
                           </div>
                           <div>
@@ -768,7 +768,7 @@ export const CoursesView: React.FC<CoursesViewProps> = ({ user, onNavigate }) =>
                       href={activeCourse.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full sm:w-auto px-6 py-2.5 bg-[#FEC163] hover:bg-[#ffcd7d] text-zinc-950 font-bold rounded-xl shadow-lg shadow-amber-950/40 transition-colors flex items-center justify-center gap-2 text-xs"
+                      className="w-full sm:w-auto px-6 py-2.5 bg-[#CCFF00] hover:bg-[#ffcd7d] text-zinc-950 font-bold rounded-xl shadow-lg shadow-[#CCFF00]/10 transition-colors flex items-center justify-center gap-2 text-xs"
                     >
                       <span>Start Learning on {activeCourse.provider.split('/')[0]}</span>
                       <ExternalLink className="size-3.5" />

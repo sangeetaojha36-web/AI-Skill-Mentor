@@ -1,4 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 import { motion, AnimatePresence } from 'motion/react';
 import { User, Project } from '../types.ts';
 import { api } from '../services/api.ts';
@@ -318,7 +322,7 @@ function ProjectRecommendationCard({
   return (
     <div
       onClick={() => onOpenGuide(project)}
-      className="group flex flex-col overflow-hidden rounded-3xl border border-white/[0.08] bg-[#120502]/90 hover:border-[#FEC163]/50 transition-all duration-300 shadow-md hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-950/20 cursor-pointer select-none justify-between"
+      className="group flex flex-col overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0E1015]/90 hover:border-[#CCFF00]/50 transition-all duration-300 shadow-md hover:-translate-y-1 hover:shadow-xl hover:shadow-[#CCFF00]/10 cursor-pointer select-none justify-between"
     >
       {/* Top Inset Card Section */}
       <div className="flex flex-1 flex-col gap-4 rounded-3xl p-5 bg-[#170703]/90 border-b border-white/[0.06] transition-colors group-hover:bg-[#1f0904]">
@@ -330,7 +334,7 @@ function ProjectRecommendationCard({
             </span>
 
             {isTargetCareer && (
-              <span className="rounded-full border border-amber-500/30 bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-mono font-bold text-[#FEC163] uppercase tracking-wider">
+              <span className="rounded-full border border-amber-500/30 bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-mono font-bold text-[#CCFF00] uppercase tracking-wider">
                 Target Role Match
               </span>
             )}
@@ -346,10 +350,10 @@ function ProjectRecommendationCard({
           <button
             type="button"
             onClick={(e) => onToggleInProgress(project.id, e)}
-            className="text-zinc-500 hover:text-[#FEC163] transition-colors p-1"
+            className="text-zinc-500 hover:text-[#CCFF00] transition-colors p-1"
             title={isInProgress ? 'Remove from active builds' : 'Save to my active build list'}
           >
-            <Bookmark className={`size-3.5 ${isInProgress ? 'fill-[#FEC163] text-[#FEC163]' : ''}`} />
+            <Bookmark className={`size-3.5 ${isInProgress ? 'fill-[#CCFF00] text-[#CCFF00]' : ''}`} />
           </button>
         </div>
 
@@ -359,7 +363,7 @@ function ProjectRecommendationCard({
             {getDomainIcon()}
           </span>
           <div className="min-w-0">
-            <h3 className="text-base font-bold text-white group-hover:text-[#FEC163] transition-colors leading-snug">
+            <h3 className="text-base font-bold text-white group-hover:text-[#CCFF00] transition-colors leading-snug">
               {project.title}
             </h3>
             <p className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider mt-0.5">
@@ -390,7 +394,7 @@ function ProjectRecommendationCard({
       <div className="flex items-center justify-between px-5 py-3.5 bg-black/30">
         <div>
           <p className="text-xs font-bold text-white font-mono flex items-center gap-1.5">
-            <Clock className="size-3 text-[#FEC163]" />
+            <Clock className="size-3 text-[#CCFF00]" />
             <span>~{project.estimatedHours} Hours Build Time</span>
           </p>
           <p className="text-[11px] text-zinc-400 flex items-center gap-1 mt-0.5 font-mono">
@@ -405,7 +409,7 @@ function ProjectRecommendationCard({
             e.stopPropagation();
             onOpenGuide(project);
           }}
-          className="rounded-xl bg-[#FEC163] hover:bg-[#ffcd7d] px-3.5 py-2 text-xs font-bold text-zinc-950 transition-colors shadow-sm cursor-pointer flex items-center gap-1"
+          className="rounded-xl bg-[#CCFF00] hover:bg-[#ffcd7d] px-3.5 py-2 text-xs font-bold text-zinc-950 transition-colors shadow-sm cursor-pointer flex items-center gap-1"
         >
           <span>Build Guide</span>
           <ArrowRight className="size-3" />
@@ -417,11 +421,77 @@ function ProjectRecommendationCard({
 
 /* ---------- Main ProjectsView Component ---------- */
 export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, onOpenChat }) => {
+
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('All');
   const [activeDepartment, setActiveDepartment] = useState<string>('All Disciplines');
+
+  const containerRef = useRef<HTMLElement>(null);
+
+  // GSAP ScrollTrigger on project cards and list items with magnetic hover & staggered reveal
+  useEffect(() => {
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const ctx = gsap.context(() => {
+      const targets = containerRef.current?.querySelectorAll<HTMLElement>(
+        ".spotlight-card, [data-card], .group, .rounded-3xl, .rounded-2xl, .rounded-xl, li, .grid > div"
+      );
+
+      if (targets && targets.length > 0) {
+        ScrollTrigger.batch(Array.from(targets), {
+          start: "top 88%",
+          once: true,
+          onEnter: (batch) => {
+            gsap.fromTo(
+              batch,
+              { y: 36, opacity: 0, scale: 0.98 },
+              {
+                y: 0,
+                opacity: 1,
+                scale: 1,
+                duration: 0.75,
+                stagger: 0.08,
+                ease: "power3.out",
+                clearProps: "transform,opacity",
+              }
+            );
+          },
+        });
+
+        targets.forEach((card) => {
+          const handleMouseMove = (e: MouseEvent) => {
+            const rect = card.getBoundingClientRect();
+            const relX = e.clientX - rect.left - rect.width / 2;
+            const relY = e.clientY - rect.top - rect.height / 2;
+            gsap.to(card, {
+              x: relX * 0.04,
+              y: relY * 0.04,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          };
+
+          const handleMouseLeave = () => {
+            gsap.to(card, {
+              x: 0,
+              y: 0,
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          };
+
+          card.addEventListener("mousemove", handleMouseMove);
+          card.addEventListener("mouseleave", handleMouseLeave);
+        });
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [activeDepartment, selectedDifficulty, searchQuery]);
 
   // Currently opened project blueprint modal
   const [activeBlueprint, setActiveBlueprint] = useState<Project | null>(null);
@@ -540,10 +610,10 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
     : DEFAULT_RESUME_BULLETS;
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-3 py-6 sm:px-6 lg:px-8 space-y-10 animate-fade-in pb-20">
+    <section ref={containerRef} className="mx-auto w-full max-w-6xl px-3 py-6 sm:px-6 lg:px-8 space-y-10 animate-fade-in pb-20">
       {/* 1. Hero Header (Direct Inspiration from Career3) */}
       <div className="flex flex-col items-center text-center space-y-3">
-        <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1 text-xs font-mono font-semibold tracking-wide text-[#FEC163] uppercase">
+        <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1 text-xs font-mono font-semibold tracking-wide text-[#CCFF00] uppercase">
           Portfolio Capstone Engine · Proof of Work
         </span>
 
@@ -557,7 +627,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
 
         {/* Clear Notice clarifying that projects must be BUILT, not directly pasted into a resume */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs text-zinc-300 mt-2">
-          <Info className="size-3.5 text-[#FEC163] shrink-0" />
+          <Info className="size-3.5 text-[#CCFF00] shrink-0" />
           <span>
             These projects are recommended for you to <strong>build and deploy</strong>. Use our step-by-step guides to create real GitHub proof of work.
           </span>
@@ -574,7 +644,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
               onClick={() => setActiveDepartment(dept)}
               className={`rounded-full px-4 py-2 text-xs font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer ${
                 activeDepartment === dept
-                  ? 'bg-[#FEC163] text-zinc-950 shadow-md font-bold'
+                  ? 'bg-[#CCFF00] text-zinc-950 shadow-md font-bold'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
@@ -593,7 +663,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search blueprints by skill (e.g. SQL, Python, ROS, Revit, Docker)..."
-            className="w-full pl-10 pr-9 py-2.5 text-xs rounded-xl bg-black/40 border border-white/10 text-white placeholder-zinc-500 focus:border-[#FEC163]/60 focus:outline-none focus:ring-1 focus:ring-[#FEC163]/30"
+            className="w-full pl-10 pr-9 py-2.5 text-xs rounded-xl bg-black/40 border border-white/10 text-white placeholder-zinc-500 focus:border-[#CCFF00]/60 focus:outline-none focus:ring-1 focus:ring-[#CCFF00]/30"
           />
           {searchQuery && (
             <button
@@ -629,7 +699,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
         {loading ? (
           <div className="py-20 text-center text-zinc-500 text-xs">Loading capstone recommendations...</div>
         ) : filtered.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.08] bg-[#120502]/60 p-12 text-center text-xs text-zinc-400 space-y-2">
+          <div className="rounded-2xl border border-white/[0.08] bg-[#0E1015]/60 p-12 text-center text-xs text-zinc-400 space-y-2">
             <p className="text-sm font-semibold text-white">No project blueprints found for this filter</p>
             <p>Try clearing filters or switching disciplines.</p>
             <button
@@ -639,7 +709,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
                 setSelectedDifficulty('All');
                 setSearchQuery('');
               }}
-              className="mt-2 text-xs font-semibold text-[#FEC163] hover:underline cursor-pointer"
+              className="mt-2 text-xs font-semibold text-[#CCFF00] hover:underline cursor-pointer"
             >
               Reset All Filters
             </button>
@@ -684,7 +754,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
             }}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs font-semibold text-white transition-all cursor-pointer shadow-sm"
           >
-            <Bot className="size-4 text-[#FEC163]" />
+            <Bot className="size-4 text-[#CCFF00]" />
             <span>Brainstorm with AI Placement Mentor</span>
             <ArrowRight className="size-3 text-zinc-400" />
           </button>
@@ -692,7 +762,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
           <button
             type="button"
             onClick={() => onNavigate('careers')}
-            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-[#FEC163] hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold text-[#CCFF00] hover:text-white transition-colors cursor-pointer"
           >
             <span>Explore All 24+ Career Paths</span>
             <ChevronRight className="size-3.5" />
@@ -703,13 +773,13 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
       {/* Next in Workflow: Proceed to Mock Interview & Progress */}
       <div className="p-6 rounded-2xl border border-white/[0.08] bg-[#120603]/80 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
         <div className="flex items-center gap-3">
-          <div className="size-8 rounded-full bg-[#FEC163] text-black font-bold text-sm flex items-center justify-center font-mono shrink-0">
+          <div className="size-8 rounded-full bg-[#CCFF00] text-black font-bold text-sm flex items-center justify-center font-mono shrink-0">
             6
           </div>
           <div>
             <h4 className="text-sm font-bold text-white flex items-center gap-2">
               <span>Next: Mock Interview & Progress Tracking</span>
-              <span className="text-[10px] font-mono text-[#FEC163] bg-[#FEC163]/10 px-2 py-0.5 rounded border border-[#FEC163]/20">
+              <span className="text-[10px] font-mono text-[#CCFF00] bg-[#CCFF00]/10 px-2 py-0.5 rounded border border-[#CCFF00]/20">
                 Greenroom
               </span>
             </h4>
@@ -723,7 +793,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
           <button
             type="button"
             onClick={() => onNavigate('interview')}
-            className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-gradient-to-r from-[#FEC163] to-[#DE4313] hover:brightness-110 rounded-xl shadow-lg shadow-amber-950/40 transition-colors whitespace-nowrap cursor-pointer"
+            className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-zinc-950 bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] hover:brightness-110 rounded-xl shadow-lg shadow-[#CCFF00]/10 transition-colors whitespace-nowrap cursor-pointer"
           >
             <span>Proceed to Mock Interview</span>
             <ArrowRight className="size-3.5" />
@@ -759,17 +829,17 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 15 }}
               transition={{ duration: 0.25 }}
-              className="relative w-full max-w-3xl bg-[#140603] rounded-3xl overflow-hidden border border-white/[0.15] z-10 flex flex-col shadow-2xl max-h-[90vh] my-auto"
+              className="relative w-full max-w-3xl bg-[#14171E] rounded-3xl overflow-hidden border border-white/[0.15] z-10 flex flex-col shadow-2xl max-h-[90vh] my-auto"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4.5 border-b border-white/[0.08] bg-black/40 shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-[#FEC163]/10 border border-[#FEC163]/30 text-[#FEC163]">
+                  <div className="flex size-10 items-center justify-center rounded-xl bg-[#CCFF00]/10 border border-[#CCFF00]/30 text-[#CCFF00]">
                     <Code2 className="size-5.5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#FEC163] font-bold">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#CCFF00] font-bold">
                         Implementation Blueprint & Guide
                       </span>
                       <span className="text-zinc-500">·</span>
@@ -796,7 +866,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
                 {/* 1. WHY BUILD THIS: Recruiter Alignment & Value */}
                 <div className="p-4 rounded-2xl border border-amber-500/30 bg-amber-950/20 space-y-2">
                   <div className="flex items-center gap-2 text-amber-300 font-semibold text-xs">
-                    <ShieldCheck className="size-4 text-[#FEC163]" />
+                    <ShieldCheck className="size-4 text-[#CCFF00]" />
                     <span>Why This Project Elevates Your Resume</span>
                   </div>
                   <p className="text-zinc-300 text-xs leading-relaxed">
@@ -846,10 +916,10 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ user, onNavigate, on
                         className="p-4 rounded-xl border border-white/[0.08] bg-black/40 space-y-2"
                       >
                         <div className="flex items-center gap-2">
-                          <span className="size-5 rounded-full bg-[#FEC163]/15 border border-[#FEC163]/30 text-[#FEC163] font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
+                          <span className="size-5 rounded-full bg-[#CCFF00]/15 border border-[#CCFF00]/30 text-[#CCFF00] font-mono text-[10px] font-bold flex items-center justify-center shrink-0">
                             {idx + 1}
                           </span>
-                          <span className="text-[11px] font-mono text-[#FEC163] uppercase font-semibold">
+                          <span className="text-[11px] font-mono text-[#CCFF00] uppercase font-semibold">
                             {step.phase}
                           </span>
                         </div>

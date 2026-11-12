@@ -243,7 +243,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
         initial={{ opacity: 0, y: 15, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 15, scale: 0.98 }}
-        className={`relative mx-auto w-full overflow-hidden rounded-[24px] border border-[#FEC163]/30 bg-[#0E0C10] font-sans antialiased shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_35px_rgba(222,67,19,0.3)] my-auto max-h-[94vh] flex flex-col transition-all duration-300 ${
+        className={`relative mx-auto w-full overflow-hidden rounded-[24px] border border-[#CCFF00]/30 bg-[#0E0C10] font-sans antialiased shadow-[0_25px_70px_rgba(0,0,0,0.95),0_0_35px_rgba(204,255,0,0.3)] my-auto max-h-[94vh] flex flex-col transition-all duration-300 ${
           isMaximized ? 'max-w-5xl' : 'max-w-3xl'
         }`}
       >
@@ -302,7 +302,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2">
                   <span>{company.name}</span>
                 </h1>
-                <span className="px-2.5 py-0.5 rounded-full bg-[#1F0C05] border border-[#FEC163]/40 text-[#FEC163] text-xs font-mono font-bold">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#1F0C05] border border-[#CCFF00]/40 text-[#CCFF00] text-xs font-mono font-bold">
                   {company.ctcRange}
                 </span>
               </div>
@@ -335,7 +335,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
               <button
                 type="button"
                 onClick={handleVisit}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#FEC163] via-[#FA8C28] to-[#DE4313] hover:from-[#FFE19C] hover:to-[#DE4313] px-4 py-2 text-[12px] font-bold text-black shadow-md transition-transform active:scale-95 sm:flex-none cursor-pointer"
+                className="flex flex-1 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#CCFF00] via-[#CCFF00] to-[#00F0FF] hover:from-[#FFE19C] hover:to-[#00F0FF] px-4 py-2 text-[12px] font-bold text-black shadow-md transition-transform active:scale-95 sm:flex-none cursor-pointer"
               >
                 <span>Visit Portal</span>
                 <ExternalLink size={13} />
@@ -368,7 +368,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
             {/* Clean Key-Value Metadata Grid */}
             <div className="grid flex-1 grid-cols-[90px_1fr] items-center gap-y-2.5 text-[11px] sm:grid-cols-[110px_1fr] bg-[#121115] p-3.5 rounded-xl border border-[#222]">
               <span className="flex items-center gap-1.5 text-[12px] font-medium tracking-wider text-[#888]">
-                <Building2 size={13} className="text-[#FEC163]" /> Category
+                <Building2 size={13} className="text-[#CCFF00]" /> Category
               </span>
               <span className="font-semibold text-white ml-2">
                 {company.category}
@@ -392,10 +392,10 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
               </span>
 
               <span className="flex items-center gap-1.5 text-[12px] font-medium tracking-wider text-[#888]">
-                <TrendingUp size={13} className="text-[#DE4313]" /> CTC Package
+                <TrendingUp size={13} className="text-[#00F0FF]" /> CTC Package
               </span>
               <div className="ml-2 flex flex-wrap items-center gap-2">
-                <span className="font-mono text-[#FEC163] font-bold">
+                <span className="font-mono text-[#CCFF00] font-bold">
                   {company.ctcRange}
                 </span>
                 <span className="rounded-full border border-[#5C5C5C] bg-[#1A1A1C] px-1.5 py-0.5 text-[9px] font-black text-amber-200 uppercase font-mono">
@@ -435,7 +435,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                   onClick={() => window.open(`https://${company.id}.com`, '_blank')}
                   className="flex cursor-pointer items-center gap-1.5 rounded-full border border-[#2a2a2c] bg-[#161617] px-3 py-1 text-slate-300 transition-colors hover:bg-[#1f1f20] active:scale-95"
                 >
-                  <Globe size={12} className="text-[#FEC163]" />
+                  <Globe size={12} className="text-[#CCFF00]" />
                   <span>careers.{company.id}.com</span>
                   <span className="text-neutral-500 font-mono">+Pan India</span>
                 </div>
@@ -452,7 +452,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                   Source
                 </span>
                 <div className="flex items-center gap-1.5 rounded border border-[#2a2a2c] bg-[#161617] px-2 py-0.5 text-[10px] font-bold text-amber-200">
-                  <GitBranch size={12} className="text-[#FEC163]" />
+                  <GitBranch size={12} className="text-[#CCFF00]" />
                   <span>{selectedRoleObj.category}</span>
                 </div>
                 <div className="flex items-center gap-3 text-neutral-400 sm:ml-2 text-[10px] font-mono">
@@ -496,12 +496,12 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                     }}
                     className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 rounded-xl border p-2.5 transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-[#FEC163]/60 bg-[#1A130C]'
+                        ? 'border-[#CCFF00]/60 bg-[#1A130C]'
                         : 'border-[#1e1e1f] bg-[#121213] hover:border-white/15'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="px-1.5 py-0.5 rounded bg-black/40 text-[10px] font-mono text-[#FEC163] font-bold">
+                      <span className="px-1.5 py-0.5 rounded bg-black/40 text-[10px] font-mono text-[#CCFF00] font-bold">
                         R{idx + 1}
                       </span>
                       <span className="text-[12px] font-medium text-white truncate max-w-[200px]">
@@ -542,12 +542,12 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                 type="button"
                 onClick={() => setActiveTab('rehearsal')}
                 className={`pb-2.5 transition-all relative cursor-pointer whitespace-nowrap ${
-                  activeTab === 'rehearsal' ? 'text-[#FEC163] font-bold' : 'text-slate-400 hover:text-white'
+                  activeTab === 'rehearsal' ? 'text-[#CCFF00] font-bold' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <span>Set Up Rehearsal</span>
                 {activeTab === 'rehearsal' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FEC163]" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CCFF00]" />
                 )}
               </button>
 
@@ -555,12 +555,12 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                 type="button"
                 onClick={() => setActiveTab('culture')}
                 className={`pb-2.5 transition-all relative cursor-pointer whitespace-nowrap ${
-                  activeTab === 'culture' ? 'text-[#FEC163] font-bold' : 'text-slate-400 hover:text-white'
+                  activeTab === 'culture' ? 'text-[#CCFF00] font-bold' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <span>Culture Brief <span className="text-[10px] text-slate-400">(what they value)</span></span>
                 {activeTab === 'culture' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FEC163]" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CCFF00]" />
                 )}
               </button>
 
@@ -568,12 +568,12 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                 type="button"
                 onClick={() => setActiveTab('callsheet')}
                 className={`pb-2.5 transition-all relative cursor-pointer whitespace-nowrap ${
-                  activeTab === 'callsheet' ? 'text-[#FEC163] font-bold' : 'text-slate-400 hover:text-white'
+                  activeTab === 'callsheet' ? 'text-[#CCFF00] font-bold' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <span>Call Sheet <span className="text-[10px] text-slate-400">({company.callSheet.length} questions)</span></span>
                 {activeTab === 'callsheet' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FEC163]" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CCFF00]" />
                 )}
               </button>
 
@@ -581,12 +581,12 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                 type="button"
                 onClick={() => setActiveTab('roles')}
                 className={`pb-2.5 transition-all relative cursor-pointer whitespace-nowrap ${
-                  activeTab === 'roles' ? 'text-[#FEC163] font-bold' : 'text-slate-400 hover:text-white'
+                  activeTab === 'roles' ? 'text-[#CCFF00] font-bold' : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <span>Roles & Compensation <span className="text-[10px] text-slate-400">({company.roles.length} tracks)</span></span>
                 {activeTab === 'roles' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#FEC163]" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CCFF00]" />
                 )}
               </button>
             </div>
@@ -598,7 +598,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                 <div className="space-y-2">
                   <div className="font-mono text-slate-400 text-[11px] flex justify-between">
                     <span>Target Role:</span>
-                    <span className="text-[#FEC163] font-bold">{selectedRoleObj.title} ({selectedRoleObj.ctcLpa})</span>
+                    <span className="text-[#CCFF00] font-bold">{selectedRoleObj.title} ({selectedRoleObj.ctcLpa})</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {company.roles.map((r) => {
@@ -610,7 +610,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                           onClick={() => onSelectRoleTitle(r.title)}
                           className={`px-3.5 py-1.5 rounded-full border transition-all cursor-pointer font-medium ${
                             isActive
-                              ? 'bg-[#FEC163] text-black border-transparent shadow-[0_0_12px_rgba(254,193,99,0.4)] font-bold'
+                              ? 'bg-[#CCFF00] text-black border-transparent shadow-[0_0_12px_rgba(204,255,0,0.4)] font-bold'
                               : 'bg-[#121213] border-white/10 text-slate-300 hover:border-white/25'
                           }`}
                         >
@@ -622,10 +622,10 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                 </div>
 
                 {/* Selected Role Card Details */}
-                <div className="p-3.5 rounded-xl bg-[#121115] border border-[#FEC163]/25 space-y-2">
+                <div className="p-3.5 rounded-xl bg-[#121115] border border-[#CCFF00]/25 space-y-2">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px]">
                     <div className="text-white font-semibold flex items-center gap-1.5">
-                      <Cpu size={13} className="text-[#FEC163]" />
+                      <Cpu size={13} className="text-[#CCFF00]" />
                       <span>{selectedRoleObj.title} · {selectedRoleObj.category}</span>
                     </div>
                     <div className="text-slate-400">
@@ -635,7 +635,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                   <div className="flex flex-wrap gap-1.5 items-center pt-1 border-t border-white/[0.06]">
                     <span className="text-slate-400 text-[10px] font-mono">Skills Evaluated:</span>
                     {selectedRoleObj.requiredSkills.map((sk) => (
-                      <span key={sk} className="px-2 py-0.5 rounded bg-black/50 text-[#FFD799] border border-[#FEC163]/20 text-[10px]">
+                      <span key={sk} className="px-2 py-0.5 rounded bg-black/50 text-[#E5E7EB] border border-[#CCFF00]/20 text-[10px]">
                         {sk}
                       </span>
                     ))}
@@ -653,7 +653,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                         onClick={() => onSelectRoundFormat(rnd)}
                         className={`px-3 py-1.5 rounded-full border text-[11px] transition-all cursor-pointer ${
                           selectedRoundFormat === rnd
-                            ? 'bg-[#1C2538] border-[#FEC163] text-white font-semibold'
+                            ? 'bg-[#1C2538] border-[#CCFF00] text-white font-semibold'
                             : 'bg-[#121213] border-white/10 text-slate-300 hover:border-white/25'
                         }`}
                       >
@@ -675,7 +675,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                           onClick={() => onSelectExperienceLevel(lvl)}
                           className={`px-2.5 py-1 rounded-lg border text-[10px] transition-all cursor-pointer ${
                             experienceLevel === lvl
-                              ? 'bg-[#FEC163] text-black border-transparent font-bold'
+                              ? 'bg-[#CCFF00] text-black border-transparent font-bold'
                               : 'bg-[#121213] border-white/10 text-slate-300'
                           }`}
                         >
@@ -695,7 +695,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                           onClick={() => onSelectInterviewerPersona(persona)}
                           className={`px-2.5 py-1 rounded-lg border text-[10px] transition-all cursor-pointer ${
                             interviewerPersona === persona
-                              ? 'bg-[#DE4313] text-white border-transparent font-bold'
+                              ? 'bg-[#00F0FF] text-white border-transparent font-bold'
                               : 'bg-[#121213] border-white/10 text-slate-300'
                           }`}
                         >
@@ -716,7 +716,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                         onClick={() => onSelectInterviewLanguage('English')}
                         className={`flex-1 py-1.5 rounded-lg border text-[11px] font-semibold cursor-pointer ${
                           interviewLanguage === 'English'
-                            ? 'bg-[#FEC163] text-black border-transparent'
+                            ? 'bg-[#CCFF00] text-black border-transparent'
                             : 'bg-[#121213] border-white/10 text-slate-300'
                         }`}
                       >
@@ -747,7 +747,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                       max="10"
                       value={numberOfQuestions}
                       onChange={(e) => onChangeNumberOfQuestions(Number(e.target.value))}
-                      className="w-full accent-[#FEC163] bg-slate-800 h-1.5 rounded-lg cursor-pointer"
+                      className="w-full accent-[#CCFF00] bg-slate-800 h-1.5 rounded-lg cursor-pointer"
                     />
                   </div>
                 </div>
@@ -761,7 +761,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                     Anxiety Reset Micro-Break (10s guided breathing between technical questions)
                   </span>
                   <div className={`h-4 w-4 rounded flex items-center justify-center border transition-all ${
-                    anxietyResetBreathing ? 'bg-[#FEC163] border-[#FEC163] text-black' : 'border-white/30'
+                    anxietyResetBreathing ? 'bg-[#CCFF00] border-[#CCFF00] text-black' : 'border-white/30'
                   }`}>
                     {anxietyResetBreathing && <Check size={12} strokeWidth={3} />}
                   </div>
@@ -791,11 +791,11 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                         <div className="absolute top-2 left-2 right-2 flex items-center justify-between gap-2 pointer-events-none">
                           <div className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono flex items-center gap-1.5 shadow-md ${
                             isSimulatedCamera
-                              ? 'bg-amber-950/85 border border-[#FEC163]/60 text-[#FEC163]'
+                              ? 'bg-amber-950/85 border border-[#CCFF00]/60 text-[#CCFF00]'
                               : 'bg-black/75 border border-emerald-400/50 text-emerald-400'
                           }`}>
                             <span className={`h-1.5 w-1.5 rounded-full ${
-                              isSimulatedCamera ? 'bg-[#FEC163] animate-pulse' : 'bg-emerald-400 animate-pulse'
+                              isSimulatedCamera ? 'bg-[#CCFF00] animate-pulse' : 'bg-emerald-400 animate-pulse'
                             }`} />
                             <span>
                               {isSimulatedCamera ? 'STUDIO SIMULATION SENSOR' : 'HARDWARE WEBCAM VERIFIED'}
@@ -854,8 +854,8 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                       </div>
                     ) : cameraRequesting ? (
                       <div className="flex flex-col items-center justify-center text-center space-y-3 py-6">
-                        <div className="h-12 w-12 rounded-full bg-[#120603] border border-[#FEC163]/50 flex items-center justify-center text-[#FEC163] animate-pulse">
-                          <RotateCw size={22} className="animate-spin text-[#FEC163]" />
+                        <div className="h-12 w-12 rounded-full bg-[#120603] border border-[#CCFF00]/50 flex items-center justify-center text-[#CCFF00] animate-pulse">
+                          <RotateCw size={22} className="animate-spin text-[#CCFF00]" />
                         </div>
                         <div>
                           <div className="font-bold text-white text-xs">Requesting Hardware Webcam Access...</div>
@@ -876,7 +876,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                           <button
                             type="button"
                             onClick={onRequestCameraAccess}
-                            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-[#FEC163] to-[#DE4313] text-black font-bold text-xs shadow-md hover:brightness-110 transition-all cursor-pointer flex items-center gap-1.5"
+                            className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-[#CCFF00] to-[#00F0FF] text-black font-bold text-xs shadow-md hover:brightness-110 transition-all cursor-pointer flex items-center gap-1.5"
                           >
                             <Video size={13} />
                             <span>Enable Hardware Webcam</span>
@@ -886,7 +886,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                             onClick={onSetupSimulatedCamera}
                             className="px-3 py-1.5 rounded-xl bg-[#1A2338] hover:bg-[#232F4C] border border-white/15 text-slate-200 text-xs transition-all cursor-pointer flex items-center gap-1.5"
                           >
-                            <Sparkles size={13} className="text-[#FEC163]" />
+                            <Sparkles size={13} className="text-[#CCFF00]" />
                             <span>Use Studio Simulation</span>
                           </button>
                         </div>
@@ -903,7 +903,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                           <button
                             type="button"
                             onClick={onSetupSimulatedCamera}
-                            className="px-2.5 py-1 rounded bg-[#FEC163] hover:bg-[#ffcd7d] text-black font-bold text-[10px] shrink-0 cursor-pointer shadow-sm"
+                            className="px-2.5 py-1 rounded bg-[#CCFF00] hover:bg-[#ffcd7d] text-black font-bold text-[10px] shrink-0 cursor-pointer shadow-sm"
                           >
                             Use Simulation
                           </button>
@@ -923,7 +923,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                   disabled={!cameraActive || starting}
                   className={`w-full py-3.5 rounded-xl font-bold text-xs sm:text-sm shadow-xl transition-all cursor-pointer flex items-center justify-center gap-2 ${
                     cameraActive
-                      ? 'bg-gradient-to-r from-[#FEC163] via-[#FA8C28] to-[#DE4313] text-black shadow-[0_0_25px_rgba(222,67,19,0.6)] hover:brightness-110 active:scale-[0.99]'
+                      ? 'bg-gradient-to-r from-[#CCFF00] via-[#CCFF00] to-[#00F0FF] text-black shadow-[0_0_25px_rgba(204,255,0,0.6)] hover:brightness-110 active:scale-[0.99]'
                       : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700 opacity-60'
                   }`}
                 >
@@ -946,9 +946,9 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
             {/* TAB CONTENT 2: CULTURE BRIEF */}
             {activeTab === 'culture' && (
               <div className="pt-4 space-y-4 text-xs">
-                <div className="p-4 rounded-xl bg-[#141217] border border-[#FEC163]/25 space-y-1.5">
+                <div className="p-4 rounded-xl bg-[#141217] border border-[#CCFF00]/25 space-y-1.5">
                   <div className="font-bold text-white text-sm flex items-center gap-2">
-                    <Sparkles size={14} className="text-[#FEC163]" />
+                    <Sparkles size={14} className="text-[#CCFF00]" />
                     <span>Hiring Philosophy at {company.name}</span>
                   </div>
                   <p className="text-slate-300 leading-relaxed text-[11px]">
@@ -963,7 +963,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     {company.cultureBrief.coreValues.map((val) => (
                       <div key={val} className="p-2.5 rounded-xl bg-[#121213] border border-white/10 flex items-start gap-2">
-                        <Check size={14} className="text-[#FEC163] shrink-0 mt-0.5" />
+                        <Check size={14} className="text-[#CCFF00] shrink-0 mt-0.5" />
                         <span className="text-slate-200 font-semibold">{val}</span>
                       </div>
                     ))}
@@ -996,14 +996,14 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
               <div className="pt-4 space-y-3 text-xs">
                 <div className="flex items-center justify-between text-slate-400 text-[11px]">
                   <span>Past recruitment questions asked at <strong className="text-white">{company.name}</strong>:</span>
-                  <span className="font-mono text-[#FEC163]">{filteredQuestions.length} recorded</span>
+                  <span className="font-mono text-[#CCFF00]">{filteredQuestions.length} recorded</span>
                 </div>
 
                 <div className="space-y-3">
                   {filteredQuestions.map((item) => (
                     <div key={item.id} className="p-3.5 rounded-xl bg-[#121213] border border-white/10 space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="font-mono text-[#FEC163] font-semibold text-[11px]">
+                        <span className="font-mono text-[#CCFF00] font-semibold text-[11px]">
                           Round: {item.round} · {item.topic}
                         </span>
                         <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-white/10 text-white">
@@ -1049,7 +1049,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                         </div>
 
                         <div className="flex items-center gap-2.5">
-                          <span className="text-[#FEC163] font-mono font-bold text-xs bg-[#1F0C05] px-2.5 py-1 rounded-lg border border-[#FEC163]/30">
+                          <span className="text-[#CCFF00] font-mono font-bold text-xs bg-[#1F0C05] px-2.5 py-1 rounded-lg border border-[#CCFF00]/30">
                             {r.ctcLpa}
                           </span>
                           <button
@@ -1058,7 +1058,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                               onSelectRoleTitle(r.title);
                               setActiveTab('rehearsal');
                             }}
-                            className="px-3 py-1 rounded-lg bg-[#FEC163] text-black font-bold text-[11px] hover:brightness-110 cursor-pointer transition-all"
+                            className="px-3 py-1 rounded-lg bg-[#CCFF00] text-black font-bold text-[11px] hover:brightness-110 cursor-pointer transition-all"
                           >
                             Select Role
                           </button>
@@ -1075,7 +1075,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                           ))}
                         </div>
                         <div className="flex flex-wrap gap-1 items-center text-slate-400">
-                          <span className="text-[#FEC163]">Rounds:</span>
+                          <span className="text-[#CCFF00]">Rounds:</span>
                           {r.rounds.map((rnd, i) => (
                             <span key={rnd} className="text-slate-300">
                               {i + 1}. {rnd} {i < r.rounds.length - 1 ? '→' : ''}
@@ -1135,7 +1135,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
               <span className="text-emerald-400 font-bold">{company.roundFormats.length} Rounds</span>
               <span>·</span>
               <span>{company.roles.length} Open Roles</span>
-              <AlertCircle size={11} className="text-[#FEC163]" />
+              <AlertCircle size={11} className="text-[#CCFF00]" />
             </div>
 
             <button
@@ -1228,7 +1228,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                     }}
                     className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-[11px] text-slate-300 transition-colors hover:bg-white/10 hover:text-white cursor-pointer"
                   >
-                    <item.icon size={13} className="text-[#FEC163]" />
+                    <item.icon size={13} className="text-[#CCFF00]" />
                     <span>{item.label}</span>
                   </button>
                 ))}
@@ -1261,7 +1261,7 @@ export const CompanyDetailCard: React.FC<CompanyDetailCardProps> = ({
                   <p className="font-medium text-emerald-400">✔ Evaluated {company.roles.length} roles and {company.callSheet.length} questions</p>
                   <p className="text-slate-400">Camera Telemetry: {cameraActive ? 'Active 30 FPS Stream' : 'Awaiting candidate consent'}</p>
                   <p className="text-amber-300">Auditing STAR rubric against Indian Tier 1-3 benchmarks</p>
-                  <p className="font-bold text-[#FEC163]">Ready for live speech-to-text & facial focus tracking</p>
+                  <p className="font-bold text-[#CCFF00]">Ready for live speech-to-text & facial focus tracking</p>
                 </div>
               </motion.div>
             )}
